@@ -10,8 +10,10 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Controle de treino personalizado">
     
-    <!-- Ícones para iPhone -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>💪</text></svg>">
+    <!-- Ícones para iPhone - Melhorado -->
+    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/shapes/svg?seed=workout&backgroundColor=667eea&size=180">
+    <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/shapes/svg?seed=workout&backgroundColor=667eea&size=32">
+    <link rel="shortcut icon" href="https://api.dicebear.com/7.x/shapes/svg?seed=workout&backgroundColor=667eea&size=32">
     
     <!-- Manifest para PWA -->
     <link rel="manifest" href="data:application/json,{
@@ -61,7 +63,7 @@
             color: #333;
             text-align: center;
             margin-bottom: 10px;
-            font-size: 1.8em;
+            font-size: 1.5em;
         }
         
         .subtitle {
@@ -73,25 +75,45 @@
         
         .tabs {
             display: flex;
-            gap: 5px;
+            gap: 3px;
             margin-bottom: 20px;
             border-bottom: 2px solid #e0e0e0;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
         }
         
         .tab {
-            padding: 12px 16px;
+            padding: 10px 12px;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
             white-space: nowrap;
             flex-shrink: 0;
+            min-width: fit-content;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .tab small {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+        
+        .tab.active small {
+            color: #667eea;
         }
         
         .tab.active {
@@ -373,9 +395,9 @@
         </div>
         
         <div class="tabs">
-            <button class="tab active" id="tab1">Dia 1 - Peito/Tríceps</button>
-            <button class="tab" id="tab2">Dia 2 - Costas/Bíceps</button>
-            <button class="tab" id="tab3">Dia 3 - Pernas/Glúteos</button>
+            <button class="tab active" id="tab1">Dia 1<br><small>Peito/Tri</small></button>
+            <button class="tab" id="tab2">Dia 2<br><small>Costas/Bi</small></button>
+            <button class="tab" id="tab3">Dia 3<br><small>Pernas</small></button>
         </div>
         
         <!-- DIA 1 -->
@@ -925,4 +947,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
