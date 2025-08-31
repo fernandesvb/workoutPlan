@@ -1,950 +1,914 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Meu Treino">
+    <meta name="apple-mobile-web-app-title" content="Treino">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Controle de treino personalizado">
+
+```
+<title>Meu Treino - 30min</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
     
-    <!-- Ícones para iPhone - Solução com base64 -->
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAWJSURBVHgB7d3dbds4HMfhr2f3BboBu0G7QbsBs0G6QbpBu0G6QbpBu0G6QbpBs0G6QXAvCgQ1YFuWKFKi3ucBDpw4sUV++JOUKEoCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBaXEhYtLu7+3J7e/vyer3+fPz8/v7+ZWi/3z9dr9cvLy8vPz09Pb0JmLUIaLrL5fL19vb2i/5sSD8M/d39/f1PQVOiRbiVjnd3d7/L+L7K8L4Kqk+LoKb6JuP7V4b3XVBtWgQ0nWz7Q99kGkNavD8Jo2kR0FQ6Z2ibe8NWPmXQDWkR0DQ6gW2+ZBse7dvGvggqRYuQRK8g27a7PJ5l8T70RlARWoQkRnDPnQg2K8RDN6T7S+R1JVSIM4XZMmRLDOn+kvHdlW0IgW5G9xGnJCFeIKTOqRRhtiJ8Qc8Z3wW11IzMVoTEiLpqMVsREiPqSUu2otEV/RUaXdHa8A4O6J7eMnxo+/4egl5hYgV0I7s0NKShrRGhnQ3aQUC/i+5O2DZ8aPP+PjXQEgJdv8i+2NDmbR7YFaUSQa5f4kNNBDkxglynyK4mES4VIsh1ie5qGoI3+8RW8V1LXRHqQ6k+Jb6AQy1ohg7gXHsNr+K7BgQ6nNxehFoQ6DA+yPh+l3F9kHF9kXFtyy7QATBDBzHnX/35aJ5e3xz72THQEJihPbOQfZXxDYX9/v39jdFx8ypI7ghoD2wSrWWYfRez5xWvArGi5EhjYTvXsGwmSzZEiwS6XLbQl1UXzGLJhqEI6HJZkO9Fcrns/mVXQzVRnvCQqAAWgHd5rXhkcxzP4QnogtjiX9YTg3stlmu8GkSg8zMxC3NFBnZqKzGGMNsS0HnZHe6XLjBZPZq0+Hw2AZ2HzcoW5jct2DZqQiGBzsNmaJtxVzUbW5jflj5TzySgUzNxqz+6GhoiAZ3SbE5tKhQBnUp0CcdKD4dPBHQKC/Oxrl5UzONxMKfSEOiiLHT0vJiX5xOTRaCLsnBxvXdmBLQYAlpMHAEdPsBQMoGKEdBiOLxJjIAWQ0CLCRHgHbOzF4F6zAdm6EwIaDEENBcCWkwcAS2GT+mEItLjBwYENJ+LJURAiyGgxRDQYkIEdE6+hLJKQIshoPO62lrKGQKaDwEtho7njCygsY+s2HfwxHcqE9B5ORzRHj1EQIshoPOwU5uioyGKXnQIaDEENBs7fxZ9Yk7xE+8ENAseAySgg9i2HaJlDT9QHCKg0zIRvFXG6wuaC8N7vCQxAjoVa+W4EykFbxwvR0CnYOF96TxiOGPBrN7rC5YqT0BrYqH9KdJO6BoT0GIIaDEEtBgCWgwBLYaAFkNAi/kf/cRRaOJH1EAAAAAASUVORK5CYII=">
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAADeSURBVHgB7ZfBDYMwDEVfxQAMABuwATABbMAIjMAG7QbQCWADugF0g3aDEwmq0kZO7FCV9qQnRYr8/7EdO3EAPM9bhOM4F2PMCRFCLJRSd4Aj4AXYbMdyAYhzgD8DRCiAnQCKW/CXAhCpgDoE1BZQaQq2wjDcA3xuzrksy5t+fxEAfI7jWJumOQP8rBfLstTDMOgA22ma3hBxuwsYsA1BEIQ+lNJ3FAUJgnBPRsjgtYAAKYKiYJBGwAOxB0SSCRISBJIJkIQBEiOBRAyQSAnMoxtdxv8VcK1PJJSyjzWR9IG3AAAAAElFTkSuQmCC">
-    <meta name="apple-mobile-web-app-title" content="Treino">
+    input, textarea {
+        -webkit-user-select: text;
+        user-select: text;
+    }
     
-    <!-- Manifest para PWA -->
-    <link rel="manifest" href="data:application/json,{
-        'name': 'Meu Treino 30min',
-        'short_name': 'Treino',
-        'display': 'standalone',
-        'background_color': '%23667eea',
-        'theme_color': '%23667eea',
-        'orientation': 'portrait'
-    }">
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
     
-    <title>Meu Treino - 30min</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        input, textarea {
-            -webkit-user-select: text;
-            user-select: text;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            overscroll-behavior: none;
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            padding: 20px;
-            padding-bottom: 30px;
-        }
-        
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 3px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab {
-            padding: 10px 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 13px;
-            color: #666;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            min-width: fit-content;
-            text-align: center;
-            flex: 1;
-        }
-        
-        .tab small {
-            display: block;
-            font-size: 11px;
-            color: #999;
-            margin-top: 2px;
-        }
-        
-        .tab.active small {
-            color: #667eea;
-        }
-        
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: bold;
-        }
-        
-        .tab:active {
-            transform: scale(0.98);
-        }
-        
-        .day-section {
-            display: none;
-        }
-        
-        .day-section.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .exercise-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .exercise-card:active {
-            transform: scale(0.99);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .exercise-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .exercise-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 1em;
-            flex: 1;
-        }
-        
-        .series-info {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-        }
-        
-        .weight-tracking {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 8px;
-        }
-        
-        .week-input {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .week-label {
-            font-size: 0.75em;
-            color: #666;
-            text-align: center;
-        }
-        
-        input[type="number"] {
-            padding: 10px 5px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: center;
-            transition: all 0.3s;
-            width: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .notes-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f0f4ff;
-            border-radius: 12px;
-        }
-        
-        .notes-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 80px;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: stretch;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            flex: 1;
-            min-width: 100px;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        
-        button:active {
-            transform: scale(0.98);
-        }
-        
-        .btn-save {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-export {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-clear {
-            background: #f56565;
-            color: white;
-        }
-        
-        .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-        
-        .info-box p {
-            color: #856404;
-            font-size: 0.85em;
-            margin: 5px 0;
-        }
-        
-        .progress-indicator {
-            display: inline-block;
-            margin-left: 5px;
-            font-size: 0.9em;
-        }
-        
-        .progress-up {
-            color: #48bb78;
-        }
-        
-        .progress-down {
-            color: #f56565;
-        }
-        
-        .offline-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #48bb78;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: none;
-            z-index: 1000;
-            animation: slideUp 0.3s;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(100px); }
-            to { transform: translateY(0); }
-        }
-        
-        .offline-badge.show {
-            display: block;
-        }
-        
-        /* iOS specific adjustments */
-        @supports (-webkit-touch-callout: none) {
-            .container {
-                padding-top: 25px;
-            }
-            
-            input[type="number"] {
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-        }
-        
-        /* Loading state */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        
-        /* Success feedback */
-        .success-feedback {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(72, 187, 120, 0.95);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 12px;
-            font-weight: bold;
-            display: none;
-            z-index: 2000;
-            animation: fadeInOut 2s;
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-        }
-        
-        .success-feedback.show {
-            display: block;
-        }
-    </style>
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: white;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 0.9em;
+    }
+    
+    .tabs {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab {
+        padding: 10px 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: #666;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        text-align: center;
+        flex: 1;
+    }
+    
+    .tab small {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        margin-top: 2px;
+    }
+    
+    .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        font-weight: bold;
+    }
+    
+    .tab.active small {
+        color: #667eea;
+    }
+    
+    .day-section {
+        display: none;
+    }
+    
+    .day-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+        font-weight: bold;
+        color: #667eea;
+        margin: 20px 0 10px 0;
+        font-size: 1em;
+        padding: 5px 0;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .exercise-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .exercise-card.core {
+        border-left-color: #48bb78;
+        background: #f0fff4;
+    }
+    
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .exercise-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 1em;
+        flex: 1;
+    }
+    
+    .series-info {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    
+    .core .series-info {
+        background: #48bb78;
+    }
+    
+    .weight-tracking {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 8px;
+    }
+    
+    .week-input {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .week-label {
+        font-size: 0.75em;
+        color: #666;
+        text-align: center;
+    }
+    
+    input[type="number"], input[type="text"] {
+        padding: 10px 5px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        width: 100%;
+        -webkit-appearance: none;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .notes-section {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f0f4ff;
+        border-radius: 12px;
+    }
+    
+    .notes-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    button {
+        padding: 14px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+    }
+    
+    .btn-save {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-export {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-clear {
+        background: #f56565;
+        color: white;
+    }
+    
+    .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+    
+    .info-box p {
+        color: #856404;
+        font-size: 0.85em;
+        margin: 5px 0;
+    }
+</style>
+```
+
 </head>
 <body>
     <div class="container">
-        <h1>💪 Meu Treino 30min</h1>
-        <p class="subtitle">Controle de evolução semanal</p>
-        
-        <div class="info-box">
-            <p>💡 <strong>Dica:</strong> Aumente gradualmente quando completar todas as repetições.</p>
-            <p>⚠️ <strong>Ombro:</strong> Priorize execução correta. Dor = reduzir peso.</p>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab active" id="tab1">Dia 1<br><small>Peito/Tri</small></button>
-            <button class="tab" id="tab2">Dia 2<br><small>Costas/Bi</small></button>
-            <button class="tab" id="tab3">Dia 3<br><small>Pernas</small></button>
-        </div>
-        
-        <!-- DIA 1 -->
-        <div id="day1" class="day-section active">
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Supino Máquina Smith</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="supino-smith" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="supino-smith" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="supino-smith" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="supino-smith" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Crucifixo Halteres</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="1" placeholder="kg" data-exercise="crucifixo" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="1" placeholder="kg" data-exercise="crucifixo" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="1" placeholder="kg" data-exercise="crucifixo" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="1" placeholder="kg" data-exercise="crucifixo" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Tríceps Polia</span>
-                    <span class="series-info">3x15</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="4">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- DIA 2 -->
-        <div id="day2" class="day-section">
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Remada Máquina</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="remada-maquina" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="remada-maquina" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="remada-maquina" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="remada-maquina" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Puxada Frontal</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="puxada-frontal" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="puxada-frontal" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="puxada-frontal" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="puxada-frontal" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Rosca Direta</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="4">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- DIA 3 -->
-        <div id="day3" class="day-section">
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Leg Press</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="5" placeholder="kg" data-exercise="leg-press" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="5" placeholder="kg" data-exercise="leg-press" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="5" placeholder="kg" data-exercise="leg-press" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="5" placeholder="kg" data-exercise="leg-press" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Cadeira Extensora</span>
-                    <span class="series-info">3x12</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-extensora" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-extensora" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-extensora" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-extensora" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Cadeira Abdutora</span>
-                    <span class="series-info">3x15</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-abdutora" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-abdutora" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-abdutora" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="cadeira-abdutora" data-week="4">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="exercise-card">
-                <div class="exercise-header">
-                    <span class="exercise-name">Panturrilha</span>
-                    <span class="series-info">3x20</span>
-                </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label">Sem 1</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 3</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 4</label>
-                        <input type="number" inputmode="decimal" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="4">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="notes-section">
-            <div class="notes-title">📝 Observações</div>
-            <textarea id="notes" placeholder="Como se sentiu, dores, progressos..."></textarea>
-        </div>
-        
-        <div class="action-buttons">
-            <button class="btn-save" onclick="saveData()">💾 Salvar</button>
-            <button class="btn-export" onclick="exportData()">📥 Exportar</button>
-            <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
-        </div>
+        <h1>💪 Meu Treino + Core</h1>
+        <p class="subtitle">30-35 min/dia com fortalecimento</p>
+
+```
+    <div class="info-box">
+        <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
+        <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
     </div>
     
-    <div class="offline-badge" id="offlineBadge">✅ Funcionando offline</div>
-    <div class="success-feedback" id="successFeedback">✅ Dados salvos!</div>
+    <div class="tabs">
+        <button class="tab active" onclick="showDay(1)">Dia 1<br><small>Peito/Tri</small></button>
+        <button class="tab" onclick="showDay(2)">Dia 2<br><small>Costas/Bi</small></button>
+        <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
+    </div>
     
-    <!-- Modal de confirmação customizado -->
-    <div id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 3000; animation: fadeIn 0.3s;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 15px; max-width: 300px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-            <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">⚠️ Confirmar Limpeza</h3>
-            <p style="margin: 0 0 20px 0; color: #666; font-size: 14px;">Todos os dados serão apagados permanentemente. Tem certeza?</p>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="confirmClear()" style="flex: 1; padding: 12px; background: #f56565; color: white; border: none; border-radius: 8px; font-weight: bold;">Sim, limpar</button>
-                <button onclick="cancelClear()" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 8px; font-weight: bold;">Cancelar</button>
+    <!-- DIA 1 -->
+    <div id="day1" class="day-section active">
+        <div class="section-title">PEITO E TRÍCEPS</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Supino Máquina Smith</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Crucifixo Halteres</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Tríceps Polia</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Tríceps Testa</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Prancha Frontal</span>
+                <span class="series-info">3x30-45s</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Superman (Lombar)</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="4">
+                </div>
             </div>
         </div>
     </div>
     
-    <script>
-        // Service Worker para funcionar offline
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
-                self.addEventListener('install', e => {
-                    self.skipWaiting();
-                });
-                self.addEventListener('fetch', e => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                });
-            `));
-        }
+    <!-- DIA 2 -->
+    <div id="day2" class="day-section">
+        <div class="section-title">COSTAS E BÍCEPS</div>
         
-        // Detectar se está offline
-        window.addEventListener('online', () => {
-            document.getElementById('offlineBadge').classList.remove('show');
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Remada Máquina</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Puxada Frontal</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Rosca Direta</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Rosca Martelo</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Prancha Lateral</span>
+                <span class="series-info">3x20-30s cada</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Ponte (Glúteo/Lombar)</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="4">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- DIA 3 -->
+    <div id="day3" class="day-section">
+        <div class="section-title">PERNAS</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Leg Press</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Cadeira Extensora</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Cadeira Flexora</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Panturrilha</span>
+                <span class="series-info">3x20</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Abdominal Bicicleta</span>
+                <span class="series-info">3x20 (10 cada)</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Gato-Vaca (Mobilidade)</span>
+                <span class="series-info">3x10 lento</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="4">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notes-section">
+        <div class="notes-title">📝 Observações</div>
+        <textarea id="notes" placeholder="Como se sentiu, dores, progressos..."></textarea>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="btn-save" onclick="saveData()">💾 Salvar</button>
+        <button class="btn-export" onclick="exportData()">📥 Exportar</button>
+        <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
+    </div>
+</div>
+
+<script>
+    // Função simples para trocar de aba
+    function showDay(day) {
+        // Remove active de tudo
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.day-section').forEach(section => {
+            section.classList.remove('active');
         });
         
-        window.addEventListener('offline', () => {
-            document.getElementById('offlineBadge').classList.add('show');
-        });
+        // Adiciona active no dia selecionado
+        document.querySelectorAll('.tab')[day-1].classList.add('active');
+        document.getElementById('day' + day).classList.add('active');
+    }
+    
+    // Salvar dados
+    function saveData() {
+        const data = {};
         
-        // Configurar navegação das abas
-        document.getElementById('tab1').addEventListener('click', function() {
-            switchTab('day1', 'tab1');
-        });
-        
-        document.getElementById('tab2').addEventListener('click', function() {
-            switchTab('day2', 'tab2');
-        });
-        
-        document.getElementById('tab3').addEventListener('click', function() {
-            switchTab('day3', 'tab3');
-        });
-        
-        function switchTab(dayId, tabId) {
-            // Remove active de todas as tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active de todas as sections
-            document.querySelectorAll('.day-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Adiciona active na tab e section selecionadas
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById(dayId).classList.add('active');
-        }
-        
-        // Feedback visual de sucesso
-        function showSuccess(message = '✅ Dados salvos!') {
-            const feedback = document.getElementById('successFeedback');
-            feedback.textContent = message;
-            feedback.classList.add('show');
-            setTimeout(() => {
-                feedback.classList.remove('show');
-            }, 2000);
-        }
-        
-        // Salvar dados no localStorage
-        function saveData(showFeedback = true) {
-            const data = {};
-            
-            // Salva todos os inputs
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                const exercise = input.dataset.exercise;
-                const week = input.dataset.week;
-                const key = `${exercise}_week${week}`;
+        // Salva todos os inputs
+        document.querySelectorAll('input').forEach(input => {
+            if (input.dataset.exercise && input.dataset.week) {
+                const key = input.dataset.exercise + '_w' + input.dataset.week;
                 data[key] = input.value;
-            });
-            
-            // Salva as notas
-            data.notes = document.getElementById('notes').value;
-            
-            // Salva no localStorage
-            localStorage.setItem('workoutData', JSON.stringify(data));
-            
-            // Feedback visual
-            if (showFeedback) {
-                showSuccess();
             }
-        }
+        });
         
-        // Carregar dados do localStorage
-        function loadData() {
-            const savedData = localStorage.getItem('workoutData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                
-                // Carrega os valores dos inputs
-                document.querySelectorAll('input[type="number"]').forEach(input => {
-                    const exercise = input.dataset.exercise;
-                    const week = input.dataset.week;
-                    const key = `${exercise}_week${week}`;
+        // Salva as notas
+        data.notes = document.getElementById('notes').value;
+        
+        // Salva no localStorage
+        localStorage.setItem('treino', JSON.stringify(data));
+        
+        alert('✅ Dados salvos!');
+    }
+    
+    // Carregar dados
+    function loadData() {
+        const saved = localStorage.getItem('treino');
+        if (saved) {
+            const data = JSON.parse(saved);
+            
+            // Carrega os inputs
+            document.querySelectorAll('input').forEach(input => {
+                if (input.dataset.exercise && input.dataset.week) {
+                    const key = input.dataset.exercise + '_w' + input.dataset.week;
                     if (data[key]) {
                         input.value = data[key];
                     }
-                });
-                
-                // Carrega as notas
-                if (data.notes) {
-                    document.getElementById('notes').value = data.notes;
                 }
-            }
-        }
-        
-        // Exportar dados como CSV
-        function exportData() {
-            let csv = 'Exercício,Semana 1,Semana 2,Semana 3,Semana 4\n';
-            
-            const exercises = [
-                { id: 'supino-smith', name: 'Supino Máquina Smith' },
-                { id: 'crucifixo', name: 'Crucifixo Halteres' },
-                { id: 'triceps-polia', name: 'Tríceps Polia' },
-                { id: 'remada-maquina', name: 'Remada Máquina' },
-                { id: 'puxada-frontal', name: 'Puxada Frontal' },
-                { id: 'rosca-direta', name: 'Rosca Direta' },
-                { id: 'leg-press', name: 'Leg Press' },
-                { id: 'cadeira-extensora', name: 'Cadeira Extensora' },
-                { id: 'cadeira-abdutora', name: 'Cadeira Abdutora' },
-                { id: 'panturrilha', name: 'Panturrilha' }
-            ];
-            
-            exercises.forEach(exercise => {
-                let row = exercise.name;
-                for (let week = 1; week <= 4; week++) {
-                    const input = document.querySelector(`input[data-exercise="${exercise.id}"][data-week="${week}"]`);
-                    row += ',' + (input?.value || '');
-                }
-                csv += row + '\n';
             });
             
-            // Adiciona as notas
-            const notes = document.getElementById('notes').value.replace(/\n/g, ' ');
-            csv += '\nObservações:,' + notes;
-            
-            // Cria o arquivo e faz o download
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            const date = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-            link.setAttribute('download', `treino_${date}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showSuccess('📥 Arquivo exportado!');
+            // Carrega as notas
+            if (data.notes) {
+                document.getElementById('notes').value = data.notes;
+            }
         }
+    }
+    
+    // Exportar CSV
+    function exportData() {
+        let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
         
-        // Limpar todos os dados
-        function clearData() {
-            // Mostra o modal de confirmação customizado
-            document.getElementById('confirmModal').style.display = 'block';
-        }
+        const exercises = [
+            'Supino Smith,supino',
+            'Crucifixo,crucifixo',
+            'Tríceps Polia,triceps-polia',
+            'Tríceps Testa,triceps-testa',
+            'Prancha Frontal,prancha1',
+            'Superman,superman',
+            'Remada,remada',
+            'Puxada,puxada',
+            'Rosca Direta,rosca-direta',
+            'Rosca Martelo,rosca-martelo',
+            'Prancha Lateral,prancha-lateral',
+            'Ponte,ponte',
+            'Leg Press,leg-press',
+            'Extensora,extensora',
+            'Flexora,flexora',
+            'Panturrilha,panturrilha',
+            'Abdominal Bicicleta,bicicleta',
+            'Gato-Vaca,gato-vaca'
+        ];
         
-        // Confirmar limpeza
-        function confirmClear() {
-            // Limpa o localStorage
-            localStorage.removeItem('workoutData');
-            
-            // Limpa todos os inputs
-            document.querySelectorAll('input[type="number"]').forEach(input => {
+        exercises.forEach(ex => {
+            const [name, id] = ex.split(',');
+            let row = name;
+            for (let w = 1; w <= 4; w++) {
+                const input = document.querySelector(`input[data-exercise="${id}"][data-week="${w}"]`);
+                row += ',' + (input?.value || '');
+            }
+            csv += row + '\n';
+        });
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'treino.csv';
+        link.click();
+        
+        alert('📥 Arquivo exportado!');
+    }
+    
+    // Limpar dados
+    function clearData() {
+        if (confirm('Limpar todos os dados?')) {
+            localStorage.removeItem('treino');
+            document.querySelectorAll('input').forEach(input => {
                 input.value = '';
             });
-            
-            // Limpa as notas
             document.getElementById('notes').value = '';
-            
-            // Remove indicadores de progresso
-            document.querySelectorAll('.progress-indicator').forEach(indicator => {
-                indicator.remove();
-            });
-            
-            // Fecha o modal
-            document.getElementById('confirmModal').style.display = 'none';
-            
-            // Mostra feedback de sucesso
-            showSuccess('🗑️ Todos os dados foram limpos!');
+            alert('🗑️ Dados limpos!');
         }
-        
-        // Cancelar limpeza
-        function cancelClear() {
-            document.getElementById('confirmModal').style.display = 'none';
-        }
-        
-        // Adicionar indicadores de progresso
-        function checkProgress() {
-            document.querySelectorAll('.exercise-card').forEach(card => {
-                const inputs = card.querySelectorAll('input[type="number"]');
-                for (let i = 1; i < inputs.length; i++) {
-                    const current = parseFloat(inputs[i].value) || 0;
-                    const previous = parseFloat(inputs[i-1].value) || 0;
-                    
-                    if (current && previous) {
-                        // Remove indicadores anteriores
-                        const existingIndicator = inputs[i].parentElement.querySelector('.progress-indicator');
-                        if (existingIndicator) existingIndicator.remove();
-                        
-                        if (current > previous) {
-                            const indicator = document.createElement('span');
-                            indicator.className = 'progress-indicator progress-up';
-                            indicator.textContent = '↑';
-                            inputs[i].parentElement.appendChild(indicator);
-                        } else if (current < previous) {
-                            const indicator = document.createElement('span');
-                            indicator.className = 'progress-indicator progress-down';
-                            indicator.textContent = '↓';
-                            inputs[i].parentElement.appendChild(indicator);
-                        }
-                    }
+    }
+    
+    // Auto-salvar
+    document.addEventListener('input', () => {
+        clearTimeout(window.saveTimer);
+        window.saveTimer = setTimeout(() => {
+            const data = {};
+            document.querySelectorAll('input').forEach(input => {
+                if (input.dataset.exercise && input.dataset.week) {
+                    const key = input.dataset.exercise + '_w' + input.dataset.week;
+                    data[key] = input.value;
                 }
             });
-        }
-        
-        // Auto-salvar ao modificar
-        let saveTimeout;
-        document.querySelectorAll('input[type="number"], textarea').forEach(element => {
-            element.addEventListener('input', () => {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(() => {
-                    saveData(false); // Salva sem mostrar feedback a cada digitação
-                    checkProgress();
-                }, 1000);
-            });
-            
-            element.addEventListener('blur', () => {
-                saveData(false);
-                checkProgress();
-            });
-        });
-        
-        // Prevenir pull-to-refresh no iOS
-        let lastY = 0;
-        document.addEventListener('touchstart', e => {
-            lastY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchmove', e => {
-            const y = e.touches[0].clientY;
-            const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-            if (scrollTop === 0 && y > lastY) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Carregar dados ao iniciar
-        window.addEventListener('load', () => {
-            loadData();
-            checkProgress();
-            
-            // Checar se foi instalado como app
-            if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('App instalado com sucesso!');
-            }
-        });
-    </script>
+            data.notes = document.getElementById('notes').value;
+            localStorage.setItem('treino', JSON.stringify(data));
+        }, 1000);
+    });
+    
+    // Carregar ao iniciar
+    window.addEventListener('load', loadData);
+</script>
+```
+
 </body>
 </html>
