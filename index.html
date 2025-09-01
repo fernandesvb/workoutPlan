@@ -58,6 +58,89 @@
         font-size: 0.9em;
     }
     
+    .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+    
+    .info-box p {
+        color: #856404;
+        font-size: 0.85em;
+        margin: 5px 0;
+    }
+    
+    .timer-section {
+        background: #f0f4ff;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #667eea;
+        margin: 10px 0;
+        font-family: monospace;
+    }
+    
+    .timer-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .timer-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-start {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-stop {
+        background: #f56565;
+        color: white;
+    }
+    
+    .btn-reset {
+        background: #718096;
+        color: white;
+    }
+    
+    .quick-timer {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+        padding: 5px 10px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    
+    .quick-btn:active {
+        background: #cbd5e0;
+    }
+    
     .tabs {
         display: flex;
         gap: 3px;
@@ -254,20 +337,6 @@
         background: #f56565;
         color: white;
     }
-    
-    .info-box {
-        background: #fff3cd;
-        border-left: 4px solid #ffc107;
-        padding: 12px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-    }
-    
-    .info-box p {
-        color: #856404;
-        font-size: 0.85em;
-        margin: 5px 0;
-    }
 </style>
 ```
 
@@ -281,6 +350,24 @@
     <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
         <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
+    </div>
+    
+    <!-- CRONÔMETRO -->
+    <div class="timer-section">
+        <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</div>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="timer-buttons">
+            <button class="timer-btn btn-start" onclick="startTimer()">▶️ Iniciar</button>
+            <button class="timer-btn btn-stop" onclick="stopTimer()">⏸️ Pausar</button>
+            <button class="timer-btn btn-reset" onclick="resetTimer()">🔄 Zerar</button>
+        </div>
+        <div class="quick-timer">
+            <button class="quick-btn" onclick="setTimer(30)">30s</button>
+            <button class="quick-btn" onclick="setTimer(45)">45s</button>
+            <button class="quick-btn" onclick="setTimer(60)">1min</button>
+            <button class="quick-btn" onclick="setTimer(90)">1:30</button>
+            <button class="quick-btn" onclick="setTimer(120)">2min</button>
+        </div>
     </div>
     
     <div class="tabs">
@@ -640,10 +727,6 @@
             <div class="weight-tracking">
                 <div class="week-input">
                     <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
                     <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
                 </div>
                 <div class="week-input">
@@ -773,6 +856,79 @@
 </div>
 
 <script>
+    // CRONÔMETRO
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isCountdown = false;
+    
+    function updateTimerDisplay() {
+        const minutes = Math.floor(Math.abs(timerSeconds) / 60);
+        const seconds = Math.abs(timerSeconds) % 60;
+        const display = document.getElementById('timerDisplay');
+        display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        // Muda cor se for contagem regressiva
+        if (isCountdown) {
+            if (timerSeconds <= 0) {
+                display.style.color = '#f56565';
+                if (timerSeconds === 0) {
+                    // Vibra no celular se possível
+                    if (navigator.vibrate) navigator.vibrate(500);
+                    stopTimer();
+                }
+            } else if (timerSeconds <= 10) {
+                display.style.color = '#ffc107';
+            } else {
+                display.style.color = '#48bb78';
+            }
+        } else {
+            display.style.color = '#667eea';
+        }
+    }
+    
+    function startTimer() {
+        if (!timerInterval) {
+            timerInterval = setInterval(() => {
+                if (isCountdown) {
+                    timerSeconds--;
+                    if (timerSeconds <= 0) {
+                        updateTimerDisplay();
+                        if (timerSeconds < 0) {
+                            // Continua contando depois do zero
+                            isCountdown = false;
+                            timerSeconds = 0;
+                        }
+                    }
+                } else {
+                    timerSeconds++;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function resetTimer() {
+        stopTimer();
+        timerSeconds = 0;
+        isCountdown = false;
+        updateTimerDisplay();
+    }
+    
+    function setTimer(seconds) {
+        stopTimer();
+        timerSeconds = seconds;
+        isCountdown = true;
+        updateTimerDisplay();
+        startTimer();
+    }
+    
     // Função simples para trocar de aba
     function showDay(day) {
         // Remove active de tudo
@@ -911,4 +1067,8 @@
 ```
 
 </body>
-</html>
+</html>="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step
