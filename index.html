@@ -440,6 +440,17 @@
         transform: translateY(-1px);
     }
     
+    .auth-btn.clear {
+        background: #fd7e14;
+        color: white;
+        font-size: 0.75em;
+    }
+    
+    .auth-btn.clear:hover {
+        background: #e8630e;
+        transform: translateY(-1px);
+    }
+    
     @media (max-width: 768px) {
         .auth-info {
             flex-direction: column;
@@ -475,7 +486,14 @@
                     <button id="logout-btn" class="auth-btn logout" onclick="AuthManager.signOut()" style="display: none;">
                         🚪 Sair
                     </button>
+                    <button id="clear-session-btn" class="auth-btn clear" onclick="AuthManager.clearSession()" style="display: none;">
+                        🧹 Limpar Sessão
+                    </button>
                 </div>
+            </div>
+            <!-- Dica específica para iOS -->
+            <div id="ios-tip" style="display: none; font-size: 0.8em; color: #666; margin-top: 8px; text-align: center;">
+                🍎 <strong>iPhone/iPad:</strong> Se o login falhar, use "Limpar Sessão" primeiro
             </div>
         </div>
     <div class="info-box">
@@ -1463,14 +1481,35 @@
                 return;
             }
             
-            // Verifica se há resultado de redirect (importante para mobile)
+            // Verifica se há resultado de redirect (crucial para iOS)
             FirebaseConfig.auth.getRedirectResult().then(async (result) => {
-                if (result.user) {
-                    console.log('✅ Login por redirect realizado com sucesso');
+                console.log('🔍 Verificando redirect result...');
+                
+                if (result && result.user) {
+                    console.log('✅ Login por redirect realizado com sucesso!');
+                    console.log('👤 Usuário:', result.user.displayName || result.user.email);
+                    
+                    // Migra dados locais para a conta do usuário
                     await this.migrateLocalData();
+                    
+                    // Mostra feedback visual
+                    alert('🎉 Login realizado com sucesso!\n👤 ' + (result.user.displayName || result.user.email));
+                    
+                } else if (result && result.credential === null && result.user === null) {
+                    console.log('ℹ️ Redirect cancelado pelo usuário');
+                } else {
+                    console.log('ℹ️ Nenhum redirect result encontrado (primeira visita)');
                 }
             }).catch((error) => {
                 console.error('❌ Erro no redirect result:', error);
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert('🚫 Domínio não autorizado!\n\nAdicione "fernandesvb.github.io" aos domínios autorizados no Google Cloud Console.');
+                } else if (error.code === 'auth/popup-blocked') {
+                    alert('🚫 Acesso bloqueado!\n\nPermita popups ou recarregue a página.');
+                } else {
+                    console.error('Erro específico:', error.code, error.message);
+                }
             });
             
             // Escuta mudanças no estado de autenticação
@@ -1502,18 +1541,39 @@
             }
             
             try {
+                console.log('🔐 Iniciando login...');
+                console.log('📱 User Agent:', navigator.userAgent);
+                console.log('🌐 URL atual:', window.location.href);
+                
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.addScope('profile');
                 provider.addScope('email');
                 
-                // Para GitHub Pages, força uso de redirect em vez de popup em mobile
+                // Detecta iOS especificamente
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
-                let result;
-                if (isMobile) {
+                console.log('📱 É iOS?', isIOS);
+                console.log('📱 É Mobile?', isMobile);
+                
+                // Para iOS, sempre usa redirect por ser mais confiável
+                if (isIOS) {
+                    console.log('🍎 iOS detectado - usando signInWithRedirect');
+                    
+                    // Limpa qualquer estado de auth anterior
+                    await FirebaseConfig.auth.signOut();
+                    
+                    // Aguarda um pouco para limpar o estado
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
                     await FirebaseConfig.auth.signInWithRedirect(provider);
                     return; // O redirect vai recarregar a página
+                } else if (isMobile) {
+                    console.log('📱 Mobile detectado - usando signInWithRedirect');
+                    await FirebaseConfig.auth.signInWithRedirect(provider);
+                    return;
                 } else {
+                    console.log('💻 Desktop detectado - usando signInWithPopup');
                     result = await FirebaseConfig.auth.signInWithPopup(provider);
                 }
                 
@@ -1552,6 +1612,39 @@
         },
         
         /**
+         * Limpa sessão (útil para resolver conflitos no iOS)
+         */
+        async clearSession() {
+            try {
+                console.log('🧹 Limpando sessão...');
+                
+                // Limpa Firebase Auth
+                if (FirebaseConfig.isInitialized) {
+                    await FirebaseConfig.auth.signOut();
+                }
+                
+                // Limpa localStorage
+                localStorage.removeItem('treino');
+                
+                // Limpa qualquer cache do navegador relacionado ao Firebase
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(cacheName => caches.delete(cacheName))
+                    );
+                }
+                
+                // Recarrega a página para limpar completamente o estado
+                alert('🧹 Sessão limpa! A página será recarregada.');
+                window.location.reload();
+                
+            } catch (error) {
+                console.error('❌ Erro ao limpar sessão:', error);
+                alert('⚠️ Erro ao limpar sessão. Tente recarregar a página manualmente.');
+            }
+        },
+        
+        /**
          * Atualiza a interface baseada no usuário
          */
         updateUI(user) {
@@ -1559,21 +1652,34 @@
             const userInfo = document.getElementById('user-info');
             const loginBtn = document.getElementById('login-btn');
             const logoutBtn = document.getElementById('logout-btn');
+            const clearSessionBtn = document.getElementById('clear-session-btn');
+            const iosTip = document.getElementById('ios-tip');
             
             if (!authSection) return;
             
             authSection.style.display = 'block';
+            
+            // Detecta iOS para mostrar o botão "Limpar Sessão"
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             
             if (user) {
                 // Usuário logado
                 userInfo.textContent = `👤 ${user.displayName || user.email}`;
                 loginBtn.style.display = 'none';
                 logoutBtn.style.display = 'inline-block';
+                // Mostra botão limpar apenas no iOS ou quando há problemas
+                clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
+                // Esconde dica quando logado
+                if (iosTip) iosTip.style.display = 'none';
             } else {
                 // Usuário não logado
                 userInfo.textContent = '👤 Modo Local';
                 loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
                 logoutBtn.style.display = 'none';
+                // Mostra botão limpar sempre no iOS (para resolver conflitos)
+                clearSessionBtn.style.display = isIOS && FirebaseConfig.isInitialized ? 'inline-block' : 'none';
+                // Mostra dica específica para iOS
+                if (iosTip) iosTip.style.display = isIOS && FirebaseConfig.isInitialized ? 'block' : 'none';
             }
         },
         
@@ -1790,6 +1896,17 @@
                 console.log('⚠️  Para funcionamento do Google Login, certifique-se que:');
                 console.log('   • "fernandesvb.github.io" está nos domínios autorizados');
                 console.log('   • O Client ID OAuth está configurado corretamente');
+            }
+            
+            // 6. Log específico para iOS troubleshooting
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                console.log('🍎 DISPOSITIVO iOS DETECTADO');
+                console.log('💡 Dicas para iOS:');
+                console.log('   • O login usa REDIRECT em vez de popup');
+                console.log('   • Se houver problemas, use "Limpar Sessão"');
+                console.log('   • Certifique-se que não há conflitos de sessão');
+                console.log('   • Verifique se o Safari permite redirects');
             }
             
         } catch (error) {
