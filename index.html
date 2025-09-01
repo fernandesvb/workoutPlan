@@ -496,6 +496,33 @@
                 🍎 <strong>iPhone/iPad:</strong> Se o login falhar, use "Limpar Sessão" primeiro
             </div>
         </div>
+        
+        <!-- BOTÃO EMERGENCIAL PARA iOS - sempre visível -->
+        <div id="ios-emergency" style="display: none; text-align: center; margin: 10px 0;">
+            <button onclick="AuthManager.clearSession()" style="
+                background: #fd7e14; 
+                color: white; 
+                border: none; 
+                padding: 8px 16px; 
+                border-radius: 6px; 
+                font-size: 0.9em;
+                cursor: pointer;
+            ">
+                🧹 Limpar Sessão iOS
+            </button>
+            <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
+                Clique se o login Google não funcionar
+            </div>
+        </div>
+        
+        <script>
+            // Mostra botão emergencial no iOS imediatamente
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                document.getElementById('ios-emergency').style.display = 'block';
+                console.log('🆘 Botão emergencial iOS ativado');
+            }
+        </script>
+        
     <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
         <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
@@ -1645,6 +1672,39 @@
         },
         
         /**
+         * Força exibição dos controles de auth no iOS
+         */
+        forceIOSAuthDisplay() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                console.log('🍎 Forçando exibição de controles iOS...');
+                
+                const authSection = document.getElementById('auth-section');
+                const clearSessionBtn = document.getElementById('clear-session-btn');
+                const iosTip = document.getElementById('ios-tip');
+                
+                // Força exibição da seção de auth
+                if (authSection) {
+                    authSection.style.display = 'block';
+                    console.log('✅ Seção de auth forçada a mostrar');
+                }
+                
+                // Força exibição do botão limpar sessão
+                if (clearSessionBtn) {
+                    clearSessionBtn.style.display = 'inline-block';
+                    console.log('✅ Botão Limpar Sessão forçado a mostrar');
+                }
+                
+                // Força exibição da dica iOS
+                if (iosTip) {
+                    iosTip.style.display = 'block';
+                    console.log('✅ Dica iOS forçada a mostrar');
+                }
+            }
+        },
+        
+        /**
          * Atualiza a interface baseada no usuário
          */
         updateUI(user) {
@@ -1662,13 +1722,22 @@
             // Detecta iOS para mostrar o botão "Limpar Sessão"
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             
+            // Log de debug para iOS
+            if (isIOS) {
+                console.log('🍎 iOS detectado na updateUI');
+                console.log('🔍 Firebase inicializado?', FirebaseConfig.isInitialized);
+                console.log('👤 Usuário logado?', !!user);
+            }
+            
             if (user) {
                 // Usuário logado
                 userInfo.textContent = `👤 ${user.displayName || user.email}`;
                 loginBtn.style.display = 'none';
                 logoutBtn.style.display = 'inline-block';
-                // Mostra botão limpar apenas no iOS ou quando há problemas
-                clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
+                // Mostra botão limpar SEMPRE no iOS (logado ou não)
+                if (clearSessionBtn) {
+                    clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
+                }
                 // Esconde dica quando logado
                 if (iosTip) iosTip.style.display = 'none';
             } else {
@@ -1676,10 +1745,15 @@
                 userInfo.textContent = '👤 Modo Local';
                 loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
                 logoutBtn.style.display = 'none';
-                // Mostra botão limpar sempre no iOS (para resolver conflitos)
-                clearSessionBtn.style.display = isIOS && FirebaseConfig.isInitialized ? 'inline-block' : 'none';
+                // Mostra botão limpar SEMPRE no iOS (mesmo sem Firebase)
+                if (clearSessionBtn) {
+                    clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
+                    if (isIOS) {
+                        console.log('🧹 Botão Limpar Sessão configurado para mostrar no iOS');
+                    }
+                }
                 // Mostra dica específica para iOS
-                if (iosTip) iosTip.style.display = isIOS && FirebaseConfig.isInitialized ? 'block' : 'none';
+                if (iosTip) iosTip.style.display = isIOS ? 'block' : 'none';
             }
         },
         
@@ -1883,6 +1957,9 @@
                         RealtimeSync.start();
                     }
                 }, 1000);
+            } else {
+                // Mesmo sem Firebase, configura UI básica
+                AuthManager.updateUI(null);
             }
             
             // 4. Carrega dados salvos
@@ -1907,6 +1984,11 @@
                 console.log('   • Se houver problemas, use "Limpar Sessão"');
                 console.log('   • Certifique-se que não há conflitos de sessão');
                 console.log('   • Verifique se o Safari permite redirects');
+                
+                // 7. FORÇA exibição dos controles iOS
+                setTimeout(() => {
+                    AuthManager.forceIOSAuthDisplay();
+                }, 500);
             }
             
         } catch (error) {
