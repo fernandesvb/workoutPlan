@@ -1516,10 +1516,17 @@
             }
             
             try {
-                console.log('🔐 Iniciando login...');
-                console.log('📱 User Agent:', navigator.userAgent);
-                console.log('🌐 URL atual:', window.location.href);
-                console.log('🔑 Auth Domain:', FirebaseConfig.config.authDomain);
+                const logs = [
+                    '🔐 Iniciando login...',
+                    `📱 User Agent: ${navigator.userAgent}`,
+                    `🌐 URL atual: ${window.location.href}`,
+                    `🔑 Auth Domain: ${FirebaseConfig.config.authDomain}`
+                ];
+                
+                logs.forEach(log => {
+                    console.log(log);
+                    this.addVisualLog(log);
+                });
                 
                 // Detecta iOS especificamente  
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -1527,6 +1534,9 @@
                 
                 console.log('📱 É iOS?', isIOS);
                 console.log('🌐 É Safari?', isSafari);
+                
+                this.addVisualLog(`📱 É iOS? ${isIOS}`);
+                this.addVisualLog(`🌐 É Safari? ${isSafari}`);
                 
                 // Configuração específica do provider para iOS
                 const provider = new firebase.auth.GoogleAuthProvider();
@@ -1545,6 +1555,7 @@
                 // Para iOS Safari, implementa lógica específica
                 if (isIOS) {
                     console.log('🍎 iOS detectado - iniciando processo de redirect');
+                    this.addVisualLog('🍎 iOS detectado - iniciando processo de redirect');
                     
                     // Salva estado antes do redirect
                     localStorage.setItem('auth_attempt', JSON.stringify({
@@ -1555,12 +1566,15 @@
                     
                     // Mostra loading
                     this.showAuthLoading(true);
+                    this.addVisualLog('🔄 Mostrando loading...');
                     
                     try {
                         await FirebaseConfig.auth.signInWithRedirect(provider);
                         console.log('🔄 Redirect iniciado com sucesso');
+                        this.addVisualLog('🔄 Redirect iniciado com sucesso');
                     } catch (redirectError) {
                         console.error('❌ Erro no redirect:', redirectError);
+                        this.addVisualLog('❌ Erro no redirect: ' + redirectError.message);
                         this.showAuthLoading(false);
                         throw redirectError;
                     }
@@ -1765,6 +1779,7 @@
             
             if (!isIOS) return;
             
+            // Logs para console
             console.log('🩺 === DIAGNÓSTICO iOS ===');
             console.log('🌐 URL:', window.location.href);
             console.log('🌐 Domain:', window.location.hostname);
@@ -1785,12 +1800,14 @@
             console.log('👁️ Clear button visível?', clearBtn?.style.display !== 'none');
             
             // Testa localStorage
+            let localStorageOK = true;
             try {
                 localStorage.setItem('test', 'ok');
                 localStorage.removeItem('test');
                 console.log('💾 localStorage funcionando? ✅');
             } catch (e) {
                 console.log('💾 localStorage funcionando? ❌', e);
+                localStorageOK = false;
             }
             
             // Verifica domínio autorizado
@@ -1799,25 +1816,55 @@
             
             console.log('🔍 === CHECKLIST DE PROBLEMAS COMUNS ===');
             
+            let problemas = [];
+            
             if (currentDomain !== 'fernandesvb.github.io') {
                 console.log('⚠️ PROBLEMA: Domínio atual não é fernandesvb.github.io');
+                problemas.push('❌ Domínio incorreto: ' + currentDomain);
             } else {
                 console.log('✅ Domínio correto: fernandesvb.github.io');
             }
             
             if (window.location.protocol !== 'https:') {
                 console.log('⚠️ PROBLEMA: Não está usando HTTPS');
+                problemas.push('❌ Não está em HTTPS');
             } else {
                 console.log('✅ HTTPS ativo');
             }
             
             if (!authDomain) {
                 console.log('⚠️ PROBLEMA: Auth domain não configurado');
+                problemas.push('❌ Auth domain não configurado');
             } else {
                 console.log('✅ Auth domain configurado:', authDomain);
             }
             
+            if (!localStorageOK) {
+                problemas.push('❌ localStorage não funciona');
+            }
+            
             console.log('🩺 === FIM DIAGNÓSTICO ===');
+            
+            // MOSTRA RESULTADO EM ALERT TAMBÉM (para iOS sem console)
+            let resultado = '🩺 DIAGNÓSTICO iOS\n\n';
+            resultado += `🌐 URL: ${window.location.href}\n`;
+            resultado += `🌐 Domínio: ${currentDomain}\n`;
+            resultado += `🌐 Protocolo: ${window.location.protocol}\n`;
+            resultado += `🧪 Firebase: ${FirebaseConfig.isInitialized ? '✅' : '❌'}\n`;
+            resultado += `💾 LocalStorage: ${localStorageOK ? '✅' : '❌'}\n\n`;
+            
+            if (problemas.length === 0) {
+                resultado += '✅ TUDO OK! Configuração correta.\n\n';
+                resultado += 'Se login ainda falha:\n';
+                resultado += '1. Use "Limpar Sessão"\n';
+                resultado += '2. Verifique domínio no Google Cloud\n';
+                resultado += '3. Tente login novamente';
+            } else {
+                resultado += '⚠️ PROBLEMAS ENCONTRADOS:\n';
+                resultado += problemas.join('\n');
+            }
+            
+            alert(resultado);
             
             // Adiciona botão de diagnóstico à interface
             this.addDiagnosticButton();
@@ -1852,10 +1899,71 @@
             
             diagnosticBtn.onclick = () => {
                 this.diagnoseiOSIssues();
-                alert('🩺 Diagnóstico executado! Veja o console do Safari.');
             };
             
             authSection.appendChild(diagnosticBtn);
+            
+            // Adiciona botão para mostrar logs visuais
+            const showLogsBtn = document.createElement('button');
+            showLogsBtn.innerHTML = '📋 Ver Logs';
+            showLogsBtn.style.cssText = `
+                background: #28a745; 
+                color: white; 
+                border: none; 
+                padding: 6px 12px; 
+                border-radius: 6px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                margin: 5px;
+            `;
+            
+            showLogsBtn.onclick = () => {
+                this.toggleVisualLogs();
+            };
+            
+            authSection.appendChild(showLogsBtn);
+        },
+        
+        /**
+         * Mostra/esconde logs visuais na página
+         */
+        toggleVisualLogs() {
+            const logsDiv = document.getElementById('ios-logs');
+            if (logsDiv) {
+                logsDiv.style.display = logsDiv.style.display === 'none' ? 'block' : 'none';
+            }
+        },
+        
+        /**
+         * Adiciona log visual na página (além do console)
+         */
+        addVisualLog(message) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (!isIOS) return;
+            
+            const logsDiv = document.getElementById('ios-logs');
+            const logsContent = document.getElementById('ios-logs-content');
+            
+            if (logsDiv && logsContent) {
+                // Mostra a div de logs
+                logsDiv.style.display = 'block';
+                
+                // Adiciona timestamp
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.style.cssText = 'margin: 2px 0; color: #495057;';
+                logEntry.innerHTML = `<span style="color: #6c757d;">[${timestamp}]</span> ${message}`;
+                
+                logsContent.appendChild(logEntry);
+                
+                // Scroll para o final
+                logsContent.scrollTop = logsContent.scrollHeight;
+                
+                // Limita a 50 logs
+                while (logsContent.children.length > 50) {
+                    logsContent.removeChild(logsContent.firstChild);
+                }
+            }
         },
         
         /**
