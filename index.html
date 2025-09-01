@@ -497,31 +497,7 @@
             </div>
         </div>
         
-        <!-- BOTÃO EMERGENCIAL PARA iOS - sempre visível -->
-        <div id="ios-emergency" style="display: none; text-align: center; margin: 10px 0;">
-            <button onclick="AuthManager.clearSession()" style="
-                background: #fd7e14; 
-                color: white; 
-                border: none; 
-                padding: 8px 16px; 
-                border-radius: 6px; 
-                font-size: 0.9em;
-                cursor: pointer;
-            ">
-                🧹 Limpar Sessão iOS
-            </button>
-            <div style="font-size: 0.75em; color: #666; margin-top: 5px;">
-                Clique se o login Google não funcionar
-            </div>
-        </div>
-        
-        <script>
-            // Mostra botão emergencial no iOS imediatamente
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                document.getElementById('ios-emergency').style.display = 'block';
-                console.log('🆘 Botão emergencial iOS ativado');
-            }
-        </script>
+
         
     <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
@@ -1509,35 +1485,7 @@
             }
             
             // Verifica se há resultado de redirect (crucial para iOS)
-            FirebaseConfig.auth.getRedirectResult().then(async (result) => {
-                console.log('🔍 Verificando redirect result...');
-                
-                if (result && result.user) {
-                    console.log('✅ Login por redirect realizado com sucesso!');
-                    console.log('👤 Usuário:', result.user.displayName || result.user.email);
-                    
-                    // Migra dados locais para a conta do usuário
-                    await this.migrateLocalData();
-                    
-                    // Mostra feedback visual
-                    alert('🎉 Login realizado com sucesso!\n👤 ' + (result.user.displayName || result.user.email));
-                    
-                } else if (result && result.credential === null && result.user === null) {
-                    console.log('ℹ️ Redirect cancelado pelo usuário');
-                } else {
-                    console.log('ℹ️ Nenhum redirect result encontrado (primeira visita)');
-                }
-            }).catch((error) => {
-                console.error('❌ Erro no redirect result:', error);
-                
-                if (error.code === 'auth/unauthorized-domain') {
-                    alert('🚫 Domínio não autorizado!\n\nAdicione "fernandesvb.github.io" aos domínios autorizados no Google Cloud Console.');
-                } else if (error.code === 'auth/popup-blocked') {
-                    alert('🚫 Acesso bloqueado!\n\nPermita popups ou recarregue a página.');
-                } else {
-                    console.error('Erro específico:', error.code, error.message);
-                }
-            });
+            this.checkRedirectResult();
             
             // Escuta mudanças no estado de autenticação
             FirebaseConfig.auth.onAuthStateChanged(async (user) => {
@@ -1571,43 +1519,63 @@
                 console.log('🔐 Iniciando login...');
                 console.log('📱 User Agent:', navigator.userAgent);
                 console.log('🌐 URL atual:', window.location.href);
+                console.log('🔑 Auth Domain:', FirebaseConfig.config.authDomain);
                 
+                // Detecta iOS especificamente  
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+                
+                console.log('📱 É iOS?', isIOS);
+                console.log('🌐 É Safari?', isSafari);
+                
+                // Configuração específica do provider para iOS
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.addScope('profile');
                 provider.addScope('email');
                 
-                // Detecta iOS especificamente
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                console.log('📱 É iOS?', isIOS);
-                console.log('📱 É Mobile?', isMobile);
-                
-                // Para iOS, sempre usa redirect por ser mais confiável
+                // Configurações específicas para iOS
                 if (isIOS) {
-                    console.log('🍎 iOS detectado - usando signInWithRedirect');
-                    
-                    // Limpa qualquer estado de auth anterior
-                    await FirebaseConfig.auth.signOut();
-                    
-                    // Aguarda um pouco para limpar o estado
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    await FirebaseConfig.auth.signInWithRedirect(provider);
-                    return; // O redirect vai recarregar a página
-                } else if (isMobile) {
-                    console.log('📱 Mobile detectado - usando signInWithRedirect');
-                    await FirebaseConfig.auth.signInWithRedirect(provider);
-                    return;
-                } else {
-                    console.log('💻 Desktop detectado - usando signInWithPopup');
-                    result = await FirebaseConfig.auth.signInWithPopup(provider);
+                    provider.setCustomParameters({
+                        prompt: 'select_account'
+                    });
                 }
                 
-                console.log('✅ Login realizado com sucesso');
+                console.log('🔐 Configuração do provider:', provider);
                 
-                // Migra dados locais para a conta do usuário
-                await this.migrateLocalData();
+                // Para iOS Safari, implementa lógica específica
+                if (isIOS) {
+                    console.log('🍎 iOS detectado - iniciando processo de redirect');
+                    
+                    // Salva estado antes do redirect
+                    localStorage.setItem('auth_attempt', JSON.stringify({
+                        timestamp: Date.now(),
+                        userAgent: navigator.userAgent,
+                        url: window.location.href
+                    }));
+                    
+                    // Mostra loading
+                    this.showAuthLoading(true);
+                    
+                    try {
+                        await FirebaseConfig.auth.signInWithRedirect(provider);
+                        console.log('🔄 Redirect iniciado com sucesso');
+                    } catch (redirectError) {
+                        console.error('❌ Erro no redirect:', redirectError);
+                        this.showAuthLoading(false);
+                        throw redirectError;
+                    }
+                    
+                    return; // O redirect vai recarregar a página
+                } else {
+                    // Desktop - usa popup
+                    console.log('💻 Desktop detectado - usando signInWithPopup');
+                    const result = await FirebaseConfig.auth.signInWithPopup(provider);
+                    console.log('✅ Login realizado com sucesso');
+                    
+                    // Migra dados locais para a conta do usuário
+                    await this.migrateLocalData();
+                    return result;
+                }
                 
             } catch (error) {
                 console.error('❌ Erro no login:', error);
@@ -1672,6 +1640,91 @@
         },
         
         /**
+         * Verifica resultado de redirect (específico para iOS)
+         */
+        async checkRedirectResult() {
+            console.log('🔍 Verificando redirect result...');
+            
+            try {
+                // Verifica se houve uma tentativa de auth recente
+                const authAttempt = localStorage.getItem('auth_attempt');
+                if (authAttempt) {
+                    const attempt = JSON.parse(authAttempt);
+                    console.log('📱 Tentativa de auth anterior encontrada:', attempt);
+                    localStorage.removeItem('auth_attempt');
+                }
+                
+                const result = await FirebaseConfig.auth.getRedirectResult();
+                console.log('🔍 Resultado do redirect:', result);
+                
+                if (result && result.user) {
+                    console.log('✅ Login por redirect realizado com sucesso!');
+                    console.log('👤 Usuário:', result.user.displayName || result.user.email);
+                    console.log('🔑 Provider:', result.additionalUserInfo?.providerId);
+                    console.log('📊 Primeiro login?', result.additionalUserInfo?.isNewUser);
+                    
+                    // Migra dados locais para a conta do usuário
+                    await this.migrateLocalData();
+                    
+                    // Mostra feedback visual
+                    FirebaseConfig.updateStatus('connected', '✅ Login realizado com sucesso!');
+                    setTimeout(() => {
+                        alert('🎉 Login realizado com sucesso!\n👤 ' + (result.user.displayName || result.user.email));
+                    }, 500);
+                    
+                } else if (result && result.credential === null && result.user === null) {
+                    console.log('ℹ️ Redirect cancelado pelo usuário');
+                    FirebaseConfig.updateStatus('error', '❌ Login cancelado');
+                } else {
+                    console.log('ℹ️ Nenhum redirect result (primeira visita ou sem tentativa)');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no redirect result:', error);
+                console.error('❌ Código de erro:', error.code);
+                console.error('❌ Mensagem:', error.message);
+                
+                // Remove indicador de loading se houver erro
+                this.showAuthLoading(false);
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert('🚫 DOMÍNIO NÃO AUTORIZADO!\n\n' +
+                          'Solução:\n' +
+                          '1. Vá para Google Cloud Console\n' +
+                          '2. OAuth 2.0 Client IDs\n' +
+                          '3. Adicione "fernandesvb.github.io"\n' +
+                          '4. Salve as alterações');
+                } else if (error.code === 'auth/popup-blocked') {
+                    alert('🚫 Acesso bloqueado!\n\nPermita popups ou recarregue a página.');
+                } else if (error.code === 'auth/network-request-failed') {
+                    alert('🌐 Erro de rede!\n\nVerifique sua conexão com a internet.');
+                } else {
+                    console.error('❌ Erro não tratado:', error.code, error.message);
+                    alert('❌ Erro no login: ' + (error.message || 'Erro desconhecido'));
+                }
+            }
+        },
+        
+        /**
+         * Mostra/esconde indicador de loading durante auth
+         */
+        showAuthLoading(show) {
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (loginBtn) {
+                if (show) {
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = '🔄 Redirecionando...';
+                    loginBtn.style.opacity = '0.7';
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 Entrar com Google';
+                    loginBtn.style.opacity = '1';
+                }
+            }
+        },
+        
+        /**
          * Força exibição dos controles de auth no iOS
          */
         forceIOSAuthDisplay() {
@@ -1702,6 +1755,107 @@
                     console.log('✅ Dica iOS forçada a mostrar');
                 }
             }
+        },
+        
+        /**
+         * Diagnóstico específico para problemas no iOS
+         */
+        diagnoseiOSIssues() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (!isIOS) return;
+            
+            console.log('🩺 === DIAGNÓSTICO iOS ===');
+            console.log('🌐 URL:', window.location.href);
+            console.log('🌐 Domain:', window.location.hostname);
+            console.log('🌐 Protocol:', window.location.protocol);
+            console.log('🍎 iOS Version:', navigator.userAgent);
+            console.log('🔐 Firebase Auth Domain:', FirebaseConfig.config?.authDomain);
+            console.log('📱 Viewport:', `${window.innerWidth}x${window.innerHeight}`);
+            console.log('🧪 Firebase inicializado?', FirebaseConfig.isInitialized);
+            console.log('🔗 HTTPS?', window.location.protocol === 'https:');
+            
+            // Testa se elementos estão visíveis
+            const authSection = document.getElementById('auth-section');
+            const loginBtn = document.getElementById('login-btn');
+            const clearBtn = document.getElementById('clear-session-btn');
+            
+            console.log('👁️ Auth section visível?', authSection?.style.display !== 'none');
+            console.log('👁️ Login button visível?', loginBtn?.style.display !== 'none');
+            console.log('👁️ Clear button visível?', clearBtn?.style.display !== 'none');
+            
+            // Testa localStorage
+            try {
+                localStorage.setItem('test', 'ok');
+                localStorage.removeItem('test');
+                console.log('💾 localStorage funcionando? ✅');
+            } catch (e) {
+                console.log('💾 localStorage funcionando? ❌', e);
+            }
+            
+            // Verifica domínio autorizado
+            const currentDomain = window.location.hostname;
+            const authDomain = FirebaseConfig.config?.authDomain;
+            
+            console.log('🔍 === CHECKLIST DE PROBLEMAS COMUNS ===');
+            
+            if (currentDomain !== 'fernandesvb.github.io') {
+                console.log('⚠️ PROBLEMA: Domínio atual não é fernandesvb.github.io');
+            } else {
+                console.log('✅ Domínio correto: fernandesvb.github.io');
+            }
+            
+            if (window.location.protocol !== 'https:') {
+                console.log('⚠️ PROBLEMA: Não está usando HTTPS');
+            } else {
+                console.log('✅ HTTPS ativo');
+            }
+            
+            if (!authDomain) {
+                console.log('⚠️ PROBLEMA: Auth domain não configurado');
+            } else {
+                console.log('✅ Auth domain configurado:', authDomain);
+            }
+            
+            console.log('🩺 === FIM DIAGNÓSTICO ===');
+            
+            // Adiciona botão de diagnóstico à interface
+            this.addDiagnosticButton();
+        },
+        
+        /**
+         * Adiciona botão de diagnóstico à interface iOS
+         */
+        addDiagnosticButton() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (!isIOS) return;
+            
+            // Verifica se já existe
+            if (document.getElementById('diagnostic-btn')) return;
+            
+            const authSection = document.getElementById('auth-section');
+            if (!authSection) return;
+            
+            const diagnosticBtn = document.createElement('button');
+            diagnosticBtn.id = 'diagnostic-btn';
+            diagnosticBtn.innerHTML = '🩺 Diagnóstico iOS';
+            diagnosticBtn.style.cssText = `
+                background: #17a2b8; 
+                color: white; 
+                border: none; 
+                padding: 6px 12px; 
+                border-radius: 6px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                margin: 5px;
+            `;
+            
+            diagnosticBtn.onclick = () => {
+                this.diagnoseiOSIssues();
+                alert('🩺 Diagnóstico executado! Veja o console do Safari.');
+            };
+            
+            authSection.appendChild(diagnosticBtn);
         },
         
         /**
@@ -1985,9 +2139,10 @@
                 console.log('   • Certifique-se que não há conflitos de sessão');
                 console.log('   • Verifique se o Safari permite redirects');
                 
-                // 7. FORÇA exibição dos controles iOS
+                // 7. FORÇA exibição dos controles iOS e diagnóstico
                 setTimeout(() => {
                     AuthManager.forceIOSAuthDisplay();
+                    AuthManager.diagnoseiOSIssues();
                 }, 500);
             }
             
