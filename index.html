@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,470 +9,337 @@
     <meta name="apple-mobile-web-app-title" content="Treino">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Aplicativo de controle de treino personalizado com cronômetro integrado">
+    <meta name="description" content="Controle de treino personalizado">
+
+```
+<title>Meu Treino - 30min</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
     
-    <title>Meu Treino - 30min</title>
+    input, textarea {
+        -webkit-user-select: text;
+        user-select: text;
+    }
     
-    <style>
-        /* ==========================================================================
-           RESET E CONFIGURAÇÕES BÁSICAS
-           ========================================================================== */
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        /* Permite seleção de texto em inputs e textareas */
-        input, textarea {
-            -webkit-user-select: text;
-            user-select: text;
-        }
-        
-        /* ==========================================================================
-           LAYOUT PRINCIPAL
-           ========================================================================== */
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
     
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        /* ==========================================================================
-           TIPOGRAFIA E ELEMENTOS DE TEXTO
-           ========================================================================== */
-        
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-        }
-        
-        .section-title {
-            font-weight: bold;
-            color: #667eea;
-            margin: 20px 0 10px 0;
-            font-size: 1em;
-            padding: 5px 0;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        /* ==========================================================================
-           CAIXAS DE INFORMAÇÃO E NOTIFICAÇÕES
-           ========================================================================== */
-        
-        .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-        
-        .info-box p {
-            color: #856404;
-            font-size: 0.85em;
-            margin: 5px 0;
-        }
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: white;
+        min-height: 100vh;
+        padding: 20px;
+    }
     
-        /* ==========================================================================
-           SEÇÃO DO CRONÔMETRO
-           ========================================================================== */
-        
-        .timer-section {
-            background: #f0f4ff;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .timer-display {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-            font-family: monospace;
-            transition: color 0.3s ease;
-        }
-        
-        .timer-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .timer-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-width: 80px;
-        }
-        
-        .timer-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .btn-start {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-stop {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-reset {
-            background: #718096;
-            color: white;
-        }
-        
-        .quick-timer {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .quick-btn {
-            padding: 5px 10px;
-            background: #e2e8f0;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        
-        .quick-btn:hover {
-            background: #cbd5e0;
-        }
-        
-        .quick-btn:active {
-            background: #a0aec0;
-        }
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
     
-        /* ==========================================================================
-           SISTEMA DE TABS PARA DIAS DE TREINO
-           ========================================================================== */
-        
-        .tabs {
-            display: flex;
-            gap: 3px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .tab {
-            padding: 10px 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 13px;
-            color: #666;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            text-align: center;
-            flex: 1;
-        }
-        
-        .tab:hover {
-            color: #667eea;
-            background-color: rgba(102, 126, 234, 0.05);
-        }
-        
-        .tab small {
-            display: block;
-            font-size: 11px;
-            color: #999;
-            margin-top: 2px;
-        }
-        
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: bold;
-        }
-        
-        .tab.active small {
-            color: #667eea;
-        }
-        
-        /* ==========================================================================
-           SEÇÕES DOS DIAS DE TREINO
-           ========================================================================== */
-        
-        .day-section {
-            display: none;
-        }
-        
-        .day-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 0.9em;
+    }
     
-        /* ==========================================================================
-           CARDS DE EXERCÍCIOS
-           ========================================================================== */
-        
-        .exercise-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .exercise-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .exercise-card.core {
-            border-left-color: #48bb78;
-            background: #f0fff4;
-        }
-        
-        .exercise-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .exercise-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 1em;
-            flex: 1;
-        }
-        
-        .series-info {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            white-space: nowrap;
-        }
-        
-        .core .series-info {
-            background: #48bb78;
-        }
-        
-        /* ==========================================================================
-           SISTEMA DE RASTREAMENTO DE PESO/REPETIÇÕES
-           ========================================================================== */
-        
-        .weight-tracking {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 8px;
-        }
-        
-        .week-input {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .week-label {
-            font-size: 0.75em;
-            color: #666;
-            text-align: center;
-            font-weight: 500;
-        }
+    .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
     
-        /* ==========================================================================
-           FORMULÁRIOS E INPUTS
-           ========================================================================== */
-        
-        input[type="number"], 
-        input[type="text"] {
-            padding: 10px 5px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: center;
-            width: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        input:invalid {
-            border-color: #f56565;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 80px;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        /* ==========================================================================
-           SEÇÃO DE ANOTAÇÕES
-           ========================================================================== */
-        
-        .notes-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f0f4ff;
-            border-radius: 12px;
-        }
-        
-        .notes-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
+    .info-box p {
+        color: #856404;
+        font-size: 0.85em;
+        margin: 5px 0;
+    }
     
-        /* ==========================================================================
-           BOTÕES DE AÇÃO
-           ========================================================================== */
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 1;
-            min-width: 120px;
-            transition: all 0.3s ease;
-        }
-        
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .btn-save {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-save:hover {
-            background: #5a6fd8;
-        }
-        
-        .btn-export {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-export:hover {
-            background: #38a169;
-        }
-        
-        .btn-clear {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-clear:hover {
-            background: #e53e3e;
-        }
-        
-        /* ==========================================================================
-           RESPONSIVIDADE
-           ========================================================================== */
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .weight-tracking {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            button {
-                min-width: auto;
-            }
-        }
-    </style>
+    .timer-section {
+        background: #f0f4ff;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #667eea;
+        margin: 10px 0;
+        font-family: monospace;
+    }
+    
+    .timer-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .timer-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-start {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-stop {
+        background: #f56565;
+        color: white;
+    }
+    
+    .btn-reset {
+        background: #718096;
+        color: white;
+    }
+    
+    .quick-timer {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+        padding: 5px 10px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    
+    .quick-btn:active {
+        background: #cbd5e0;
+    }
+    
+    .tabs {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .tab {
+        padding: 10px 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        color: #666;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        text-align: center;
+        flex: 1;
+    }
+    
+    .tab small {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        margin-top: 2px;
+    }
+    
+    .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        font-weight: bold;
+    }
+    
+    .tab.active small {
+        color: #667eea;
+    }
+    
+    .day-section {
+        display: none;
+    }
+    
+    .day-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+        font-weight: bold;
+        color: #667eea;
+        margin: 20px 0 10px 0;
+        font-size: 1em;
+        padding: 5px 0;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .exercise-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .exercise-card.core {
+        border-left-color: #48bb78;
+        background: #f0fff4;
+    }
+    
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .exercise-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 1em;
+        flex: 1;
+    }
+    
+    .series-info {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    
+    .core .series-info {
+        background: #48bb78;
+    }
+    
+    .weight-tracking {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 8px;
+    }
+    
+    .week-input {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .week-label {
+        font-size: 0.75em;
+        color: #666;
+        text-align: center;
+    }
+    
+    input[type="number"], input[type="text"] {
+        padding: 10px 5px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .notes-section {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f0f4ff;
+        border-radius: 12px;
+    }
+    
+    .notes-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    button {
+        padding: 14px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+    }
+    
+    .btn-save {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-export {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-clear {
+        background: #f56565;
+        color: white;
+    }
+</style>
+```
 
 </head>
 <body>
@@ -479,84 +347,64 @@
         <h1>💪 Meu Treino + Core</h1>
         <p class="subtitle">30-35 min/dia com fortalecimento</p>
 
-        <div class="info-box">
+```
+    <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
         <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
     </div>
     
-        <!-- CRONÔMETRO -->
-        <section class="timer-section" aria-labelledby="timer-title">
-            <h2 id="timer-title" style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</h2>
-            <div class="timer-display" id="timerDisplay" aria-live="polite" aria-label="Tempo decorrido">00:00</div>
-            <div class="timer-buttons" role="group" aria-label="Controles do cronômetro">
-                <button class="timer-btn btn-start" onclick="startTimer()" aria-label="Iniciar cronômetro">
-                    ▶️ Iniciar
-                </button>
-                <button class="timer-btn btn-stop" onclick="stopTimer()" aria-label="Pausar cronômetro">
-                    ⏸️ Pausar
-                </button>
-                <button class="timer-btn btn-reset" onclick="resetTimer()" aria-label="Zerar cronômetro">
-                    🔄 Zerar
-                </button>
-            </div>
-            <div class="quick-timer" role="group" aria-label="Tempos pré-definidos">
-                <button class="quick-btn" onclick="setTimer(30)" aria-label="Definir 30 segundos">30s</button>
-                <button class="quick-btn" onclick="setTimer(45)" aria-label="Definir 45 segundos">45s</button>
-                <button class="quick-btn" onclick="setTimer(60)" aria-label="Definir 1 minuto">1min</button>
-                <button class="quick-btn" onclick="setTimer(90)" aria-label="Definir 1 minuto e 30 segundos">1:30</button>
-                <button class="quick-btn" onclick="setTimer(120)" aria-label="Definir 2 minutos">2min</button>
-            </div>
-        </section>
+    <!-- CRONÔMETRO -->
+    <div class="timer-section">
+        <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</div>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="timer-buttons">
+            <button class="timer-btn btn-start" onclick="startTimer()">▶️ Iniciar</button>
+            <button class="timer-btn btn-stop" onclick="stopTimer()">⏸️ Pausar</button>
+            <button class="timer-btn btn-reset" onclick="resetTimer()">🔄 Zerar</button>
+        </div>
+        <div class="quick-timer">
+            <button class="quick-btn" onclick="setTimer(30)">30s</button>
+            <button class="quick-btn" onclick="setTimer(45)">45s</button>
+            <button class="quick-btn" onclick="setTimer(60)">1min</button>
+            <button class="quick-btn" onclick="setTimer(90)">1:30</button>
+            <button class="quick-btn" onclick="setTimer(120)">2min</button>
+        </div>
+    </div>
     
-        <!-- NAVEGAÇÃO DOS DIAS DE TREINO -->
-        <nav class="tabs" role="tablist" aria-label="Dias de treino">
-            <button class="tab active" role="tab" aria-selected="true" aria-controls="day1" onclick="showDay(1)">
-                Dia 1<br><small>Peito/Tri</small>
-            </button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="day2" onclick="showDay(2)">
-                Dia 2<br><small>Costas/Bi</small>
-            </button>
-            <button class="tab" role="tab" aria-selected="false" aria-controls="day3" onclick="showDay(3)">
-                Dia 3<br><small>Pernas</small>
-            </button>
-        </nav>
+    <div class="tabs">
+        <button class="tab active" onclick="showDay(1)">Dia 1<br><small>Peito/Tri</small></button>
+        <button class="tab" onclick="showDay(2)">Dia 2<br><small>Costas/Bi</small></button>
+        <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
+    </div>
     
         <!-- DIA 1 -->
         <section id="day1" class="day-section active" role="tabpanel" aria-labelledby="day1-title">
             <h2 id="day1-title" class="section-title">PEITO E TRÍCEPS</h2>
         
-            <article class="exercise-card">
-                <div class="exercise-header">
-                    <h3 class="exercise-name">Supino Máquina Smith</h3>
-                    <span class="series-info">3x12</span>
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Supino Máquina Smith</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="1">
                 </div>
-                <div class="weight-tracking">
-                    <div class="week-input">
-                        <label class="week-label" for="supino-w1">Sem 1</label>
-                        <input id="supino-w1" type="number" step="2.5" placeholder="kg" 
-                               data-exercise="supino" data-week="1" 
-                               aria-label="Peso do supino na semana 1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label" for="supino-w2">Sem 2</label>
-                        <input id="supino-w2" type="number" step="2.5" placeholder="kg" 
-                               data-exercise="supino" data-week="2"
-                               aria-label="Peso do supino na semana 2">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label" for="supino-w3">Sem 3</label>
-                        <input id="supino-w3" type="number" step="2.5" placeholder="kg" 
-                               data-exercise="supino" data-week="3"
-                               aria-label="Peso do supino na semana 3">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label" for="supino-w4">Sem 4</label>
-                        <input id="supino-w4" type="number" step="2.5" placeholder="kg" 
-                               data-exercise="supino" data-week="4"
-                               aria-label="Peso do supino na semana 4">
-                    </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="2">
                 </div>
-            </article>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="4">
+                </div>
+            </div>
+        </div>
         
         <div class="exercise-card">
             <div class="exercise-header">
@@ -684,11 +532,11 @@
                 </div>
             </div>
         </div>
-    </div>
+        </section>
     
-    <!-- DIA 2 -->
-    <div id="day2" class="day-section">
-        <div class="section-title">COSTAS E BÍCEPS</div>
+        <!-- DIA 2 -->
+        <section id="day2" class="day-section" role="tabpanel" aria-labelledby="day2-title">
+            <h2 id="day2-title" class="section-title">COSTAS E BÍCEPS</h2>
         
         <div class="exercise-card">
             <div class="exercise-header">
@@ -841,11 +689,11 @@
                 </div>
             </div>
         </div>
-    </div>
+        </section>
     
-    <!-- DIA 3 -->
-    <div id="day3" class="day-section">
-        <div class="section-title">PERNAS</div>
+        <!-- DIA 3 -->
+        <section id="day3" class="day-section" role="tabpanel" aria-labelledby="day3-title">
+            <h2 id="day3-title" class="section-title">PERNAS</h2>
         
         <div class="exercise-card">
             <div class="exercise-header">
@@ -880,10 +728,6 @@
             <div class="weight-tracking">
                 <div class="week-input">
                     <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
                     <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
                 </div>
                 <div class="week-input">
@@ -998,7 +842,7 @@
                 </div>
             </div>
         </div>
-    </div>
+        </section>
     
     <div class="notes-section">
         <div class="notes-title">📝 Observações</div>
@@ -1012,489 +856,220 @@
     </div>
 </div>
 
-    <script>
-        'use strict';
+<script>
+    // CRONÔMETRO
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isCountdown = false;
+    
+    function updateTimerDisplay() {
+        const minutes = Math.floor(Math.abs(timerSeconds) / 60);
+        const seconds = Math.abs(timerSeconds) % 60;
+        const display = document.getElementById('timerDisplay');
+        display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         
-        /**
-         * APLICAÇÃO DE TREINO - CONTROLE DE EXERCÍCIOS E CRONÔMETRO
-         * =========================================================
-         */
-        
-        // =====================================================================
-        // MÓDULO DO CRONÔMETRO
-        // =====================================================================
-        
-        const Timer = {
-            // Estado do cronômetro
-            interval: null,
-            seconds: 0,
-            isCountdown: false,
-            
-            // Cores para diferentes estados
-            colors: {
-                normal: '#667eea',
-                warning: '#ffc107',
-                danger: '#f56565',
-                success: '#48bb78'
-            },
-            
-            /**
-             * Atualiza o display do cronômetro
-             */
-            updateDisplay() {
-                const minutes = Math.floor(Math.abs(this.seconds) / 60);
-                const seconds = Math.abs(this.seconds) % 60;
-                const display = document.getElementById('timerDisplay');
-                
-                if (!display) return;
-                
-                // Atualiza o texto
-                display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                
-                // Atualiza a cor baseada no estado
-                this.updateDisplayColor(display);
-            },
-            
-            /**
-             * Atualiza a cor do display baseada no estado atual
-             */
-            updateDisplayColor(display) {
-                if (this.isCountdown) {
-                    if (this.seconds <= 0) {
-                        display.style.color = this.colors.danger;
-                        if (this.seconds === 0) {
-                            this.handleTimerComplete();
+        // Muda cor se for contagem regressiva
+        if (isCountdown) {
+            if (timerSeconds <= 0) {
+                display.style.color = '#f56565';
+                if (timerSeconds === 0) {
+                    // Vibra no celular se possível
+                    if (navigator.vibrate) navigator.vibrate(500);
+                    stopTimer();
+                }
+            } else if (timerSeconds <= 10) {
+                display.style.color = '#ffc107';
+            } else {
+                display.style.color = '#48bb78';
+            }
+        } else {
+            display.style.color = '#667eea';
+        }
+    }
+    
+    function startTimer() {
+        if (!timerInterval) {
+            timerInterval = setInterval(() => {
+                if (isCountdown) {
+                    timerSeconds--;
+                    if (timerSeconds <= 0) {
+                        updateTimerDisplay();
+                        if (timerSeconds < 0) {
+                            // Continua contando depois do zero
+                            isCountdown = false;
+                            timerSeconds = 0;
                         }
-                    } else if (this.seconds <= 10) {
-                        display.style.color = this.colors.warning;
-                    } else {
-                        display.style.color = this.colors.success;
                     }
                 } else {
-                    display.style.color = this.colors.normal;
+                    timerSeconds++;
                 }
-            },
-            
-            /**
-             * Manipula a conclusão do timer
-             */
-            handleTimerComplete() {
-                // Vibra no celular se possível
-                if (navigator.vibrate) {
-                    navigator.vibrate(500);
-                }
-                this.stop();
-            },
-            
-            /**
-             * Inicia o cronômetro
-             */
-            start() {
-                if (!this.interval) {
-                    this.interval = setInterval(() => {
-                        if (this.isCountdown) {
-                            this.seconds--;
-                            if (this.seconds <= 0) {
-                                this.updateDisplay();
-                                if (this.seconds < 0) {
-                                    // Continua contando depois do zero
-                                    this.isCountdown = false;
-                                    this.seconds = 0;
-                                }
-                            }
-                        } else {
-                            this.seconds++;
-                        }
-                        this.updateDisplay();
-                    }, 1000);
-                }
-            },
-            
-            /**
-             * Para o cronômetro
-             */
-            stop() {
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = null;
-                }
-            },
-            
-            /**
-             * Reseta o cronômetro
-             */
-            reset() {
-                this.stop();
-                this.seconds = 0;
-                this.isCountdown = false;
-                this.updateDisplay();
-            },
-            
-            /**
-             * Define um tempo específico e inicia countdown
-             */
-            setCountdown(seconds) {
-                this.stop();
-                this.seconds = seconds;
-                this.isCountdown = true;
-                this.updateDisplay();
-                this.start();
-            }
-        };
+                updateTimerDisplay();
+            }, 1000);
+        }
+    }
     
-        
-        // =====================================================================
-        // MÓDULO DE NAVEGAÇÃO DAS ABAS
-        // =====================================================================
-        
-        const TabNavigation = {
-            /**
-             * Mostra o dia específico de treino
-             */
-            showDay(dayNumber) {
-                // Remove todas as classes active
-                this.clearActiveStates();
-                
-                // Adiciona active ao dia selecionado
-                this.activateDay(dayNumber);
-                
-                // Atualiza ARIA attributes para acessibilidade
-                this.updateAriaAttributes(dayNumber);
-            },
-            
-            /**
-             * Remove todos os estados ativos
-             */
-            clearActiveStates() {
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.classList.remove('active');
-                    tab.setAttribute('aria-selected', 'false');
-                });
-                document.querySelectorAll('.day-section').forEach(section => {
-                    section.classList.remove('active');
-                });
-            },
-            
-            /**
-             * Ativa o dia específico
-             */
-            activateDay(dayNumber) {
-                const tab = document.querySelectorAll('.tab')[dayNumber - 1];
-                const section = document.getElementById(`day${dayNumber}`);
-                
-                if (tab && section) {
-                    tab.classList.add('active');
-                    section.classList.add('active');
-                }
-            },
-            
-            /**
-             * Atualiza atributos ARIA para acessibilidade
-             */
-            updateAriaAttributes(dayNumber) {
-                const activeTab = document.querySelectorAll('.tab')[dayNumber - 1];
-                if (activeTab) {
-                    activeTab.setAttribute('aria-selected', 'true');
-                }
-            }
-        };
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
     
+    function resetTimer() {
+        stopTimer();
+        timerSeconds = 0;
+        isCountdown = false;
+        updateTimerDisplay();
+    }
+    
+    function setTimer(seconds) {
+        stopTimer();
+        timerSeconds = seconds;
+        isCountdown = true;
+        updateTimerDisplay();
+        startTimer();
+    }
+    
+    // Função simples para trocar de aba
+    function showDay(day) {
+        // Remove active de tudo
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.day-section').forEach(section => {
+            section.classList.remove('active');
+        });
         
-        // =====================================================================
-        // MÓDULO DE GERENCIAMENTO DE DADOS
-        // =====================================================================
+        // Adiciona active no dia selecionado
+        document.querySelectorAll('.tab')[day-1].classList.add('active');
+        document.getElementById('day' + day).classList.add('active');
+    }
+    
+    // Salvar dados
+    function saveData() {
+        const data = {};
         
-        const DataManager = {
-            STORAGE_KEY: 'treino',
+        // Salva todos os inputs
+        document.querySelectorAll('input').forEach(input => {
+            if (input.dataset.exercise && input.dataset.week) {
+                const key = input.dataset.exercise + '_w' + input.dataset.week;
+                data[key] = input.value;
+            }
+        });
+        
+        // Salva as notas
+        data.notes = document.getElementById('notes').value;
+        
+        // Salva no localStorage
+        localStorage.setItem('treino', JSON.stringify(data));
+        
+        alert('✅ Dados salvos!');
+    }
+    
+    // Carregar dados
+    function loadData() {
+        const saved = localStorage.getItem('treino');
+        if (saved) {
+            const data = JSON.parse(saved);
             
-            /**
-             * Salva todos os dados do treino
-             */
-            save() {
-                try {
-                    const data = this.collectData();
-                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-                    this.showMessage('✅ Dados salvos com sucesso!', 'success');
-                } catch (error) {
-                    console.error('Erro ao salvar dados:', error);
-                    this.showMessage('❌ Erro ao salvar dados.', 'error');
-                }
-            },
-            
-            /**
-             * Coleta todos os dados dos inputs
-             */
-            collectData() {
-                const data = {};
-                
-                // Coleta dados dos exercícios
-                document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
-                    const key = `${input.dataset.exercise}_w${input.dataset.week}`;
-                    data[key] = input.value;
-                });
-                
-                // Coleta as notas
-                const notesElement = document.getElementById('notes');
-                if (notesElement) {
-                    data.notes = notesElement.value;
-                }
-                
-                return data;
-            },
-            
-            /**
-             * Carrega os dados salvos
-             */
-            load() {
-                try {
-                    const saved = localStorage.getItem(this.STORAGE_KEY);
-                    if (saved) {
-                        const data = JSON.parse(saved);
-                        this.populateInputs(data);
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                    this.showMessage('⚠️ Erro ao carregar dados salvos.', 'warning');
-                }
-            },
-            
-            /**
-             * Popula os inputs com dados salvos
-             */
-            populateInputs(data) {
-                // Popula inputs dos exercícios
-                document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
-                    const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+            // Carrega os inputs
+            document.querySelectorAll('input').forEach(input => {
+                if (input.dataset.exercise && input.dataset.week) {
+                    const key = input.dataset.exercise + '_w' + input.dataset.week;
                     if (data[key]) {
                         input.value = data[key];
                     }
-                });
-                
-                // Popula as notas
-                const notesElement = document.getElementById('notes');
-                if (notesElement && data.notes) {
-                    notesElement.value = data.notes;
                 }
-            },
+            });
             
-            /**
-             * Limpa todos os dados
-             */
-            clear() {
-                if (confirm('⚠️ Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
-                    try {
-                        localStorage.removeItem(this.STORAGE_KEY);
-                        this.clearInputs();
-                        this.showMessage('🗑️ Dados limpos com sucesso!', 'success');
-                    } catch (error) {
-                        console.error('Erro ao limpar dados:', error);
-                        this.showMessage('❌ Erro ao limpar dados.', 'error');
-                    }
-                }
-            },
-            
-            /**
-             * Limpa todos os inputs
-             */
-            clearInputs() {
-                document.querySelectorAll('input').forEach(input => {
-                    input.value = '';
-                });
-                
-                const notesElement = document.getElementById('notes');
-                if (notesElement) {
-                    notesElement.value = '';
-                }
-            },
-            
-            /**
-             * Exibe mensagem para o usuário
-             */
-            showMessage(message, type = 'info') {
-                // Implementação simples com alert - pode ser melhorada com toast
-                alert(message);
+            // Carrega as notas
+            if (data.notes) {
+                document.getElementById('notes').value = data.notes;
             }
-        };
+        }
+    }
     
+    // Exportar CSV
+    function exportData() {
+        let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
         
-        // =====================================================================
-        // MÓDULO DE EXPORTAÇÃO DE DADOS
-        // =====================================================================
+        const exercises = [
+            'Supino Smith,supino',
+            'Crucifixo,crucifixo',
+            'Tríceps Polia,triceps-polia',
+            'Tríceps Testa,triceps-testa',
+            'Prancha Frontal,prancha1',
+            'Superman,superman',
+            'Remada,remada',
+            'Puxada,puxada',
+            'Rosca Direta,rosca-direta',
+            'Rosca Martelo,rosca-martelo',
+            'Prancha Lateral,prancha-lateral',
+            'Ponte,ponte',
+            'Leg Press,leg-press',
+            'Extensora,extensora',
+            'Flexora,flexora',
+            'Panturrilha,panturrilha',
+            'Abdominal Bicicleta,bicicleta',
+            'Gato-Vaca,gato-vaca'
+        ];
         
-        const ExportManager = {
-            // Lista de exercícios para exportação
-            exercises: [
-                { name: 'Supino Smith', id: 'supino' },
-                { name: 'Crucifixo', id: 'crucifixo' },
-                { name: 'Tríceps Polia', id: 'triceps-polia' },
-                { name: 'Tríceps Testa', id: 'triceps-testa' },
-                { name: 'Prancha Frontal', id: 'prancha1' },
-                { name: 'Superman', id: 'superman' },
-                { name: 'Remada', id: 'remada' },
-                { name: 'Puxada', id: 'puxada' },
-                { name: 'Rosca Direta', id: 'rosca-direta' },
-                { name: 'Rosca Martelo', id: 'rosca-martelo' },
-                { name: 'Prancha Lateral', id: 'prancha-lateral' },
-                { name: 'Ponte', id: 'ponte' },
-                { name: 'Leg Press', id: 'leg-press' },
-                { name: 'Extensora', id: 'extensora' },
-                { name: 'Flexora', id: 'flexora' },
-                { name: 'Panturrilha', id: 'panturrilha' },
-                { name: 'Abdominal Bicicleta', id: 'bicicleta' },
-                { name: 'Gato-Vaca', id: 'gato-vaca' }
-            ],
-            
-            /**
-             * Exporta os dados para arquivo CSV
-             */
-            exportToCSV() {
-                try {
-                    const csv = this.generateCSV();
-                    this.downloadFile(csv, 'treino.csv', 'text/csv');
-                    DataManager.showMessage('📥 Arquivo exportado com sucesso!', 'success');
-                } catch (error) {
-                    console.error('Erro ao exportar dados:', error);
-                    DataManager.showMessage('❌ Erro ao exportar dados.', 'error');
-                }
-            },
-            
-            /**
-             * Gera o conteúdo CSV
-             */
-            generateCSV() {
-                let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
-                
-                this.exercises.forEach(exercise => {
-                    let row = exercise.name;
-                    
-                    for (let week = 1; week <= 4; week++) {
-                        const input = document.querySelector(
-                            `input[data-exercise="${exercise.id}"][data-week="${week}"]`
-                        );
-                        row += ',' + (input?.value || '');
-                    }
-                    
-                    csv += row + '\n';
-                });
-                
-                return csv;
-            },
-            
-            /**
-             * Faz download do arquivo
-             */
-            downloadFile(content, filename, mimeType) {
-                const blob = new Blob([content], { type: mimeType });
-                const link = document.createElement('a');
-                
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                link.style.display = 'none';
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Libera o objeto URL
-                URL.revokeObjectURL(link.href);
+        exercises.forEach(ex => {
+            const [name, id] = ex.split(',');
+            let row = name;
+            for (let w = 1; w <= 4; w++) {
+                const input = document.querySelector(`input[data-exercise="${id}"][data-week="${w}"]`);
+                row += ',' + (input?.value || '');
             }
-        };
+            csv += row + '\n';
+        });
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'treino.csv';
+        link.click();
+        
+        alert('📥 Arquivo exportado!');
+    }
     
-        
-        // =====================================================================
-        // FUNÇÕES GLOBAIS (COMPATIBILIDADE COM ONCLICK)
-        // =====================================================================
-        
-        // Funções do cronômetro
-        function startTimer() {
-            Timer.start();
+    // Limpar dados
+    function clearData() {
+        if (confirm('Limpar todos os dados?')) {
+            localStorage.removeItem('treino');
+            document.querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            document.getElementById('notes').value = '';
+            alert('🗑️ Dados limpos!');
         }
-        
-        function stopTimer() {
-            Timer.stop();
-        }
-        
-        function resetTimer() {
-            Timer.reset();
-        }
-        
-        function setTimer(seconds) {
-            Timer.setCountdown(seconds);
-        }
-        
-        // Funções de navegação
-        function showDay(dayNumber) {
-            TabNavigation.showDay(dayNumber);
-        }
-        
-        // Funções de dados
-        function saveData() {
-            DataManager.save();
-        }
-        
-        function exportData() {
-            ExportManager.exportToCSV();
-        }
-        
-        function clearData() {
-            DataManager.clear();
-        }
-        
-        // =====================================================================
-        // SISTEMA DE AUTO-SAVE
-        // =====================================================================
-        
-        const AutoSave = {
-            timer: null,
-            delay: 1000, // 1 segundo
-            
-            /**
-             * Inicia o auto-save após mudanças
-             */
-            schedule() {
-                clearTimeout(this.timer);
-                this.timer = setTimeout(() => {
-                    DataManager.save();
-                }, this.delay);
-            },
-            
-            /**
-             * Inicializa os event listeners
-             */
-            init() {
-                document.addEventListener('input', (event) => {
-                    // Auto-save apenas para inputs de treino e notas
-                    if (event.target.matches('input[data-exercise], #notes')) {
-                        this.schedule();
-                    }
-                });
-            }
-        };
-        
-        // =====================================================================
-        // INICIALIZAÇÃO DA APLICAÇÃO
-        // =====================================================================
-        
-        function initApp() {
-            // Carrega dados salvos
-            DataManager.load();
-            
-            // Inicializa timer display
-            Timer.updateDisplay();
-            
-            // Inicializa auto-save
-            AutoSave.init();
-            
-            console.log('💪 Aplicação de treino inicializada com sucesso!');
-        }
-        
-        // Inicializa quando o DOM estiver pronto
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
+    }
+    
+    // Auto-salvar
+    document.addEventListener('input', () => {
+        clearTimeout(window.saveTimer);
+        window.saveTimer = setTimeout(() => {
+            const data = {};
+            document.querySelectorAll('input').forEach(input => {
+                if (input.dataset.exercise && input.dataset.week) {
+                    const key = input.dataset.exercise + '_w' + input.dataset.week;
+                    data[key] = input.value;
+                }
+            });
+            data.notes = document.getElementById('notes').value;
+            localStorage.setItem('treino', JSON.stringify(data));
+        }, 1000);
+    });
+    
+    // Carregar ao iniciar
+    window.addEventListener('load', loadData);
 </script>
+```
 
 </body>
-</html>
+</html>="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step
