@@ -9,10 +9,15 @@
     <meta name="apple-mobile-web-app-title" content="Treino">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Controle de treino personalizado">
+    <meta name="description" content="Aplicativo de controle de treino personalizado com cronômetro integrado e sincronização na nuvem">
 
-```
 <title>Meu Treino - 30min</title>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
 <style>
     * {
         margin: 0;
@@ -338,8 +343,114 @@
         background: #f56565;
         color: white;
     }
+    
+    /* ==========================================================================
+       FIREBASE STATUS BAR
+       ========================================================================== */
+    
+    .firebase-status {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: 0.85em;
+        color: #1565c0;
+        transition: all 0.3s ease;
+    }
+    
+    .firebase-status.connected {
+        background: #e8f5e8;
+        border-color: #4caf50;
+        color: #2e7d32;
+    }
+    
+    .firebase-status.error {
+        background: #ffebee;
+        border-color: #f44336;
+        color: #c62828;
+    }
+    
+    .firebase-status.offline {
+        background: #fff3e0;
+        border-color: #ff9800;
+        color: #e65100;
+    }
+    
+    /* ==========================================================================
+       SEÇÃO DE AUTENTICAÇÃO
+       ========================================================================== */
+    
+    .auth-section {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .auth-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    #user-info {
+        font-size: 0.9em;
+        color: #495057;
+        font-weight: 500;
+    }
+    
+    .auth-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .auth-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8em;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .auth-btn.login {
+        background: #4285f4;
+        color: white;
+    }
+    
+    .auth-btn.login:hover {
+        background: #3367d6;
+        transform: translateY(-1px);
+    }
+    
+    .auth-btn.logout {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .auth-btn.logout:hover {
+        background: #5a6268;
+        transform: translateY(-1px);
+    }
+    
+    @media (max-width: 768px) {
+        .auth-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .auth-buttons {
+            justify-content: center;
+        }
+    }
 </style>
-```
 
 </head>
 <body>
@@ -347,7 +458,26 @@
         <h1>💪 Meu Treino + Core</h1>
         <p class="subtitle">30-35 min/dia com fortalecimento</p>
 
-```
+        <!-- Status de Conexão Firebase -->
+        <div id="firebase-status" class="firebase-status" style="display: none;">
+            <span id="status-icon">🔄</span>
+            <span id="status-text">Conectando...</span>
+        </div>
+        
+        <!-- Seção de Autenticação -->
+        <div id="auth-section" class="auth-section" style="display: none;">
+            <div class="auth-info">
+                <span id="user-info">👤 Visitante</span>
+                <div class="auth-buttons">
+                    <button id="login-btn" class="auth-btn login" onclick="AuthManager.signInWithGoogle()" style="display: none;">
+                        🔐 Entrar com Google
+                    </button>
+                    <button id="logout-btn" class="auth-btn logout" onclick="AuthManager.signOut()" style="display: none;">
+                        🚪 Sair
+                    </button>
+                </div>
+            </div>
+        </div>
     <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
         <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
@@ -377,7 +507,7 @@
         <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
     </div>
     
-        <!-- DIA 1 -->
+    <!-- DIA 1 -->
         <section id="day1" class="day-section active" role="tabpanel" aria-labelledby="day1-title">
             <h2 id="day1-title" class="section-title">PEITO E TRÍCEPS</h2>
         
@@ -534,7 +664,7 @@
         </div>
         </section>
     
-        <!-- DIA 2 -->
+    <!-- DIA 2 -->
         <section id="day2" class="day-section" role="tabpanel" aria-labelledby="day2-title">
             <h2 id="day2-title" class="section-title">COSTAS E BÍCEPS</h2>
         
@@ -691,7 +821,7 @@
         </div>
         </section>
     
-        <!-- DIA 3 -->
+    <!-- DIA 3 -->
         <section id="day3" class="day-section" role="tabpanel" aria-labelledby="day3-title">
             <h2 id="day3-title" class="section-title">PERNAS</h2>
         
@@ -728,6 +858,10 @@
             <div class="weight-tracking">
                 <div class="week-input">
                     <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
                     <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
                 </div>
                 <div class="week-input">
@@ -946,7 +1080,7 @@
     }
     
     // Salvar dados
-    function saveData() {
+    async function saveData() {
         const data = {};
         
         // Salva todos os inputs
@@ -960,18 +1094,25 @@
         // Salva as notas
         data.notes = document.getElementById('notes').value;
         
-        // Salva no localStorage
-        localStorage.setItem('treino', JSON.stringify(data));
-        
+        // Salva usando o sistema unificado (Firebase + localStorage)
+        try {
+            const success = await UnifiedDatabase.save(data);
+            if (success) {
         alert('✅ Dados salvos!');
+            } else {
+                alert('⚠️ Erro ao salvar dados');
+            }
+        } catch (error) {
+            console.error('Erro ao salvar:', error);
+            alert('❌ Erro ao salvar dados');
+        }
     }
     
     // Carregar dados
-    function loadData() {
-        const saved = localStorage.getItem('treino');
-        if (saved) {
-            const data = JSON.parse(saved);
-            
+    async function loadData() {
+        try {
+            const data = await UnifiedDatabase.load();
+            if (data) {
             // Carrega os inputs
             document.querySelectorAll('input').forEach(input => {
                 if (input.dataset.exercise && input.dataset.week) {
@@ -986,6 +1127,9 @@
             if (data.notes) {
                 document.getElementById('notes').value = data.notes;
             }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
         }
     }
     
@@ -1035,21 +1179,565 @@
     }
     
     // Limpar dados
-    function clearData() {
-        if (confirm('Limpar todos os dados?')) {
-            localStorage.removeItem('treino');
+    async function clearData() {
+        if (confirm('⚠️ Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+            try {
+                const success = await UnifiedDatabase.clear();
+                
+                // Limpa a interface
             document.querySelectorAll('input').forEach(input => {
                 input.value = '';
             });
             document.getElementById('notes').value = '';
-            alert('🗑️ Dados limpos!');
+                
+                if (success) {
+                    alert('🗑️ Todos os dados foram limpos!');
+                } else {
+                    alert('⚠️ Erro ao limpar alguns dados');
+                }
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+                alert('❌ Erro ao limpar dados');
+            }
         }
     }
     
+    // =====================================================================
+    // MÓDULO FIREBASE E CONFIGURAÇÃO
+    // =====================================================================
+    
+    const FirebaseConfig = {
+        // 🔥 CONFIGURAÇÃO FIREBASE - PERSONALIZADA PARA SEU PROJETO
+        // ⚠️  IMPORTANTE: Verifique se o domínio https://fernandesvb.github.io 
+        //    está autorizado no Google Cloud Console > OAuth 2.0 Client IDs
+        config: {
+            apiKey: "AIzaSyBLZwcbCRqahZj1SXP7Zr9tlqhsoTYg7qg",
+            authDomain: "meu-treino-app-668e5.firebaseapp.com",
+            projectId: "meu-treino-app-668e5",
+            storageBucket: "meu-treino-app-668e5.firebasestorage.app",
+            messagingSenderId: "441652448957",
+            appId: "1:441652448957:web:e72cc230975f229faeb1d4"
+        },
+        
+        // Estado da conexão
+        isInitialized: false,
+        isConnected: false,
+        
+        /**
+         * Inicializa o Firebase
+         */
+        async init() {
+            try {
+                // Verifica se o Firebase está disponível
+                if (typeof firebase === 'undefined') {
+                    console.log('🔄 Firebase não carregado, usando localStorage');
+                    this.updateStatus('offline', '💾 Modo Local');
+                    return false;
+                }
+                
+                // Verifica se a configuração foi personalizada
+                if (this.config.apiKey === "CONFIGURE_SUA_API_KEY" || !this.config.apiKey) {
+                    console.log('⚙️ Configure o Firebase em FirebaseConfig.config');
+                    this.updateStatus('offline', '⚙️ Firebase não configurado - usando modo local');
+                    return false;
+                }
+                
+                // Inicializa o Firebase
+                firebase.initializeApp(this.config);
+                this.db = firebase.firestore();
+                this.auth = firebase.auth();
+                
+                this.isInitialized = true;
+                this.updateStatus('connected', '☁️ Conectado ao Firebase');
+                
+                console.log('✅ Firebase inicializado com sucesso!');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Erro ao inicializar Firebase:', error);
+                this.updateStatus('error', '❌ Erro de conexão - usando modo local');
+                return false;
+            }
+        },
+        
+        /**
+         * Atualiza o status visual da conexão
+         */
+        updateStatus(status, message) {
+            const statusElement = document.getElementById('firebase-status');
+            const iconElement = document.getElementById('status-icon');
+            const textElement = document.getElementById('status-text');
+            
+            if (!statusElement) return;
+            
+            // Remove classes antigas
+            statusElement.className = 'firebase-status';
+            
+            // Adiciona nova classe e atualiza conteúdo
+            switch (status) {
+                case 'connected':
+                    statusElement.classList.add('connected');
+                    iconElement.textContent = '☁️';
+                    this.isConnected = true;
+                    break;
+                case 'error':
+                    statusElement.classList.add('error');
+                    iconElement.textContent = '❌';
+                    this.isConnected = false;
+                    break;
+                case 'offline':
+                    statusElement.classList.add('offline');
+                    iconElement.textContent = '💾';
+                    this.isConnected = false;
+                    break;
+                default:
+                    iconElement.textContent = '🔄';
+                    this.isConnected = false;
+            }
+            
+            textElement.textContent = message;
+            statusElement.style.display = 'block';
+            
+            // Auto-hide status após 5 segundos se conectado
+            if (status === 'connected') {
+                setTimeout(() => {
+                    statusElement.style.opacity = '0.7';
+                }, 3000);
+            }
+        }
+    };
+    
+    // =====================================================================
+    // MÓDULO DE DATABASE UNIFICADO (FIREBASE + LOCALSTORAGE)
+    // =====================================================================
+    
+    const UnifiedDatabase = {
+        /**
+         * Salva dados usando Firebase ou localStorage como fallback
+         */
+        async save(data) {
+            const results = { localStorage: false, firebase: false };
+            
+            // Sempre salva no localStorage como backup
+            try {
+                localStorage.setItem('treino', JSON.stringify(data));
+                results.localStorage = true;
+                console.log('💾 Dados salvos no localStorage');
+            } catch (error) {
+                console.error('❌ Erro ao salvar no localStorage:', error);
+            }
+            
+            // Salva no Firebase se disponível
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).set({
+                        ...data,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                        version: Date.now()
+                    });
+                    results.firebase = true;
+                    console.log('☁️ Dados salvos no Firebase');
+                } catch (error) {
+                    console.error('❌ Erro ao salvar no Firebase:', error);
+                    FirebaseConfig.updateStatus('error', '❌ Erro ao salvar na nuvem');
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        },
+        
+        /**
+         * Carrega dados do Firebase ou localStorage
+         */
+        async load() {
+            try {
+                // Tenta carregar do Firebase primeiro
+                if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
+                    const firebaseData = await this.loadFromFirebase();
+                    if (firebaseData) {
+                        // Sincroniza com localStorage
+                        localStorage.setItem('treino', JSON.stringify(firebaseData));
+                        console.log('☁️ Dados carregados do Firebase');
+                        return firebaseData;
+                    }
+                }
+                
+                // Fallback para localStorage
+                const localData = this.loadFromLocalStorage();
+                if (localData) {
+                    console.log('💾 Dados carregados do localStorage');
+                }
+                return localData;
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                return this.loadFromLocalStorage();
+            }
+        },
+        
+        /**
+         * Carrega do localStorage
+         */
+        loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('treino');
+                return saved ? JSON.parse(saved) : null;
+            } catch (error) {
+                console.error('Erro ao carregar do localStorage:', error);
+                return null;
+            }
+        },
+        
+        /**
+         * Carrega do Firebase
+         */
+        async loadFromFirebase() {
+            if (!FirebaseConfig.isInitialized) {
+                return null;
+            }
+            
+            try {
+                const userId = AuthManager.getUserId();
+                const doc = await FirebaseConfig.db.collection('workouts').doc(userId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    // Remove campos internos do Firebase
+                    delete data.lastUpdated;
+                    delete data.version;
+                    return data;
+                }
+                
+                return null;
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar do Firebase:', error);
+                return null;
+            }
+        },
+        
+        /**
+         * Limpa todos os dados
+         */
+        async clear() {
+            const results = { localStorage: false, firebase: false };
+            
+            try {
+                // Limpa localStorage
+                localStorage.removeItem('treino');
+                results.localStorage = true;
+            } catch (error) {
+                console.error('Erro ao limpar localStorage:', error);
+            }
+            
+            // Limpa Firebase se disponível
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).delete();
+                    results.firebase = true;
+                    console.log('☁️ Dados removidos do Firebase');
+                } catch (error) {
+                    console.error('Erro ao limpar Firebase:', error);
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        }
+    };
+    
+    // =====================================================================
+    // MÓDULO DE AUTENTICAÇÃO
+    // =====================================================================
+    
+    const AuthManager = {
+        currentUser: null,
+        
+        /**
+         * Inicializa o sistema de autenticação
+         */
+        init() {
+            if (!FirebaseConfig.isInitialized) {
+                this.updateUI(null);
+                return;
+            }
+            
+            // Verifica se há resultado de redirect (importante para mobile)
+            FirebaseConfig.auth.getRedirectResult().then(async (result) => {
+                if (result.user) {
+                    console.log('✅ Login por redirect realizado com sucesso');
+                    await this.migrateLocalData();
+                }
+            }).catch((error) => {
+                console.error('❌ Erro no redirect result:', error);
+            });
+            
+            // Escuta mudanças no estado de autenticação
+            FirebaseConfig.auth.onAuthStateChanged(async (user) => {
+                this.currentUser = user;
+                this.updateUI(user);
+                
+                if (user) {
+                    console.log('👤 Usuário autenticado:', user.displayName);
+                    // Recarrega dados do usuário específico
+                    await this.loadUserData();
+                    // Inicia sincronização em tempo real
+                    RealtimeSync.start();
+                } else {
+                    console.log('👤 Usuário não autenticado');
+                    // Para sincronização em tempo real
+                    RealtimeSync.stop();
+                }
+            });
+        },
+        
+        /**
+         * Login com Google
+         */
+        async signInWithGoogle() {
+            if (!FirebaseConfig.isInitialized) {
+                alert('⚙️ Firebase não configurado');
+                return;
+            }
+            
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                // Para GitHub Pages, força uso de redirect em vez de popup em mobile
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                let result;
+                if (isMobile) {
+                    await FirebaseConfig.auth.signInWithRedirect(provider);
+                    return; // O redirect vai recarregar a página
+                } else {
+                    result = await FirebaseConfig.auth.signInWithPopup(provider);
+                }
+                
+                console.log('✅ Login realizado com sucesso');
+                
+                // Migra dados locais para a conta do usuário
+                await this.migrateLocalData();
+                
+            } catch (error) {
+                console.error('❌ Erro no login:', error);
+                
+                if (error.code === 'auth/popup-blocked') {
+                    alert('🚫 Popup bloqueado! Permita popups para este site.');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    console.log('Login cancelado pelo usuário');
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    alert('🚫 Domínio não autorizado!\n\nAdicione "fernandesvb.github.io" aos domínios autorizados no Google Cloud Console.');
+                } else {
+                    alert('❌ Erro no login: ' + error.message);
+                }
+            }
+        },
+        
+        /**
+         * Logout
+         */
+        async signOut() {
+            if (!FirebaseConfig.isInitialized) return;
+            
+            try {
+                await FirebaseConfig.auth.signOut();
+                console.log('👋 Logout realizado com sucesso');
+            } catch (error) {
+                console.error('❌ Erro no logout:', error);
+            }
+        },
+        
+        /**
+         * Atualiza a interface baseada no usuário
+         */
+        updateUI(user) {
+            const authSection = document.getElementById('auth-section');
+            const userInfo = document.getElementById('user-info');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (!authSection) return;
+            
+            authSection.style.display = 'block';
+            
+            if (user) {
+                // Usuário logado
+                userInfo.textContent = `👤 ${user.displayName || user.email}`;
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+            } else {
+                // Usuário não logado
+                userInfo.textContent = '👤 Modo Local';
+                loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
+                logoutBtn.style.display = 'none';
+            }
+        },
+        
+        /**
+         * Carrega dados específicos do usuário
+         */
+        async loadUserData() {
+            try {
+                const data = await UnifiedDatabase.load();
+                if (data) {
+                    // Popula interface com dados do usuário
+                    document.querySelectorAll('input').forEach(input => {
+                        if (input.dataset.exercise && input.dataset.week) {
+                            const key = input.dataset.exercise + '_w' + input.dataset.week;
+                            if (data[key]) {
+                                input.value = data[key];
+                            }
+                        }
+                    });
+                    
+                    if (data.notes) {
+                        document.getElementById('notes').value = data.notes;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do usuário:', error);
+            }
+        },
+        
+        /**
+         * Migra dados locais para a conta do usuário
+         */
+        async migrateLocalData() {
+            try {
+                const localData = UnifiedDatabase.loadFromLocalStorage();
+                if (localData && Object.keys(localData).length > 0) {
+                    const migrate = confirm('🔄 Encontramos dados locais. Deseja migrar para sua conta?');
+                    if (migrate) {
+                        await UnifiedDatabase.save(localData);
+                        console.log('✅ Dados migrados com sucesso');
+                    }
+                }
+            } catch (error) {
+                console.error('Erro na migração:', error);
+            }
+        },
+        
+        /**
+         * Obtém ID do usuário atual
+         */
+        getUserId() {
+            return this.currentUser ? this.currentUser.uid : 'default_user';
+        }
+    };
+    
+    // =====================================================================
+    // SINCRONIZAÇÃO EM TEMPO REAL
+    // =====================================================================
+    
+    const RealtimeSync = {
+        unsubscribe: null,
+        
+        /**
+         * Inicia sincronização em tempo real
+         */
+        start() {
+            if (!FirebaseConfig.isInitialized || !AuthManager.currentUser) {
+                return;
+            }
+            
+            const userId = AuthManager.getUserId();
+            
+            // Escuta mudanças no documento do usuário
+            this.unsubscribe = FirebaseConfig.db
+                .collection('workouts')
+                .doc(userId)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Remove campos internos
+                        delete data.lastUpdated;
+                        delete data.version;
+                        
+                        // Atualiza interface apenas se dados mudaram externamente
+                        this.updateInterfaceIfChanged(data);
+                        
+                        console.log('🔄 Dados sincronizados em tempo real');
+                    }
+                }, (error) => {
+                    console.error('❌ Erro na sincronização:', error);
+                });
+        },
+        
+        /**
+         * Para sincronização em tempo real
+         */
+        stop() {
+            if (this.unsubscribe) {
+                this.unsubscribe();
+                this.unsubscribe = null;
+                console.log('⏹️ Sincronização em tempo real parada');
+            }
+        },
+        
+        /**
+         * Atualiza interface apenas se dados mudaram
+         */
+        updateInterfaceIfChanged(newData) {
+            // Coleta dados atuais da interface
+            const currentData = {};
+            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
+                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+                currentData[key] = input.value;
+            });
+            currentData.notes = document.getElementById('notes').value;
+            
+            // Compara e atualiza apenas campos diferentes
+            let hasChanges = false;
+            
+            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
+                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+                const newValue = newData[key] || '';
+                
+                if (input.value !== newValue) {
+                    input.value = newValue;
+                    hasChanges = true;
+                }
+            });
+            
+            const notesElement = document.getElementById('notes');
+            const newNotes = newData.notes || '';
+            if (notesElement.value !== newNotes) {
+                notesElement.value = newNotes;
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                // Mostra notificação sutil de sincronização
+                this.showSyncNotification();
+            }
+        },
+        
+        /**
+         * Mostra notificação de sincronização
+         */
+        showSyncNotification() {
+            const statusElement = document.getElementById('firebase-status');
+            if (statusElement) {
+                const originalText = statusElement.querySelector('#status-text').textContent;
+                statusElement.querySelector('#status-text').textContent = '🔄 Dados atualizados';
+                
+                setTimeout(() => {
+                    statusElement.querySelector('#status-text').textContent = originalText;
+                }, 2000);
+            }
+        }
+    };
+    
     // Auto-salvar
-    document.addEventListener('input', () => {
+    document.addEventListener('input', (event) => {
+        // Auto-save apenas para inputs de treino e notas
+        if (event.target.matches('input[data-exercise], #notes')) {
         clearTimeout(window.saveTimer);
-        window.saveTimer = setTimeout(() => {
+            window.saveTimer = setTimeout(async () => {
             const data = {};
             document.querySelectorAll('input').forEach(input => {
                 if (input.dataset.exercise && input.dataset.week) {
@@ -1058,18 +1746,60 @@
                 }
             });
             data.notes = document.getElementById('notes').value;
-            localStorage.setItem('treino', JSON.stringify(data));
-        }, 1000);
+                
+                // Salva usando o sistema unificado
+                try {
+                    await UnifiedDatabase.save(data);
+                } catch (error) {
+                    console.error('Erro no auto-save:', error);
+                }
+            }, 2000); // 2 segundos para reduzir calls ao Firebase
+        }
     });
     
+    // Inicialização da aplicação
+    async function initApp() {
+        try {
+            console.log('🚀 Inicializando aplicação de treino...');
+            console.log('🌐 Domínio atual:', window.location.hostname);
+            
+            // 1. Inicializa o Firebase
+            const firebaseInitialized = await FirebaseConfig.init();
+            
+            // 2. Inicializa autenticação (se Firebase disponível)
+            if (firebaseInitialized) {
+                AuthManager.init();
+                
+                // Aguarda um pouco para o estado de auth ser definido
+                setTimeout(() => {
+                    // 3. Inicia sincronização em tempo real (se usuário autenticado)
+                    if (AuthManager.currentUser) {
+                        RealtimeSync.start();
+                    }
+                }, 1000);
+            }
+            
+            // 4. Carrega dados salvos
+            await loadData();
+            
+            console.log('💪 Aplicação de treino inicializada com sucesso!');
+            
+            // 5. Log importante para verificação no GitHub Pages
+            if (window.location.hostname.includes('github.io')) {
+                console.log('📱 Rodando no GitHub Pages');
+                console.log('⚠️  Para funcionamento do Google Login, certifique-se que:');
+                console.log('   • "fernandesvb.github.io" está nos domínios autorizados');
+                console.log('   • O Client ID OAuth está configurado corretamente');
+            }
+            
+        } catch (error) {
+            console.error('❌ Erro na inicialização:', error);
+        }
+    }
+    
     // Carregar ao iniciar
-    window.addEventListener('load', loadData);
+    window.addEventListener('load', initApp);
 </script>
-```
 
 </body>
-</html>="1">
-                    </div>
-                    <div class="week-input">
-                        <label class="week-label">Sem 2</label>
-                        <input type="number" step
+</html>
