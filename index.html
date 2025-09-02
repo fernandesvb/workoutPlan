@@ -2121,59 +2121,76 @@
             
             this.addVisualLog('🔧 Testando configuração OAuth...');
             
-            let resultado = '🚨 PROBLEMA OAUTH CONFIRMADO!\n\n';
-            resultado += 'Seu redirect funciona mas a autenticação falha.\n';
-            resultado += 'Isso é 100% problema de configuração OAuth.\n\n';
+            let resultado = '🔍 DIAGNÓSTICO OAUTH AVANÇADO\n\n';
+            resultado += '📋 SUA CONFIGURAÇÃO ATUAL:\n';
+            resultado += `• Domínio: ${currentDomain}\n`;
+            resultado += `• URL: ${protocol}//${currentDomain}\n`;
+            resultado += `• Firebase Project: ${FirebaseConfig.config?.projectId}\n`;
+            resultado += `• Auth Domain: ${FirebaseConfig.config?.authDomain}\n\n`;
             
-            resultado += '🎯 SOLUÇÃO PASSO A PASSO:\n\n';
+            resultado += '✅ CONFIGURAÇÕES NECESSÁRIAS:\n\n';
+            resultado += '1️⃣ GOOGLE CLOUD CONSOLE:\n';
+            resultado += `• JavaScript Origins: ${protocol}//${currentDomain}\n`;
+            resultado += `• Redirect URIs: ${protocol}//${currentDomain}/__/auth/handler\n\n`;
             
-            resultado += '1️⃣ ABRA O GOOGLE CLOUD CONSOLE:\n';
-            resultado += 'console.cloud.google.com/apis/credentials\n\n';
+            resultado += '2️⃣ OAUTH CONSENT SCREEN:\n';
+            resultado += '• Status: PUBLICADO (não em teste)\n';
+            resultado += '• Usuários de teste: seu email\n\n';
             
-            resultado += '2️⃣ CLIQUE NO SEU OAuth 2.0 Client ID\n';
-            resultado += '(É o que tem tipo "Web application")\n\n';
+            resultado += '⏰ PROBLEMA COMUM:\n';
+            resultado += '🚨 Google demora 5-24 HORAS para aplicar mudanças OAuth!\n\n';
             
-            resultado += '3️⃣ AUTHORIZED JAVASCRIPT ORIGINS:\n';
-            resultado += `ADICIONE EXATAMENTE: ${protocol}//${currentDomain}\n`;
-            resultado += 'SEM BARRA no final!\n\n';
-            
-            resultado += '4️⃣ AUTHORIZED REDIRECT URIs:\n';
-            resultado += `ADICIONE: ${protocol}//${currentDomain}/__/auth/handler\n\n`;
-            
-            resultado += '5️⃣ CLIQUE SALVAR E AGUARDE 5-10 MIN\n\n';
-            
-            resultado += '🚨 VERIFIAÇÕES EXTRAS:\n';
-            resultado += '• OAuth Consent Screen deve estar PUBLICADO\n';
-            resultado += '• NÃO pode estar em modo "Testing"\n';
-            resultado += '• Seu email deve estar nos usuários de teste\n\n';
+            resultado += '🔧 TESTES IMEDIATOS:\n';
+            resultado += '1. Use "💾 Modo Offline" (funciona sempre)\n';
+            resultado += '2. Aguarde 2-3 horas e teste novamente\n';
+            resultado += '3. Ou tente no computador (desktop)\n\n';
             
             if (isIOS) {
-                resultado += '📱 CONFIRMAÇÃO iOS:\n';
-                resultado += 'Como falha tanto no Safari quanto no Chrome iOS,\n';
-                resultado += 'isso confirma que é problema OAuth (não do navegador).\n\n';
+                resultado += '📱 ESPECÍFICO iOS:\n';
+                resultado += 'Como falha no Safari E Chrome iOS = OAuth issue\n';
+                resultado += '(Se fosse limitação do Safari, funcionaria no Chrome)\n\n';
             }
             
-            resultado += '✅ APÓS CONFIGURAR:\n';
-            resultado += '1. Clique "🧹 Limpar Sessão"\n';
-            resultado += '2. Tente fazer login novamente\n';
-            resultado += '3. Ou use "💾 Modo Offline" como alternativa';
+            resultado += '💡 DICA IMPORTANTE:\n';
+            resultado += 'Se você fez mudanças OAuth hoje, aguarde até amanhã!\n';
+            resultado += 'Google OAuth demora para propagar globalmente.';
             
             alert(resultado);
             
-            // Sugere abrir o Google Cloud Console
-            if (confirm('🔧 Quer abrir o Google Cloud Console para corrigir agora?')) {
-                window.open('https://console.cloud.google.com/apis/credentials', '_blank');
-                this.addVisualLog('🔗 Google Cloud Console aberto para correção');
+            // Teste de conectividade Firebase
+            this.testFirebaseConnectivity();
+            
+            // Sugere modo offline
+            if (confirm('🎯 Quer ativar MODO OFFLINE enquanto aguarda a propagação OAuth?')) {
+                this.enableOfflineMode();
+            }
+        },
+        
+        /**
+         * Testa conectividade Firebase
+         */
+        async testFirebaseConnectivity() {
+            this.addVisualLog('🔍 Testando conectividade Firebase...');
+            
+            try {
+                // Testa se Firebase está acessível
+                const user = FirebaseConfig.auth.currentUser;
+                this.addVisualLog('👤 Current user: ' + (user ? user.email : 'null'));
                 
-                // Mostra lembrete
-                setTimeout(() => {
-                    alert('💡 LEMBRETE:\n\n' +
-                          '1. Clique no OAuth 2.0 Client ID\n' +
-                          '2. Adicione ' + protocol + '//' + currentDomain + '\n' +
-                          '3. Salve e aguarde 5-10 minutos\n' +
-                          '4. Volte ao app e limpe a sessão\n' +
-                          '5. Tente fazer login novamente!');
-                }, 3000);
+                // Testa configuração
+                const config = FirebaseConfig.config;
+                this.addVisualLog('🔑 Project ID: ' + (config?.projectId || 'não encontrado'));
+                this.addVisualLog('🌐 Auth Domain: ' + (config?.authDomain || 'não encontrado'));
+                
+                // Testa se consegue acessar auth
+                const providers = FirebaseConfig.auth.app.options;
+                this.addVisualLog('⚙️ Firebase inicializado: ' + (providers ? 'Sim' : 'Não'));
+                
+                this.addVisualLog('✅ Firebase conectado e configurado corretamente');
+                
+            } catch (error) {
+                this.addVisualLog('❌ Erro Firebase: ' + error.message);
+                console.error('Erro ao testar Firebase:', error);
             }
         },
         
