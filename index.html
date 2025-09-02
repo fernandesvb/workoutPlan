@@ -505,15 +505,19 @@
         <div id="ios-logs-content"></div>
     </div>
     
-    <!-- ALERTA ESPECÍFICO PARA PROBLEMAS DO iOS SAFARI -->
-    <div id="ios-warning" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin: 10px 0; color: #856404;">
-        <div style="font-weight: bold; margin-bottom: 8px;">⚠️ Problema detectado no Safari iOS</div>
+    <!-- ALERTA ESPECÍFICO PARA PROBLEMAS DO iOS -->
+    <div id="ios-warning" style="display: none; background: #f8d7da; border: 1px solid #dc3545; border-radius: 8px; padding: 12px; margin: 10px 0; color: #721c24;">
+        <div style="font-weight: bold; margin-bottom: 8px;">🚨 Problema de Autenticação Detectado</div>
         <div style="font-size: 0.9em; margin-bottom: 10px;">
-            O Safari iOS tem limitações conhecidas com Firebase Auth. Se o login não funcionar:
+            <strong>Falha no login Google (inclusive Chrome iOS)</strong><br/>
+            Isso indica problema de configuração OAuth no Google Cloud Console, não limitação do navegador.
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button onclick="window.open('googlechrome://fernandesvb.github.io/workoutPlan/', '_blank')" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
-                🌐 Abrir no Chrome
+        <div style="background: #fff; border: 1px solid #dc3545; border-radius: 4px; padding: 8px; margin: 8px 0; font-size: 0.85em;">
+            <strong>🎯 Causa Provável:</strong> Domínio "fernandesvb.github.io" não autorizado nas configurações OAuth
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            <button onclick="AuthManager.testOAuthConfiguration()" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
+                🔧 Verificar OAuth
             </button>
             <button onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
                 💾 Usar Offline
@@ -1651,14 +1655,20 @@
         async clearSession() {
             try {
                 console.log('🧹 Limpando sessão...');
+                this.addVisualLog('🧹 Iniciando limpeza de sessão...');
                 
                 // Limpa Firebase Auth
                 if (FirebaseConfig.isInitialized) {
                     await FirebaseConfig.auth.signOut();
                 }
                 
-                // Limpa localStorage
+                // Limpa localStorage (dados de treino)
                 localStorage.removeItem('treino');
+                
+                // Limpa dados de debug e tentativas de auth
+                localStorage.removeItem('ios_auth_failures');
+                localStorage.removeItem('oauth_problem_detected');
+                localStorage.removeItem('auth_attempt');
                 
                 // Limpa qualquer cache do navegador relacionado ao Firebase
                 if ('caches' in window) {
@@ -1668,12 +1678,15 @@
                     );
                 }
                 
+                this.addVisualLog('✅ Sessão limpa completamente');
+                
                 // Recarrega a página para limpar completamente o estado
-                alert('🧹 Sessão limpa! A página será recarregada.');
+                alert('🧹 Sessão limpa! A página será recarregada.\n\n✅ Todos os dados de tentativas de login foram removidos.\n✅ Cache do navegador limpo.\n✅ Estado do Firebase resetado.');
                 window.location.reload();
                 
             } catch (error) {
                 console.error('❌ Erro ao limpar sessão:', error);
+                this.addVisualLog('❌ Erro ao limpar sessão: ' + error.message);
                 alert('⚠️ Erro ao limpar sessão. Tente recarregar a página manualmente.');
             }
         },
@@ -1723,6 +1736,13 @@
                     console.log('ℹ️ Redirect cancelado pelo usuário');
                     this.addVisualLog('❌ Redirect cancelado pelo usuário');
                     FirebaseConfig.updateStatus('error', '❌ Login cancelado');
+                    
+                    // Se houve tentativa de auth mas foi cancelado, pode ser problema OAuth
+                    const authAttempt = localStorage.getItem('auth_attempt');
+                    if (authAttempt) {
+                        this.recordiOSAuthFailure();
+                        this.addVisualLog('⚠️ Login cancelado pode indicar problema OAuth');
+                    }
                 } else {
                     console.log('ℹ️ Nenhum redirect result (primeira visita ou sem tentativa)');
                     this.addVisualLog('ℹ️ Sem resultado de redirect');
@@ -1851,24 +1871,23 @@
             if (!isIOS) return;
             
             // Logs para console
-            console.log('🩺 === DIAGNÓSTICO iOS ===');
+            console.log('🩺 === DIAGNÓSTICO COMPLETO iOS ===');
             console.log('🌐 URL:', window.location.href);
             console.log('🌐 Domain:', window.location.hostname);
             console.log('🌐 Protocol:', window.location.protocol);
             console.log('🍎 iOS Version:', navigator.userAgent);
             console.log('🔐 Firebase Auth Domain:', FirebaseConfig.config?.authDomain);
+            console.log('🔑 Firebase Project ID:', FirebaseConfig.config?.projectId);
+            console.log('🆔 Firebase App ID:', FirebaseConfig.config?.appId);
             console.log('📱 Viewport:', `${window.innerWidth}x${window.innerHeight}`);
             console.log('🧪 Firebase inicializado?', FirebaseConfig.isInitialized);
             console.log('🔗 HTTPS?', window.location.protocol === 'https:');
             
-            // Testa se elementos estão visíveis
-            const authSection = document.getElementById('auth-section');
-            const loginBtn = document.getElementById('login-btn');
-            const clearBtn = document.getElementById('clear-session-btn');
-            
-            console.log('👁️ Auth section visível?', authSection?.style.display !== 'none');
-            console.log('👁️ Login button visível?', loginBtn?.style.display !== 'none');
-            console.log('👁️ Clear button visível?', clearBtn?.style.display !== 'none');
+            // Detecta navegador específico
+            const isChrome = /Chrome/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            console.log('🌐 Chrome iOS?', isChrome);
+            console.log('🌐 Safari iOS?', isSafari);
             
             // Testa localStorage
             let localStorageOK = true;
@@ -1881,17 +1900,22 @@
                 localStorageOK = false;
             }
             
+            // Verifica tentativas anteriores
+            const authFailures = localStorage.getItem('ios_auth_failures') || '0';
+            console.log('📊 Tentativas de auth falhadas:', authFailures);
+            
             // Verifica domínio autorizado
             const currentDomain = window.location.hostname;
             const authDomain = FirebaseConfig.config?.authDomain;
             
-            console.log('🔍 === CHECKLIST DE PROBLEMAS COMUNS ===');
+            console.log('🔍 === CHECKLIST DETALHADO ===');
             
             let problemas = [];
+            let avisos = [];
             
             if (currentDomain !== 'fernandesvb.github.io') {
                 console.log('⚠️ PROBLEMA: Domínio atual não é fernandesvb.github.io');
-                problemas.push('❌ Domínio incorreto: ' + currentDomain);
+                problemas.push(`❌ Domínio incorreto: ${currentDomain}`);
             } else {
                 console.log('✅ Domínio correto: fernandesvb.github.io');
             }
@@ -1914,25 +1938,56 @@
                 problemas.push('❌ localStorage não funciona');
             }
             
+            // Verifica configurações OAuth específicas
+            if (parseInt(authFailures) >= 2) {
+                avisos.push('⚠️ Múltiplas falhas de auth detectadas');
+                if (isChrome) {
+                    avisos.push('⚠️ Falha até no Chrome - possível problema de configuração OAuth');
+                }
+            }
+            
             console.log('🩺 === FIM DIAGNÓSTICO ===');
             
-            // MOSTRA RESULTADO EM ALERT TAMBÉM (para iOS sem console)
-            let resultado = '🩺 DIAGNÓSTICO iOS\n\n';
+            // ALERT DETALHADO
+            let resultado = '🩺 DIAGNÓSTICO COMPLETO iOS\n\n';
             resultado += `🌐 URL: ${window.location.href}\n`;
             resultado += `🌐 Domínio: ${currentDomain}\n`;
             resultado += `🌐 Protocolo: ${window.location.protocol}\n`;
             resultado += `🧪 Firebase: ${FirebaseConfig.isInitialized ? '✅' : '❌'}\n`;
-            resultado += `💾 LocalStorage: ${localStorageOK ? '✅' : '❌'}\n\n`;
+            resultado += `💾 LocalStorage: ${localStorageOK ? '✅' : '❌'}\n`;
+            resultado += `🌐 Navegador: ${isChrome ? 'Chrome' : isSafari ? 'Safari' : 'Outro'}\n`;
+            resultado += `📊 Falhas auth: ${authFailures}\n\n`;
             
-            if (problemas.length === 0) {
-                resultado += '✅ TUDO OK! Configuração correta.\n\n';
-                resultado += 'Se login ainda falha:\n';
-                resultado += '1. Use "Limpar Sessão"\n';
-                resultado += '2. Verifique domínio no Google Cloud\n';
-                resultado += '3. Tente login novamente';
+            if (problemas.length === 0 && avisos.length === 0) {
+                resultado += '✅ CONFIGURAÇÃO OK!\n\n';
+                resultado += 'Se ainda falha, provável:\n';
+                resultado += '❌ Domínio não autorizado no Google Cloud\n\n';
+                resultado += 'SOLUÇÃO:\n';
+                resultado += '1. Google Cloud Console\n';
+                resultado += '2. APIs e Serviços > Credenciais\n';
+                resultado += '3. OAuth 2.0 Client IDs\n';
+                resultado += '4. Adicionar "fernandesvb.github.io"\n';
+                resultado += '5. Salvar\n\n';
+                resultado += '💾 OU use Modo Offline';
             } else {
-                resultado += '⚠️ PROBLEMAS ENCONTRADOS:\n';
-                resultado += problemas.join('\n');
+                if (problemas.length > 0) {
+                    resultado += '🚨 PROBLEMAS CRÍTICOS:\n';
+                    resultado += problemas.join('\n') + '\n\n';
+                }
+                if (avisos.length > 0) {
+                    resultado += '⚠️ AVISOS:\n';
+                    resultado += avisos.join('\n') + '\n\n';
+                }
+                
+                if (isChrome && parseInt(authFailures) >= 2) {
+                    resultado += '🎯 DIAGNÓSTICO ESPECÍFICO:\n';
+                    resultado += 'Falha no Chrome = problema de OAuth\n';
+                    resultado += 'Não é limitação do navegador!\n\n';
+                    resultado += 'AÇÃO NECESSÁRIA:\n';
+                    resultado += '1. Verificar Google Cloud Console\n';
+                    resultado += '2. Configurar domínios autorizados\n';
+                    resultado += '3. Ou usar Modo Offline\n';
+                }
             }
             
             alert(resultado);
@@ -2013,6 +2068,83 @@
             };
             
             authSection.appendChild(offlineModeBtn);
+            
+            // Adiciona botão específico para teste de configuração OAuth
+            const testOAuthBtn = document.createElement('button');
+            testOAuthBtn.innerHTML = '🔧 Testar OAuth';
+            testOAuthBtn.style.cssText = `
+                background: #dc3545; 
+                color: white; 
+                border: none; 
+                padding: 6px 12px; 
+                border-radius: 6px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                margin: 5px;
+            `;
+            
+            testOAuthBtn.onclick = () => {
+                this.testOAuthConfiguration();
+            };
+            
+            authSection.appendChild(testOAuthBtn);
+        },
+        
+        /**
+         * Testa configurações OAuth específicas
+         */
+        testOAuthConfiguration() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            this.addVisualLog('🔧 Testando configuração OAuth...');
+            
+            let resultado = '🔧 TESTE DE CONFIGURAÇÃO OAUTH\n\n';
+            
+            // Verifica as configurações básicas
+            resultado += '📋 CONFIGURAÇÃO ATUAL:\n';
+            resultado += `🔑 Project ID: ${FirebaseConfig.config?.projectId}\n`;
+            resultado += `🌐 Auth Domain: ${FirebaseConfig.config?.authDomain}\n`;
+            resultado += `🆔 App ID: ${FirebaseConfig.config?.appId}\n`;
+            resultado += `🌐 Domínio atual: ${window.location.hostname}\n\n`;
+            
+            // Verifica problemas conhecidos
+            resultado += '🎯 PROBLEMAS MAIS COMUNS:\n\n';
+            
+            resultado += '1️⃣ DOMÍNIO NÃO AUTORIZADO:\n';
+            resultado += '   • Google Cloud Console\n';
+            resultado += '   • APIs e Serviços > Credenciais\n';
+            resultado += '   • OAuth 2.0 Client IDs\n';
+            resultado += '   • Adicionar: fernandesvb.github.io\n\n';
+            
+            resultado += '2️⃣ URLs JAVASCRIPT AUTORIZADAS:\n';
+            resultado += '   • https://fernandesvb.github.io\n';
+            resultado += '   • https://fernandesvb.github.io/workoutPlan/\n\n';
+            
+            resultado += '3️⃣ CONFIGURAÇÃO CONSENT SCREEN:\n';
+            resultado += '   • Status: Publicado (não teste)\n';
+            resultado += '   • Usuários de teste: seu email\n\n';
+            
+            if (isIOS) {
+                resultado += '📱 ESPECÍFICO iOS:\n';
+                resultado += '   • Chrome funciona melhor que Safari\n';
+                resultado += '   • Mas se falha no Chrome = config OAuth\n\n';
+            }
+            
+            resultado += '💡 AÇÕES IMEDIATAS:\n';
+            resultado += '1. Verificar Google Cloud Console\n';
+            resultado += '2. Adicionar domínio se necessário\n';
+            resultado += '3. Aguardar 5-10 min propagação\n';
+            resultado += '4. Ou usar Modo Offline\n\n';
+            
+            resultado += '🔗 LINK DIRETO:\n';
+            resultado += 'console.cloud.google.com/apis/credentials';
+            
+            alert(resultado);
+            
+            // Sugere abrir o Google Cloud Console
+            if (confirm('🔧 Quer abrir o Google Cloud Console para verificar a configuração?')) {
+                window.open('https://console.cloud.google.com/apis/credentials', '_blank');
+            }
         },
         
         /**
@@ -2078,10 +2210,28 @@
             const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
             localStorage.setItem('ios_auth_failures', failures.toString());
             
-            this.addVisualLog(`❌ Falha de auth #${failures} registrada`);
+            // Detecta o navegador específico
+            const isChrome = /Chrome/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
             
-            // Se já falhou 2+ vezes, sugere alternativas
-            if (failures >= 2) {
+            this.addVisualLog(`❌ Falha de auth #${failures} registrada (${isChrome ? 'Chrome' : 'Safari'})`);
+            
+            // Se falhou no Chrome iOS, é problema de OAuth (não do navegador)
+            if (isChrome && failures >= 1) {
+                localStorage.setItem('oauth_problem_detected', 'true');
+                this.addVisualLog('🚨 Falha no Chrome = problema OAuth detectado');
+                
+                // Mostra alerta específico imediatamente
+                setTimeout(() => {
+                    const warning = document.getElementById('ios-warning');
+                    if (warning) {
+                        warning.style.display = 'block';
+                        this.addVisualLog('🚨 Alerta OAuth exibido');
+                    }
+                }, 1000);
+                
+            } else if (failures >= 2) {
+                // Para Safari, só depois de 2+ tentativas
                 this.detectiOSAuthProblems();
             }
         },
