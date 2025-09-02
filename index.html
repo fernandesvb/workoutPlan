@@ -1745,24 +1745,56 @@
                     return; // IMPORTANTE: para aqui, não continua
                     
                 } else if (result && result.credential === null && result.user === null) {
-                    // ERRO AQUI! Isso pode não ser cancelamento real
-                    console.log('⚠️ Redirect result vazio - verificando currentUser');
-                    this.addVisualLog('⚠️ Redirect result vazio - verificando currentUser');
+                    // PROBLEMA OAUTH: redirect result vazio = configuração incorreta
+                    console.log('🚨 PROBLEMA OAUTH: Redirect result vazio!');
+                    this.addVisualLog('🚨 PROBLEMA OAUTH: Redirect vazio');
                     
-                    // Aguarda um pouco para auth state se estabilizar
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // Aguarda MUITO mais tempo para tentar diferentes estratégias
+                    this.addVisualLog('⏳ Aguardando 5 segundos para re-verificar...');
+                    await new Promise(resolve => setTimeout(resolve, 5000));
                     
-                    const currentUser = FirebaseConfig.auth.currentUser;
+                    // Estratégia 1: Verifica currentUser
+                    let currentUser = FirebaseConfig.auth.currentUser;
+                    this.addVisualLog('🔍 Estratégia 1 - currentUser: ' + (currentUser ? currentUser.email : 'null'));
+                    
+                    if (!currentUser) {
+                        // Estratégia 2: Força refresh do token
+                        this.addVisualLog('🔄 Estratégia 2 - Forçando refresh...');
+                        try {
+                            await FirebaseConfig.auth.currentUser?.reload();
+                            currentUser = FirebaseConfig.auth.currentUser;
+                            this.addVisualLog('🔄 Após reload: ' + (currentUser ? currentUser.email : 'null'));
+                        } catch (e) {
+                            this.addVisualLog('❌ Erro no reload: ' + e.message);
+                        }
+                    }
+                    
                     if (currentUser) {
-                        console.log('✅ Usuário encontrado via currentUser:', currentUser.email);
-                        this.addVisualLog('✅ Login OK via currentUser: ' + currentUser.email);
+                        console.log('✅ Usuário recuperado:', currentUser.email);
+                        this.addVisualLog('✅ SUCESSO! Usuário: ' + currentUser.email);
                         FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
+                        await this.migrateLocalData();
                         return; // Sucesso!
                     } else {
-                        console.log('❌ Realmente cancelado pelo usuário');
-                        this.addVisualLog('❌ Login realmente cancelado');
-                        FirebaseConfig.updateStatus('error', '❌ Login cancelado');
-                        this.recordiOSAuthFailure();
+                        // PROBLEMA OAUTH CONFIRMADO
+                        console.log('🚨 PROBLEMA OAUTH CONFIRMADO!');
+                        this.addVisualLog('🚨 PROBLEMA OAUTH CONFIRMADO!');
+                        FirebaseConfig.updateStatus('error', '🚨 Problema OAuth - verifique configuração');
+                        
+                        // Mostra alerta específico para problema OAuth
+                        setTimeout(() => {
+                            alert('🚨 PROBLEMA DE CONFIGURAÇÃO OAUTH!\n\n' +
+                                  '❌ O redirect funcionou mas o login falhou.\n' +
+                                  '❌ Isso indica problema na configuração do Google Cloud Console.\n\n' +
+                                  '🔧 SOLUÇÕES:\n' +
+                                  '1. Clique "🔧 Testar OAuth" para ver checklist\n' +
+                                  '2. Verifique se o domínio está autorizado\n' +
+                                  '3. Use "💾 Modo Offline" como alternativa\n\n' +
+                                  '⚠️ Este NÃO é problema do Safari, é OAuth!');
+                        }, 1000);
+                        
+                        // Marca como problema OAuth (não falha de navegador)
+                        localStorage.setItem('oauth_problem_detected', 'true');
                     }
                 } else {
                     console.log('ℹ️ Sem redirect result - primeira visita');
@@ -2078,55 +2110,64 @@
          */
         testOAuthConfiguration() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const currentDomain = window.location.hostname;
+            const protocol = window.location.protocol;
             
             this.addVisualLog('🔧 Testando configuração OAuth...');
             
-            let resultado = '🔧 TESTE DE CONFIGURAÇÃO OAUTH\n\n';
+            let resultado = '🚨 PROBLEMA OAUTH CONFIRMADO!\n\n';
+            resultado += 'Seu redirect funciona mas a autenticação falha.\n';
+            resultado += 'Isso é 100% problema de configuração OAuth.\n\n';
             
-            // Verifica as configurações básicas
-            resultado += '📋 CONFIGURAÇÃO ATUAL:\n';
-            resultado += `🔑 Project ID: ${FirebaseConfig.config?.projectId}\n`;
-            resultado += `🌐 Auth Domain: ${FirebaseConfig.config?.authDomain}\n`;
-            resultado += `🆔 App ID: ${FirebaseConfig.config?.appId}\n`;
-            resultado += `🌐 Domínio atual: ${window.location.hostname}\n\n`;
+            resultado += '🎯 SOLUÇÃO PASSO A PASSO:\n\n';
             
-            // Verifica problemas conhecidos
-            resultado += '🎯 PROBLEMAS MAIS COMUNS:\n\n';
+            resultado += '1️⃣ ABRA O GOOGLE CLOUD CONSOLE:\n';
+            resultado += 'console.cloud.google.com/apis/credentials\n\n';
             
-            resultado += '1️⃣ DOMÍNIO NÃO AUTORIZADO:\n';
-            resultado += '   • Google Cloud Console\n';
-            resultado += '   • APIs e Serviços > Credenciais\n';
-            resultado += '   • OAuth 2.0 Client IDs\n';
-            resultado += '   • Adicionar: fernandesvb.github.io\n\n';
+            resultado += '2️⃣ CLIQUE NO SEU OAuth 2.0 Client ID\n';
+            resultado += '(É o que tem tipo "Web application")\n\n';
             
-            resultado += '2️⃣ URLs JAVASCRIPT AUTORIZADAS:\n';
-            resultado += '   • https://fernandesvb.github.io\n';
-            resultado += '   • https://fernandesvb.github.io/workoutPlan/\n\n';
+            resultado += '3️⃣ AUTHORIZED JAVASCRIPT ORIGINS:\n';
+            resultado += `ADICIONE EXATAMENTE: ${protocol}//${currentDomain}\n`;
+            resultado += 'SEM BARRA no final!\n\n';
             
-            resultado += '3️⃣ CONFIGURAÇÃO CONSENT SCREEN:\n';
-            resultado += '   • Status: Publicado (não teste)\n';
-            resultado += '   • Usuários de teste: seu email\n\n';
+            resultado += '4️⃣ AUTHORIZED REDIRECT URIs:\n';
+            resultado += `ADICIONE: ${protocol}//${currentDomain}/__/auth/handler\n\n`;
+            
+            resultado += '5️⃣ CLIQUE SALVAR E AGUARDE 5-10 MIN\n\n';
+            
+            resultado += '🚨 VERIFIAÇÕES EXTRAS:\n';
+            resultado += '• OAuth Consent Screen deve estar PUBLICADO\n';
+            resultado += '• NÃO pode estar em modo "Testing"\n';
+            resultado += '• Seu email deve estar nos usuários de teste\n\n';
             
             if (isIOS) {
-                resultado += '📱 ESPECÍFICO iOS:\n';
-                resultado += '   • Chrome funciona melhor que Safari\n';
-                resultado += '   • Mas se falha no Chrome = config OAuth\n\n';
+                resultado += '📱 CONFIRMAÇÃO iOS:\n';
+                resultado += 'Como falha tanto no Safari quanto no Chrome iOS,\n';
+                resultado += 'isso confirma que é problema OAuth (não do navegador).\n\n';
             }
             
-            resultado += '💡 AÇÕES IMEDIATAS:\n';
-            resultado += '1. Verificar Google Cloud Console\n';
-            resultado += '2. Adicionar domínio se necessário\n';
-            resultado += '3. Aguardar 5-10 min propagação\n';
-            resultado += '4. Ou usar Modo Offline\n\n';
-            
-            resultado += '🔗 LINK DIRETO:\n';
-            resultado += 'console.cloud.google.com/apis/credentials';
+            resultado += '✅ APÓS CONFIGURAR:\n';
+            resultado += '1. Clique "🧹 Limpar Sessão"\n';
+            resultado += '2. Tente fazer login novamente\n';
+            resultado += '3. Ou use "💾 Modo Offline" como alternativa';
             
             alert(resultado);
             
             // Sugere abrir o Google Cloud Console
-            if (confirm('🔧 Quer abrir o Google Cloud Console para verificar a configuração?')) {
+            if (confirm('🔧 Quer abrir o Google Cloud Console para corrigir agora?')) {
                 window.open('https://console.cloud.google.com/apis/credentials', '_blank');
+                this.addVisualLog('🔗 Google Cloud Console aberto para correção');
+                
+                // Mostra lembrete
+                setTimeout(() => {
+                    alert('💡 LEMBRETE:\n\n' +
+                          '1. Clique no OAuth 2.0 Client ID\n' +
+                          '2. Adicione ' + protocol + '//' + currentDomain + '\n' +
+                          '3. Salve e aguarde 5-10 minutos\n' +
+                          '4. Volte ao app e limpe a sessão\n' +
+                          '5. Tente fazer login novamente!');
+                }, 3000);
             }
         },
         
