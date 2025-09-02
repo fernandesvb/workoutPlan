@@ -495,6 +495,12 @@
                     <button id="offline-mode-btn" class="auth-btn" onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; display: inline-block; margin: 2px;">
                         💾 Modo Offline
                     </button>
+                    <button id="ios-diagnostic-btn" class="auth-btn" onclick="AuthManager.detectiOSAuthProblems()" style="background: #17a2b8; color: white; display: inline-block; margin: 2px;">
+                        🩺 Diagnóstico iOS
+                    </button>
+                    <button id="show-logs-btn" class="auth-btn" onclick="AuthManager.toggleVisualLogs()" style="background: #28a745; color: white; display: inline-block; margin: 2px;">
+                        📋 Ver Logs
+                    </button>
                 </div>
             </div>
             <!-- Dica específica para iOS -->
@@ -1519,23 +1525,20 @@
                 return;
             }
             
-            // Aguarda um pouco antes de verificar redirect result
-            setTimeout(() => {
-                this.checkRedirectResult();
-            }, 500);
+            // Verifica redirect result (apenas para iOS)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                setTimeout(() => {
+                    this.checkRedirectResult();
+                }, 500);
+            }
             
             // Escuta mudanças no estado de autenticação
             FirebaseConfig.auth.onAuthStateChanged(async (user) => {
-                console.log('🔄 onAuthStateChanged acionado:', user ? user.email : 'null');
-                this.addVisualLog('🔄 Auth state: ' + (user ? user.email : 'desconectado'));
-                
                 this.currentUser = user;
                 this.updateUI(user);
                 
                 if (user) {
-                    console.log('👤 Usuário autenticado:', user.displayName || user.email);
-                    this.addVisualLog('👤 Usuário autenticado: ' + user.email);
-                    
                     // Atualiza status visual
                     FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + user.email);
                     
@@ -1544,9 +1547,6 @@
                     // Inicia sincronização em tempo real
                     RealtimeSync.start();
                 } else {
-                    console.log('👤 Usuário não autenticado');
-                    this.addVisualLog('👤 Usuário desconectado');
-                    
                     // Para sincronização em tempo real
                     RealtimeSync.stop();
                 }
@@ -1563,75 +1563,32 @@
             }
             
             try {
-                const logs = [
-                    '🔐 Iniciando login...',
-                    `📱 User Agent: ${navigator.userAgent}`,
-                    `🌐 URL atual: ${window.location.href}`,
-                    `🔑 Auth Domain: ${FirebaseConfig.config.authDomain}`
-                ];
-                
-                logs.forEach(log => {
-                    console.log(log);
-                    this.addVisualLog(log);
-                });
-                
-                // Detecta iOS especificamente  
+                // Detecta iOS
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
                 
-                console.log('📱 É iOS?', isIOS);
-                console.log('🌐 É Safari?', isSafari);
-                
-                this.addVisualLog(`📱 É iOS? ${isIOS}`);
-                this.addVisualLog(`🌐 É Safari? ${isSafari}`);
-                
-                // Configuração específica do provider para iOS
+                // Configuração do provider
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.addScope('profile');
                 provider.addScope('email');
                 
-                // Configurações específicas para iOS
                 if (isIOS) {
+                    // iOS - usar redirect
                     provider.setCustomParameters({
                         prompt: 'select_account'
                     });
-                }
-                
-                console.log('🔐 Configuração do provider:', provider);
-                
-                // Para iOS Safari, implementa lógica específica
-                if (isIOS) {
-                    console.log('🍎 iOS detectado - iniciando processo de redirect');
-                    this.addVisualLog('🍎 iOS detectado - iniciando processo de redirect');
                     
-                    // Salva estado antes do redirect
+                    // Salva tentativa para verificação posterior
                     localStorage.setItem('auth_attempt', JSON.stringify({
                         timestamp: Date.now(),
-                        userAgent: navigator.userAgent,
-                        url: window.location.href
+                        type: 'ios_redirect'
                     }));
                     
-                    // Mostra loading
                     this.showAuthLoading(true);
-                    this.addVisualLog('🔄 Mostrando loading...');
-                    
-                    try {
-                        await FirebaseConfig.auth.signInWithRedirect(provider);
-                        console.log('🔄 Redirect iniciado com sucesso');
-                        this.addVisualLog('🔄 Redirect iniciado com sucesso');
-                    } catch (redirectError) {
-                        console.error('❌ Erro no redirect:', redirectError);
-                        this.addVisualLog('❌ Erro no redirect: ' + redirectError.message);
-                        this.showAuthLoading(false);
-                        throw redirectError;
-                    }
-                    
-                    return; // O redirect vai recarregar a página
+                    await FirebaseConfig.auth.signInWithRedirect(provider);
+                    return; // Redirect recarrega a página
                 } else {
-                    // Desktop - usa popup
-                    console.log('💻 Desktop detectado - usando signInWithPopup');
+                    // Desktop - usar popup
                     const result = await FirebaseConfig.auth.signInWithPopup(provider);
-                    console.log('✅ Login realizado com sucesso');
                     
                     // Migra dados locais para a conta do usuário
                     await this.migrateLocalData();
@@ -1644,9 +1601,10 @@
                 if (error.code === 'auth/popup-blocked') {
                     alert('🚫 Popup bloqueado! Permita popups para este site.');
                 } else if (error.code === 'auth/popup-closed-by-user') {
+                    // Login cancelado pelo usuário - não mostrar alerta
                     console.log('Login cancelado pelo usuário');
                 } else if (error.code === 'auth/unauthorized-domain') {
-                    alert('🚫 Domínio não autorizado!\n\nAdicione "fernandesvb.github.io" aos domínios autorizados no Google Cloud Console.');
+                    alert('🚫 Domínio não autorizado!\n\nVerifique as configurações OAuth no Google Cloud Console.');
                 } else {
                     alert('❌ Erro no login: ' + error.message);
                 }
@@ -1713,120 +1671,57 @@
          * Verifica resultado de redirect (específico para iOS)
          */
         async checkRedirectResult() {
-            console.log('🔍 Verificando redirect result...');
-            this.addVisualLog('🔍 Verificando redirect result...');
-            
             try {
-                // Verifica se houve uma tentativa de auth recente
+                // Verifica se houve tentativa de auth
                 const authAttempt = localStorage.getItem('auth_attempt');
                 if (authAttempt) {
-                    const attempt = JSON.parse(authAttempt);
-                    console.log('📱 Tentativa de auth anterior encontrada:', attempt);
-                    this.addVisualLog('📱 Tentativa de auth encontrada: ' + new Date(attempt.timestamp).toLocaleTimeString());
                     localStorage.removeItem('auth_attempt');
                 }
                 
-                // Aguarda um pouco para Firebase se estabilizar
+                // Aguarda Firebase estabilizar
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
                 const result = await FirebaseConfig.auth.getRedirectResult();
-                console.log('🔍 Resultado completo do redirect:', result);
-                this.addVisualLog('🔍 Resultado redirect: ' + (result ? 'existe' : 'null'));
                 
                 if (result && result.user) {
-                    console.log('✅ Login por redirect realizado com sucesso!');
-                    console.log('👤 Usuário:', result.user.displayName || result.user.email);
-                    console.log('🔑 Provider:', result.additionalUserInfo?.providerId);
-                    console.log('📊 Primeiro login?', result.additionalUserInfo?.isNewUser);
-                    
-                    this.addVisualLog('✅ LOGIN SUCESSO: ' + (result.user.displayName || result.user.email));
-                    
-                    // Migra dados locais para a conta do usuário
+                    // Login bem-sucedido
                     await this.migrateLocalData();
-                    
-                    // Mostra feedback visual
                     FirebaseConfig.updateStatus('connected', '✅ Login realizado com sucesso!');
+                    return;
+                }
+                
+                if (result && result.credential === null && result.user === null) {
+                    // Possível problema OAuth - tenta estratégias de recuperação
+                    await new Promise(resolve => setTimeout(resolve, 3000));
                     
-                    // NÃO remove o listener - deixa o onAuthStateChanged gerenciar
-                    return; // IMPORTANTE: para aqui, não continua
-                    
-                } else if (result && result.credential === null && result.user === null) {
-                    // PROBLEMA OAUTH: redirect result vazio = configuração incorreta
-                    console.log('🚨 PROBLEMA OAUTH: Redirect result vazio!');
-                    this.addVisualLog('🚨 PROBLEMA OAUTH: Redirect vazio');
-                    
-                    // Aguarda MUITO mais tempo para tentar diferentes estratégias
-                    this.addVisualLog('⏳ Aguardando 5 segundos para re-verificar...');
-                    await new Promise(resolve => setTimeout(resolve, 5000));
-                    
-                    // Estratégia 1: Verifica currentUser
                     let currentUser = FirebaseConfig.auth.currentUser;
-                    this.addVisualLog('🔍 Estratégia 1 - currentUser: ' + (currentUser ? currentUser.email : 'null'));
                     
                     if (!currentUser) {
-                        // Estratégia 2: Força refresh do token
-                        this.addVisualLog('🔄 Estratégia 2 - Forçando refresh...');
                         try {
                             await FirebaseConfig.auth.currentUser?.reload();
                             currentUser = FirebaseConfig.auth.currentUser;
-                            this.addVisualLog('🔄 Após reload: ' + (currentUser ? currentUser.email : 'null'));
                         } catch (e) {
-                            this.addVisualLog('❌ Erro no reload: ' + e.message);
+                            console.error('Erro no reload:', e);
                         }
                     }
                     
                     if (currentUser) {
-                        console.log('✅ Usuário recuperado:', currentUser.email);
-                        this.addVisualLog('✅ SUCESSO! Usuário: ' + currentUser.email);
                         FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
                         await this.migrateLocalData();
-                        return; // Sucesso!
+                        return;
                     } else {
-                        // PROBLEMA OAUTH CONFIRMADO
-                        console.log('🚨 PROBLEMA OAUTH CONFIRMADO!');
-                        this.addVisualLog('🚨 PROBLEMA OAUTH CONFIRMADO!');
-                        FirebaseConfig.updateStatus('error', '🚨 Problema OAuth - verifique configuração');
-                        
-                        // Mostra alerta específico para problema OAuth
-                        setTimeout(() => {
-                            alert('🚨 PROBLEMA DE CONFIGURAÇÃO OAUTH!\n\n' +
-                                  '❌ O redirect funcionou mas o login falhou.\n' +
-                                  '❌ Isso indica problema na configuração do Google Cloud Console.\n\n' +
-                                  '🔧 SOLUÇÕES:\n' +
-                                  '1. Clique "🔧 Testar OAuth" para ver checklist\n' +
-                                  '2. Verifique se o domínio está autorizado\n' +
-                                  '3. Use "💾 Modo Offline" como alternativa\n\n' +
-                                  '⚠️ Este NÃO é problema do Safari, é OAuth!');
-                        }, 1000);
-                        
-                        // Marca como problema OAuth (não falha de navegador)
+                        // Problema OAuth detectado
+                        FirebaseConfig.updateStatus('error', '❌ Problema de autenticação');
                         localStorage.setItem('oauth_problem_detected', 'true');
-                    }
-                } else {
-                    console.log('ℹ️ Sem redirect result - primeira visita');
-                    this.addVisualLog('ℹ️ Sem redirect result - primeira visita');
-                    
-                    // Verifica se já está logado
-                    const currentUser = FirebaseConfig.auth.currentUser;
-                    if (currentUser) {
-                        console.log('🔍 Usuário já logado:', currentUser.email);
-                        this.addVisualLog('🔍 Já logado: ' + currentUser.email);
-                        FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
                     }
                 }
                 
             } catch (error) {
                 console.error('❌ Erro no redirect result:', error);
-                this.addVisualLog('❌ ERRO redirect: ' + error.code + ' - ' + error.message);
-                
-                // Remove indicador de loading se houver erro
                 this.showAuthLoading(false);
                 
                 if (error.code === 'auth/unauthorized-domain') {
-                    this.addVisualLog('🚫 PROBLEMA: Domínio não autorizado!');
-                    alert('🚫 DOMÍNIO NÃO AUTORIZADO!');
-                } else {
-                    console.error('❌ Erro não tratado:', error.code, error.message);
+                    alert('🚫 Domínio não autorizado!\n\nVerifique as configurações OAuth no Google Cloud Console.');
                 }
             }
         },
@@ -1850,266 +1745,17 @@
             }
         },
         
-        /**
-         * Força exibição dos controles de auth no iOS
-         */
-        forceIOSAuthDisplay() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            if (isIOS) {
-                console.log('🍎 Forçando exibição de controles iOS...');
-                
-                const authSection = document.getElementById('auth-section');
-                const clearSessionBtn = document.getElementById('clear-session-btn');
-                const iosTip = document.getElementById('ios-tip');
-                
-                // Força exibição da seção de auth
-                if (authSection) {
-                    authSection.style.display = 'block';
-                    console.log('✅ Seção de auth forçada a mostrar');
-                }
-                
-                // Força exibição do botão limpar sessão
-                if (clearSessionBtn) {
-                    clearSessionBtn.style.display = 'inline-block';
-                    console.log('✅ Botão Limpar Sessão forçado a mostrar');
-                }
-                
-                // Força exibição da dica iOS
-                if (iosTip) {
-                    iosTip.style.display = 'block';
-                    console.log('✅ Dica iOS forçada a mostrar');
-                }
-            }
-        },
+
         
         /**
          * Diagnóstico específico para problemas no iOS
          */
         diagnoseiOSIssues() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            if (!isIOS) return;
-            
-            // Logs para console
-            console.log('🩺 === DIAGNÓSTICO COMPLETO iOS ===');
-            console.log('🌐 URL:', window.location.href);
-            console.log('🌐 Domain:', window.location.hostname);
-            console.log('🌐 Protocol:', window.location.protocol);
-            console.log('🍎 iOS Version:', navigator.userAgent);
-            console.log('🔐 Firebase Auth Domain:', FirebaseConfig.config?.authDomain);
-            console.log('🔑 Firebase Project ID:', FirebaseConfig.config?.projectId);
-            console.log('🆔 Firebase App ID:', FirebaseConfig.config?.appId);
-            console.log('📱 Viewport:', `${window.innerWidth}x${window.innerHeight}`);
-            console.log('🧪 Firebase inicializado?', FirebaseConfig.isInitialized);
-            console.log('🔗 HTTPS?', window.location.protocol === 'https:');
-            
-            // Detecta navegador específico
-            const isChrome = /Chrome/.test(navigator.userAgent);
-            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-            console.log('🌐 Chrome iOS?', isChrome);
-            console.log('🌐 Safari iOS?', isSafari);
-            
-            // Testa localStorage
-            let localStorageOK = true;
-            try {
-                localStorage.setItem('test', 'ok');
-                localStorage.removeItem('test');
-                console.log('💾 localStorage funcionando? ✅');
-            } catch (e) {
-                console.log('💾 localStorage funcionando? ❌', e);
-                localStorageOK = false;
-            }
-            
-            // Verifica tentativas anteriores
-            const authFailures = localStorage.getItem('ios_auth_failures') || '0';
-            console.log('📊 Tentativas de auth falhadas:', authFailures);
-            
-            // Verifica domínio autorizado
-            const currentDomain = window.location.hostname;
-            const authDomain = FirebaseConfig.config?.authDomain;
-            
-            console.log('🔍 === CHECKLIST DETALHADO ===');
-            
-            let problemas = [];
-            let avisos = [];
-            
-            if (currentDomain !== 'fernandesvb.github.io') {
-                console.log('⚠️ PROBLEMA: Domínio atual não é fernandesvb.github.io');
-                problemas.push(`❌ Domínio incorreto: ${currentDomain}`);
-            } else {
-                console.log('✅ Domínio correto: fernandesvb.github.io');
-            }
-            
-            if (window.location.protocol !== 'https:') {
-                console.log('⚠️ PROBLEMA: Não está usando HTTPS');
-                problemas.push('❌ Não está em HTTPS');
-            } else {
-                console.log('✅ HTTPS ativo');
-            }
-            
-            if (!authDomain) {
-                console.log('⚠️ PROBLEMA: Auth domain não configurado');
-                problemas.push('❌ Auth domain não configurado');
-            } else {
-                console.log('✅ Auth domain configurado:', authDomain);
-            }
-            
-            if (!localStorageOK) {
-                problemas.push('❌ localStorage não funciona');
-            }
-            
-            // Verifica configurações OAuth específicas
-            if (parseInt(authFailures) >= 2) {
-                avisos.push('⚠️ Múltiplas falhas de auth detectadas');
-                if (isChrome) {
-                    avisos.push('⚠️ Falha até no Chrome - possível problema de configuração OAuth');
-                }
-            }
-            
-            console.log('🩺 === FIM DIAGNÓSTICO ===');
-            
-            // ALERT DETALHADO
-            let resultado = '🩺 DIAGNÓSTICO COMPLETO iOS\n\n';
-            resultado += `🌐 URL: ${window.location.href}\n`;
-            resultado += `🌐 Domínio: ${currentDomain}\n`;
-            resultado += `🌐 Protocolo: ${window.location.protocol}\n`;
-            resultado += `🧪 Firebase: ${FirebaseConfig.isInitialized ? '✅' : '❌'}\n`;
-            resultado += `💾 LocalStorage: ${localStorageOK ? '✅' : '❌'}\n`;
-            resultado += `🌐 Navegador: ${isChrome ? 'Chrome' : isSafari ? 'Safari' : 'Outro'}\n`;
-            resultado += `📊 Falhas auth: ${authFailures}\n\n`;
-            
-            if (problemas.length === 0 && avisos.length === 0) {
-                resultado += '✅ CONFIGURAÇÃO OK!\n\n';
-                resultado += 'Se ainda falha, provável:\n';
-                resultado += '❌ Domínio não autorizado no Google Cloud\n\n';
-                resultado += 'SOLUÇÃO:\n';
-                resultado += '1. Google Cloud Console\n';
-                resultado += '2. APIs e Serviços > Credenciais\n';
-                resultado += '3. OAuth 2.0 Client IDs\n';
-                resultado += '4. Adicionar "fernandesvb.github.io"\n';
-                resultado += '5. Salvar\n\n';
-                resultado += '💾 OU use Modo Offline';
-            } else {
-                if (problemas.length > 0) {
-                    resultado += '🚨 PROBLEMAS CRÍTICOS:\n';
-                    resultado += problemas.join('\n') + '\n\n';
-                }
-                if (avisos.length > 0) {
-                    resultado += '⚠️ AVISOS:\n';
-                    resultado += avisos.join('\n') + '\n\n';
-                }
-                
-                if (isChrome && parseInt(authFailures) >= 2) {
-                    resultado += '🎯 DIAGNÓSTICO ESPECÍFICO:\n';
-                    resultado += 'Falha no Chrome = problema de OAuth\n';
-                    resultado += 'Não é limitação do navegador!\n\n';
-                    resultado += 'AÇÃO NECESSÁRIA:\n';
-                    resultado += '1. Verificar Google Cloud Console\n';
-                    resultado += '2. Configurar domínios autorizados\n';
-                    resultado += '3. Ou usar Modo Offline\n';
-                }
-            }
-            
-            alert(resultado);
-            
-            // Adiciona botão de diagnóstico à interface
-            this.addDiagnosticButton();
+            // Esta função não faz mais nada automaticamente
+            // Use os botões "🩺 Diagnóstico iOS" ou "🔧 Testar OAuth" para diagnósticos
         },
         
-        /**
-         * Adiciona botão de diagnóstico à interface iOS
-         */
-        addDiagnosticButton() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) return;
-            
-            // Verifica se já existe
-            if (document.getElementById('diagnostic-btn')) return;
-            
-            const authSection = document.getElementById('auth-section');
-            if (!authSection) return;
-            
-            const diagnosticBtn = document.createElement('button');
-            diagnosticBtn.id = 'diagnostic-btn';
-            diagnosticBtn.innerHTML = '🩺 Diagnóstico iOS';
-            diagnosticBtn.style.cssText = `
-                background: #17a2b8; 
-                color: white; 
-                border: none; 
-                padding: 6px 12px; 
-                border-radius: 6px; 
-                font-size: 0.8em; 
-                cursor: pointer; 
-                margin: 5px;
-            `;
-            
-            diagnosticBtn.onclick = () => {
-                this.diagnoseiOSIssues();
-            };
-            
-            authSection.appendChild(diagnosticBtn);
-            
-            // Adiciona botão para mostrar logs visuais
-            const showLogsBtn = document.createElement('button');
-            showLogsBtn.innerHTML = '📋 Ver Logs';
-            showLogsBtn.style.cssText = `
-                background: #28a745; 
-                color: white; 
-                border: none; 
-                padding: 6px 12px; 
-                border-radius: 6px; 
-                font-size: 0.8em; 
-                cursor: pointer; 
-                margin: 5px;
-            `;
-            
-            showLogsBtn.onclick = () => {
-                this.toggleVisualLogs();
-            };
-            
-            authSection.appendChild(showLogsBtn);
-            
-            // Adiciona botão de modo offline para iOS se Firebase falhar
-            const offlineModeBtn = document.createElement('button');
-            offlineModeBtn.innerHTML = '💾 Modo Offline';
-            offlineModeBtn.style.cssText = `
-                background: #6f42c1; 
-                color: white; 
-                border: none; 
-                padding: 6px 12px; 
-                border-radius: 6px; 
-                font-size: 0.8em; 
-                cursor: pointer; 
-                margin: 5px;
-            `;
-            
-            offlineModeBtn.onclick = () => {
-                this.enableOfflineMode();
-            };
-            
-            authSection.appendChild(offlineModeBtn);
-            
-            // Adiciona botão específico para teste de configuração OAuth
-            const testOAuthBtn = document.createElement('button');
-            testOAuthBtn.innerHTML = '🔧 Testar OAuth';
-            testOAuthBtn.style.cssText = `
-                background: #dc3545; 
-                color: white; 
-                border: none; 
-                padding: 6px 12px; 
-                border-radius: 6px; 
-                font-size: 0.8em; 
-                cursor: pointer; 
-                margin: 5px;
-            `;
-            
-            testOAuthBtn.onclick = () => {
-                this.testOAuthConfiguration();
-            };
-            
-            authSection.appendChild(testOAuthBtn);
-        },
+
         
         /**
          * Testa configurações OAuth específicas
@@ -2225,70 +1871,64 @@
         },
         
         /**
-         * Detecta problemas do iOS Safari e mostra alerta automático
+         * Detecta problemas do iOS Safari (apenas quando solicitado)
          */
         detectiOSAuthProblems() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) return;
+            if (!isIOS) {
+                alert('ℹ️ Esta função é específica para dispositivos iOS.');
+                return;
+            }
             
-            // Aguarda mais tempo para ter certeza que realmente falhou
-            setTimeout(() => {
-                const currentUser = FirebaseConfig.auth.currentUser;
-                if (currentUser) {
-                    // Se está logado, não há problema
-                    this.addVisualLog('✅ Usuário logado - sem problemas detectados');
-                    return;
-                }
-                
-                // Verifica se houve tentativas falhas de auth
-                const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
-                const attempts = parseInt(failedAttempts);
-                
-                // Se houve 3+ tentativas falhas E não está logado, mostra o alerta
-                if (attempts >= 3) {
-                    const warning = document.getElementById('ios-warning');
-                    if (warning) {
-                        warning.style.display = 'block';
-                        this.addVisualLog('⚠️ Alerta de problemas OAuth exibido após verificação');
-                    }
-                }
-            }, 5000); // Aguarda 5 segundos para ter certeza
+            const currentUser = FirebaseConfig.auth.currentUser;
+            const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
+            
+            let resultado = '🔍 DIAGNÓSTICO iOS\n\n';
+            resultado += `👤 Usuário logado: ${currentUser ? currentUser.email : 'Não'}\n`;
+            resultado += `❌ Tentativas falhas: ${failedAttempts}\n`;
+            resultado += `📱 Dispositivo: iOS ${/Chrome/.test(navigator.userAgent) ? 'Chrome' : 'Safari'}\n\n`;
+            
+            if (currentUser) {
+                resultado += '✅ TUDO OK!\n';
+                resultado += 'Usuário está conectado com sucesso.';
+            } else if (parseInt(failedAttempts) >= 3) {
+                resultado += '🚨 PROBLEMA DETECTADO!\n';
+                resultado += 'Múltiplas tentativas de login falharam.\n\n';
+                resultado += '💡 SOLUÇÕES:\n';
+                resultado += '1. Use "💾 Modo Offline"\n';
+                resultado += '2. Teste no computador\n';
+                resultado += '3. Aguarde propagação OAuth (24h)';
+            } else {
+                resultado += 'ℹ️ Nenhum problema detectado.\n';
+                resultado += 'Se houver dificuldades, use "🔧 Testar OAuth".';
+            }
+            
+            alert(resultado);
         },
         
         /**
-         * Registra falha de autenticação no iOS (mais conservador)
+         * Registra falha de autenticação no iOS (simplificado)
          */
         recordiOSAuthFailure() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             if (!isIOS) return;
             
-            // Aguarda um pouco para ter certeza que realmente falhou
+            // Aguarda para verificar se realmente falhou
             setTimeout(() => {
                 const currentUser = FirebaseConfig.auth.currentUser;
                 if (currentUser) {
                     // Se conseguiu logar, não conta como falha
-                    this.addVisualLog('✅ Login bem-sucedido - não registrando falha');
                     return;
                 }
                 
                 const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
                 localStorage.setItem('ios_auth_failures', failures.toString());
                 
-                // Detecta o navegador específico
-                const isChrome = /Chrome/.test(navigator.userAgent);
-                const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-                
-                this.addVisualLog(`❌ Falha real de auth #${failures} registrada (${isChrome ? 'Chrome' : 'Safari'})`);
-                
-                // Só mostra alerta após múltiplas tentativas reais
-                if (failures >= 3) {
-                    if (isChrome) {
-                        localStorage.setItem('oauth_problem_detected', 'true');
-                        this.addVisualLog('🚨 Múltiplas falhas no Chrome = problema OAuth');
-                    }
-                    this.detectiOSAuthProblems();
+                // Marca problema OAuth se múltiplas falhas no Chrome
+                if (failures >= 3 && /Chrome/.test(navigator.userAgent)) {
+                    localStorage.setItem('oauth_problem_detected', 'true');
                 }
-            }, 3000); // Aguarda 3 segundos para verificar se realmente falhou
+            }, 3000);
         },
         
         /**
@@ -2569,9 +2209,6 @@
     // Inicialização da aplicação
     async function initApp() {
         try {
-            console.log('🚀 Inicializando aplicação de treino...');
-            console.log('🌐 Domínio atual:', window.location.hostname);
-            
             // 1. Inicializa o Firebase
             const firebaseInitialized = await FirebaseConfig.init();
             
@@ -2593,33 +2230,6 @@
             
             // 4. Carrega dados salvos
             await loadData();
-            
-            console.log('💪 Aplicação de treino inicializada com sucesso!');
-            
-            // 5. Log importante para verificação no GitHub Pages
-            if (window.location.hostname.includes('github.io')) {
-                console.log('📱 Rodando no GitHub Pages');
-                console.log('⚠️  Para funcionamento do Google Login, certifique-se que:');
-                console.log('   • "fernandesvb.github.io" está nos domínios autorizados');
-                console.log('   • O Client ID OAuth está configurado corretamente');
-            }
-            
-            // 6. Log específico para iOS troubleshooting
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                console.log('🍎 DISPOSITIVO iOS DETECTADO');
-                console.log('💡 Dicas para iOS:');
-                console.log('   • O login usa REDIRECT em vez de popup');
-                console.log('   • Se houver problemas, use "Limpar Sessão"');
-                console.log('   • Certifique-se que não há conflitos de sessão');
-                console.log('   • Verifique se o Safari permite redirects');
-                
-                // 7. FORÇA exibição dos controles iOS e detecta problemas
-                setTimeout(() => {
-                    AuthManager.forceIOSAuthDisplay();
-                    AuthManager.detectiOSAuthProblems();
-                }, 2000);
-            }
             
         } catch (error) {
             console.error('❌ Erro na inicialização:', error);
