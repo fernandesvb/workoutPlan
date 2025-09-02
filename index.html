@@ -1513,22 +1513,34 @@
                 return;
             }
             
-            // Verifica se há resultado de redirect (crucial para iOS)
-            this.checkRedirectResult();
+            // Aguarda um pouco antes de verificar redirect result
+            setTimeout(() => {
+                this.checkRedirectResult();
+            }, 500);
             
             // Escuta mudanças no estado de autenticação
             FirebaseConfig.auth.onAuthStateChanged(async (user) => {
+                console.log('🔄 onAuthStateChanged acionado:', user ? user.email : 'null');
+                this.addVisualLog('🔄 Auth state: ' + (user ? user.email : 'desconectado'));
+                
                 this.currentUser = user;
                 this.updateUI(user);
                 
                 if (user) {
-                    console.log('👤 Usuário autenticado:', user.displayName);
+                    console.log('👤 Usuário autenticado:', user.displayName || user.email);
+                    this.addVisualLog('👤 Usuário autenticado: ' + user.email);
+                    
+                    // Atualiza status visual
+                    FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + user.email);
+                    
                     // Recarrega dados do usuário específico
                     await this.loadUserData();
                     // Inicia sincronização em tempo real
                     RealtimeSync.start();
                 } else {
                     console.log('👤 Usuário não autenticado');
+                    this.addVisualLog('👤 Usuário desconectado');
+                    
                     // Para sincronização em tempo real
                     RealtimeSync.stop();
                 }
@@ -1728,47 +1740,45 @@
                     
                     // Mostra feedback visual
                     FirebaseConfig.updateStatus('connected', '✅ Login realizado com sucesso!');
-                    setTimeout(() => {
-                        alert('🎉 Login realizado com sucesso!\n👤 ' + (result.user.displayName || result.user.email));
-                    }, 500);
+                    
+                    // NÃO remove o listener - deixa o onAuthStateChanged gerenciar
+                    return; // IMPORTANTE: para aqui, não continua
                     
                 } else if (result && result.credential === null && result.user === null) {
-                    console.log('ℹ️ Redirect cancelado pelo usuário');
-                    this.addVisualLog('❌ Redirect cancelado pelo usuário');
-                    FirebaseConfig.updateStatus('error', '❌ Login cancelado');
+                    // ERRO AQUI! Isso pode não ser cancelamento real
+                    console.log('⚠️ Redirect result vazio - verificando currentUser');
+                    this.addVisualLog('⚠️ Redirect result vazio - verificando currentUser');
                     
-                    // Se houve tentativa de auth mas foi cancelado, pode ser problema OAuth
-                    const authAttempt = localStorage.getItem('auth_attempt');
-                    if (authAttempt) {
-                        this.recordiOSAuthFailure();
-                        this.addVisualLog('⚠️ Login cancelado pode indicar problema OAuth');
-                    }
-                } else {
-                    console.log('ℹ️ Nenhum redirect result (primeira visita ou sem tentativa)');
-                    this.addVisualLog('ℹ️ Sem resultado de redirect');
+                    // Aguarda um pouco para auth state se estabilizar
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     
-                    // NOVO: Verifica se pode estar logado mesmo sem redirect result
                     const currentUser = FirebaseConfig.auth.currentUser;
                     if (currentUser) {
-                        console.log('🔍 Usuário já logado encontrado:', currentUser);
-                        this.addVisualLog('🔍 Usuário já estava logado: ' + currentUser.email);
+                        console.log('✅ Usuário encontrado via currentUser:', currentUser.email);
+                        this.addVisualLog('✅ Login OK via currentUser: ' + currentUser.email);
+                        FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
+                        return; // Sucesso!
                     } else {
-                        console.log('❌ Nenhum usuário logado encontrado');
-                        this.addVisualLog('❌ Nenhum usuário logado');
-                        
-                        // Se houve tentativa de auth e não funcionou, registra falha (iOS)
-                        const authAttempt = localStorage.getItem('auth_attempt');
-                        if (authAttempt) {
-                            this.recordiOSAuthFailure();
-                        }
+                        console.log('❌ Realmente cancelado pelo usuário');
+                        this.addVisualLog('❌ Login realmente cancelado');
+                        FirebaseConfig.updateStatus('error', '❌ Login cancelado');
+                        this.recordiOSAuthFailure();
+                    }
+                } else {
+                    console.log('ℹ️ Sem redirect result - primeira visita');
+                    this.addVisualLog('ℹ️ Sem redirect result - primeira visita');
+                    
+                    // Verifica se já está logado
+                    const currentUser = FirebaseConfig.auth.currentUser;
+                    if (currentUser) {
+                        console.log('🔍 Usuário já logado:', currentUser.email);
+                        this.addVisualLog('🔍 Já logado: ' + currentUser.email);
+                        FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
                     }
                 }
                 
             } catch (error) {
                 console.error('❌ Erro no redirect result:', error);
-                console.error('❌ Código de erro:', error.code);
-                console.error('❌ Mensagem:', error.message);
-                
                 this.addVisualLog('❌ ERRO redirect: ' + error.code + ' - ' + error.message);
                 
                 // Remove indicador de loading se houver erro
@@ -1776,36 +1786,9 @@
                 
                 if (error.code === 'auth/unauthorized-domain') {
                     this.addVisualLog('🚫 PROBLEMA: Domínio não autorizado!');
-                    alert('🚫 DOMÍNIO NÃO AUTORIZADO!\n\n' +
-                          '❌ PROBLEMA ENCONTRADO!\n\n' +
-                          'O Safari iOS não consegue autenticar porque o domínio não está autorizado.\n\n' +
-                          'SOLUÇÃO:\n' +
-                          '1. Google Cloud Console\n' +
-                          '2. OAuth 2.0 Client IDs\n' +
-                          '3. Adicione "fernandesvb.github.io"\n' +
-                          '4. Salve as alterações\n\n' +
-                          '⚠️ Este é um problema comum do Safari iOS!');
-                } else if (error.code === 'auth/popup-blocked') {
-                    alert('🚫 Acesso bloqueado!\n\nPermita popups ou recarregue a página.');
-                } else if (error.code === 'auth/network-request-failed') {
-                    alert('🌐 Erro de rede!\n\nVerifique sua conexão com a internet.');
+                    alert('🚫 DOMÍNIO NÃO AUTORIZADO!');
                 } else {
                     console.error('❌ Erro não tratado:', error.code, error.message);
-                    
-                    // Mostra diagnóstico específico para iOS
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    if (isIOS) {
-                        alert('📱 PROBLEMA NO iOS SAFARI!\n\n' +
-                              'Erro: ' + error.code + '\n' +
-                              'Mensagem: ' + error.message + '\n\n' +
-                              '💡 SOLUÇÕES ALTERNATIVAS:\n' +
-                              '1. Use Chrome no iOS (se disponível)\n' +
-                              '2. Use o app pelo computador\n' +
-                              '3. Ou use apenas modo local (sem login)\n\n' +
-                              '⚠️ Safari iOS tem limitações conhecidas com Firebase Auth!');
-                    } else {
-                        alert('❌ Erro no login: ' + (error.message || 'Erro desconhecido'));
-                    }
                 }
             }
         },
@@ -2184,56 +2167,64 @@
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             if (!isIOS) return;
             
-            // Verifica se houve tentativas falhas de auth
-            const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
-            const attempts = parseInt(failedAttempts);
-            
-            // Se houve 2+ tentativas falhas, mostra o alerta
-            if (attempts >= 2) {
-                setTimeout(() => {
+            // Aguarda mais tempo para ter certeza que realmente falhou
+            setTimeout(() => {
+                const currentUser = FirebaseConfig.auth.currentUser;
+                if (currentUser) {
+                    // Se está logado, não há problema
+                    this.addVisualLog('✅ Usuário logado - sem problemas detectados');
+                    return;
+                }
+                
+                // Verifica se houve tentativas falhas de auth
+                const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
+                const attempts = parseInt(failedAttempts);
+                
+                // Se houve 3+ tentativas falhas E não está logado, mostra o alerta
+                if (attempts >= 3) {
                     const warning = document.getElementById('ios-warning');
                     if (warning) {
                         warning.style.display = 'block';
-                        this.addVisualLog('⚠️ Alerta de problemas iOS exibido');
+                        this.addVisualLog('⚠️ Alerta de problemas OAuth exibido após verificação');
                     }
-                }, 3000);
-            }
+                }
+            }, 5000); // Aguarda 5 segundos para ter certeza
         },
         
         /**
-         * Registra falha de autenticação no iOS
+         * Registra falha de autenticação no iOS (mais conservador)
          */
         recordiOSAuthFailure() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             if (!isIOS) return;
             
-            const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
-            localStorage.setItem('ios_auth_failures', failures.toString());
-            
-            // Detecta o navegador específico
-            const isChrome = /Chrome/.test(navigator.userAgent);
-            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-            
-            this.addVisualLog(`❌ Falha de auth #${failures} registrada (${isChrome ? 'Chrome' : 'Safari'})`);
-            
-            // Se falhou no Chrome iOS, é problema de OAuth (não do navegador)
-            if (isChrome && failures >= 1) {
-                localStorage.setItem('oauth_problem_detected', 'true');
-                this.addVisualLog('🚨 Falha no Chrome = problema OAuth detectado');
+            // Aguarda um pouco para ter certeza que realmente falhou
+            setTimeout(() => {
+                const currentUser = FirebaseConfig.auth.currentUser;
+                if (currentUser) {
+                    // Se conseguiu logar, não conta como falha
+                    this.addVisualLog('✅ Login bem-sucedido - não registrando falha');
+                    return;
+                }
                 
-                // Mostra alerta específico imediatamente
-                setTimeout(() => {
-                    const warning = document.getElementById('ios-warning');
-                    if (warning) {
-                        warning.style.display = 'block';
-                        this.addVisualLog('🚨 Alerta OAuth exibido');
+                const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
+                localStorage.setItem('ios_auth_failures', failures.toString());
+                
+                // Detecta o navegador específico
+                const isChrome = /Chrome/.test(navigator.userAgent);
+                const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+                
+                this.addVisualLog(`❌ Falha real de auth #${failures} registrada (${isChrome ? 'Chrome' : 'Safari'})`);
+                
+                // Só mostra alerta após múltiplas tentativas reais
+                if (failures >= 3) {
+                    if (isChrome) {
+                        localStorage.setItem('oauth_problem_detected', 'true');
+                        this.addVisualLog('🚨 Múltiplas falhas no Chrome = problema OAuth');
                     }
-                }, 1000);
-                
-            } else if (failures >= 2) {
-                // Para Safari, só depois de 2+ tentativas
-                this.detectiOSAuthProblems();
-            }
+                    this.detectiOSAuthProblems();
+                }
+            }, 3000); // Aguarda 3 segundos para verificar se realmente falhou
         },
         
         /**
