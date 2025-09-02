@@ -499,6 +499,31 @@
         
 
         
+    <!-- LOG VISUAL PARA iOS -->
+    <div id="ios-logs" style="display: none; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 0.8em; max-height: 200px; overflow-y: auto;">
+        <div style="font-weight: bold; margin-bottom: 5px;">📱 Logs iOS:</div>
+        <div id="ios-logs-content"></div>
+    </div>
+    
+    <!-- ALERTA ESPECÍFICO PARA PROBLEMAS DO iOS SAFARI -->
+    <div id="ios-warning" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin: 10px 0; color: #856404;">
+        <div style="font-weight: bold; margin-bottom: 8px;">⚠️ Problema detectado no Safari iOS</div>
+        <div style="font-size: 0.9em; margin-bottom: 10px;">
+            O Safari iOS tem limitações conhecidas com Firebase Auth. Se o login não funcionar:
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button onclick="window.open('googlechrome://fernandesvb.github.io/workoutPlan/', '_blank')" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
+                🌐 Abrir no Chrome
+            </button>
+            <button onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
+                💾 Usar Offline
+            </button>
+            <button onclick="document.getElementById('ios-warning').style.display='none'" style="background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
+                ✖️ Fechar
+            </button>
+        </div>
+    </div>
+    
     <div class="info-box">
         <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
         <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
@@ -1658,6 +1683,7 @@
          */
         async checkRedirectResult() {
             console.log('🔍 Verificando redirect result...');
+            this.addVisualLog('🔍 Verificando redirect result...');
             
             try {
                 // Verifica se houve uma tentativa de auth recente
@@ -1665,17 +1691,24 @@
                 if (authAttempt) {
                     const attempt = JSON.parse(authAttempt);
                     console.log('📱 Tentativa de auth anterior encontrada:', attempt);
+                    this.addVisualLog('📱 Tentativa de auth encontrada: ' + new Date(attempt.timestamp).toLocaleTimeString());
                     localStorage.removeItem('auth_attempt');
                 }
                 
+                // Aguarda um pouco para Firebase se estabilizar
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
                 const result = await FirebaseConfig.auth.getRedirectResult();
-                console.log('🔍 Resultado do redirect:', result);
+                console.log('🔍 Resultado completo do redirect:', result);
+                this.addVisualLog('🔍 Resultado redirect: ' + (result ? 'existe' : 'null'));
                 
                 if (result && result.user) {
                     console.log('✅ Login por redirect realizado com sucesso!');
                     console.log('👤 Usuário:', result.user.displayName || result.user.email);
                     console.log('🔑 Provider:', result.additionalUserInfo?.providerId);
                     console.log('📊 Primeiro login?', result.additionalUserInfo?.isNewUser);
+                    
+                    this.addVisualLog('✅ LOGIN SUCESSO: ' + (result.user.displayName || result.user.email));
                     
                     // Migra dados locais para a conta do usuário
                     await this.migrateLocalData();
@@ -1688,9 +1721,27 @@
                     
                 } else if (result && result.credential === null && result.user === null) {
                     console.log('ℹ️ Redirect cancelado pelo usuário');
+                    this.addVisualLog('❌ Redirect cancelado pelo usuário');
                     FirebaseConfig.updateStatus('error', '❌ Login cancelado');
                 } else {
                     console.log('ℹ️ Nenhum redirect result (primeira visita ou sem tentativa)');
+                    this.addVisualLog('ℹ️ Sem resultado de redirect');
+                    
+                    // NOVO: Verifica se pode estar logado mesmo sem redirect result
+                    const currentUser = FirebaseConfig.auth.currentUser;
+                    if (currentUser) {
+                        console.log('🔍 Usuário já logado encontrado:', currentUser);
+                        this.addVisualLog('🔍 Usuário já estava logado: ' + currentUser.email);
+                    } else {
+                        console.log('❌ Nenhum usuário logado encontrado');
+                        this.addVisualLog('❌ Nenhum usuário logado');
+                        
+                        // Se houve tentativa de auth e não funcionou, registra falha (iOS)
+                        const authAttempt = localStorage.getItem('auth_attempt');
+                        if (authAttempt) {
+                            this.recordiOSAuthFailure();
+                        }
+                    }
                 }
                 
             } catch (error) {
@@ -1698,23 +1749,43 @@
                 console.error('❌ Código de erro:', error.code);
                 console.error('❌ Mensagem:', error.message);
                 
+                this.addVisualLog('❌ ERRO redirect: ' + error.code + ' - ' + error.message);
+                
                 // Remove indicador de loading se houver erro
                 this.showAuthLoading(false);
                 
                 if (error.code === 'auth/unauthorized-domain') {
+                    this.addVisualLog('🚫 PROBLEMA: Domínio não autorizado!');
                     alert('🚫 DOMÍNIO NÃO AUTORIZADO!\n\n' +
-                          'Solução:\n' +
-                          '1. Vá para Google Cloud Console\n' +
+                          '❌ PROBLEMA ENCONTRADO!\n\n' +
+                          'O Safari iOS não consegue autenticar porque o domínio não está autorizado.\n\n' +
+                          'SOLUÇÃO:\n' +
+                          '1. Google Cloud Console\n' +
                           '2. OAuth 2.0 Client IDs\n' +
                           '3. Adicione "fernandesvb.github.io"\n' +
-                          '4. Salve as alterações');
+                          '4. Salve as alterações\n\n' +
+                          '⚠️ Este é um problema comum do Safari iOS!');
                 } else if (error.code === 'auth/popup-blocked') {
                     alert('🚫 Acesso bloqueado!\n\nPermita popups ou recarregue a página.');
                 } else if (error.code === 'auth/network-request-failed') {
                     alert('🌐 Erro de rede!\n\nVerifique sua conexão com a internet.');
                 } else {
                     console.error('❌ Erro não tratado:', error.code, error.message);
-                    alert('❌ Erro no login: ' + (error.message || 'Erro desconhecido'));
+                    
+                    // Mostra diagnóstico específico para iOS
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    if (isIOS) {
+                        alert('📱 PROBLEMA NO iOS SAFARI!\n\n' +
+                              'Erro: ' + error.code + '\n' +
+                              'Mensagem: ' + error.message + '\n\n' +
+                              '💡 SOLUÇÕES ALTERNATIVAS:\n' +
+                              '1. Use Chrome no iOS (se disponível)\n' +
+                              '2. Use o app pelo computador\n' +
+                              '3. Ou use apenas modo local (sem login)\n\n' +
+                              '⚠️ Safari iOS tem limitações conhecidas com Firebase Auth!');
+                    } else {
+                        alert('❌ Erro no login: ' + (error.message || 'Erro desconhecido'));
+                    }
                 }
             }
         },
@@ -1922,6 +1993,97 @@
             };
             
             authSection.appendChild(showLogsBtn);
+            
+            // Adiciona botão de modo offline para iOS se Firebase falhar
+            const offlineModeBtn = document.createElement('button');
+            offlineModeBtn.innerHTML = '💾 Modo Offline';
+            offlineModeBtn.style.cssText = `
+                background: #6f42c1; 
+                color: white; 
+                border: none; 
+                padding: 6px 12px; 
+                border-radius: 6px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                margin: 5px;
+            `;
+            
+            offlineModeBtn.onclick = () => {
+                this.enableOfflineMode();
+            };
+            
+            authSection.appendChild(offlineModeBtn);
+        },
+        
+        /**
+         * Ativa modo offline completo (para casos onde Firebase não funciona)
+         */
+        enableOfflineMode() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            const message = isIOS ? 
+                '💾 MODO OFFLINE ATIVADO!\n\n' +
+                '✅ Seus dados serão salvos apenas no dispositivo\n' +
+                '✅ Não precisa de login Google\n' +
+                '✅ Funciona 100% no Safari iOS\n\n' +
+                '⚠️ Limitações:\n' +
+                '• Sem sincronização entre dispositivos\n' +
+                '• Dados podem ser perdidos se limpar navegador\n\n' +
+                '💡 Para sincronizar:\n' +
+                '• Use o botão "Exportar" regularmente\n' +
+                '• Ou acesse pelo computador' :
+                '💾 Modo offline ativado para este dispositivo.';
+                
+            alert(message);
+            
+            // Desabilita Firebase temporariamente
+            FirebaseConfig.isConnected = false;
+            FirebaseConfig.updateStatus('offline', '💾 Modo Offline - Dados salvos localmente');
+            
+            // Força UI para modo offline
+            this.updateUI(null);
+            this.addVisualLog('💾 Modo offline ativado pelo usuário');
+        },
+        
+        /**
+         * Detecta problemas do iOS Safari e mostra alerta automático
+         */
+        detectiOSAuthProblems() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (!isIOS) return;
+            
+            // Verifica se houve tentativas falhas de auth
+            const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
+            const attempts = parseInt(failedAttempts);
+            
+            // Se houve 2+ tentativas falhas, mostra o alerta
+            if (attempts >= 2) {
+                setTimeout(() => {
+                    const warning = document.getElementById('ios-warning');
+                    if (warning) {
+                        warning.style.display = 'block';
+                        this.addVisualLog('⚠️ Alerta de problemas iOS exibido');
+                    }
+                }, 3000);
+            }
+        },
+        
+        /**
+         * Registra falha de autenticação no iOS
+         */
+        recordiOSAuthFailure() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (!isIOS) return;
+            
+            const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
+            localStorage.setItem('ios_auth_failures', failures.toString());
+            
+            this.addVisualLog(`❌ Falha de auth #${failures} registrada`);
+            
+            // Se já falhou 2+ vezes, sugere alternativas
+            if (failures >= 2) {
+                this.detectiOSAuthProblems();
+            }
         },
         
         /**
@@ -2247,11 +2409,11 @@
                 console.log('   • Certifique-se que não há conflitos de sessão');
                 console.log('   • Verifique se o Safari permite redirects');
                 
-                // 7. FORÇA exibição dos controles iOS e diagnóstico
+                // 7. FORÇA exibição dos controles iOS e detecta problemas
                 setTimeout(() => {
                     AuthManager.forceIOSAuthDisplay();
-                    AuthManager.diagnoseiOSIssues();
-                }, 500);
+                    AuthManager.detectiOSAuthProblems();
+                }, 2000);
             }
             
         } catch (error) {
