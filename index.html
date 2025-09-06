@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +10,7 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Aplicativo de controle de treino personalizado com cronômetro integrado e sincronização na nuvem">
 
-<title>Meu Treino - 30min</title>
+    <title>Meu Treino - 30min</title>
     
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -39,6 +38,7 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        overflow-x: hidden;
     }
     
     .container {
@@ -46,308 +46,38 @@
         margin: 0 auto;
         background: white;
         min-height: 100vh;
-        padding: 20px;
+        padding: 15px;
     }
     
     h1 {
         color: #333;
         text-align: center;
-        margin-bottom: 10px;
-        font-size: 1.5em;
+        margin-bottom: 8px;
+        font-size: clamp(1.2em, 4vw, 1.5em);
     }
     
     .subtitle {
         text-align: center;
         color: #666;
-        margin-bottom: 20px;
-        font-size: 0.9em;
+        margin-bottom: 15px;
+        font-size: clamp(0.8em, 3vw, 0.9em);
     }
     
     .info-box {
         background: #fff3cd;
         border-left: 4px solid #ffc107;
-        padding: 12px;
+        padding: 10px;
         margin-bottom: 15px;
         border-radius: 8px;
     }
     
     .info-box p {
         color: #856404;
-        font-size: 0.85em;
-        margin: 5px 0;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        margin: 3px 0;
     }
     
-    .timer-section {
-        background: #f0f4ff;
-        border-radius: 12px;
-        padding: 15px;
-        margin: 20px 0;
-        text-align: center;
-    }
-    
-    .timer-display {
-        font-size: 2.5em;
-        font-weight: bold;
-        color: #667eea;
-        margin: 10px 0;
-        font-family: monospace;
-    }
-    
-    .timer-buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 15px;
-    }
-    
-    .timer-btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-    
-    .btn-start {
-        background: #48bb78;
-        color: white;
-    }
-    
-    .btn-stop {
-        background: #f56565;
-        color: white;
-    }
-    
-    .btn-reset {
-        background: #718096;
-        color: white;
-    }
-    
-    .quick-timer {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-        margin-top: 10px;
-        flex-wrap: wrap;
-    }
-    
-    .quick-btn {
-        padding: 5px 10px;
-        background: #e2e8f0;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-    }
-    
-    .quick-btn:active {
-        background: #cbd5e0;
-    }
-    
-    .tabs {
-        display: flex;
-        gap: 3px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #e0e0e0;
-    }
-    
-    .tab {
-        padding: 10px 12px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 13px;
-        color: #666;
-        transition: all 0.3s;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        text-align: center;
-        flex: 1;
-    }
-    
-    .tab small {
-        display: block;
-        font-size: 11px;
-        color: #999;
-        margin-top: 2px;
-    }
-    
-    .tab.active {
-        color: #667eea;
-        border-bottom-color: #667eea;
-        font-weight: bold;
-    }
-    
-    .tab.active small {
-        color: #667eea;
-    }
-    
-    .day-section {
-        display: none;
-    }
-    
-    .day-section.active {
-        display: block;
-        animation: fadeIn 0.3s;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .section-title {
-        font-weight: bold;
-        color: #667eea;
-        margin: 20px 0 10px 0;
-        font-size: 1em;
-        padding: 5px 0;
-        border-bottom: 2px solid #f0f0f0;
-    }
-    
-    .exercise-card {
-        background: #f8f9fa;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-left: 4px solid #667eea;
-    }
-    
-    .exercise-card.core {
-        border-left-color: #48bb78;
-        background: #f0fff4;
-    }
-    
-    .exercise-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .exercise-name {
-        font-weight: bold;
-        color: #333;
-        font-size: 1em;
-        flex: 1;
-    }
-    
-    .series-info {
-        background: #667eea;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85em;
-    }
-    
-    .core .series-info {
-        background: #48bb78;
-    }
-    
-    .weight-tracking {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-        gap: 8px;
-    }
-    
-    .week-input {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-    
-    .week-label {
-        font-size: 0.75em;
-        color: #666;
-        text-align: center;
-    }
-    
-    input[type="number"], input[type="text"] {
-        padding: 10px 5px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 16px;
-        text-align: center;
-        width: 100%;
-        -webkit-appearance: none;
-        appearance: none;
-    }
-    
-    input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .notes-section {
-        margin-top: 20px;
-        padding: 15px;
-        background: #f0f4ff;
-        border-radius: 12px;
-    }
-    
-    .notes-title {
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 10px;
-    }
-    
-    textarea {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-family: inherit;
-        font-size: 14px;
-        resize: vertical;
-        min-height: 80px;
-    }
-    
-    textarea:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    
-    button {
-        padding: 14px 20px;
-        border: none;
-        border-radius: 12px;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 600;
-        flex: 1;
-    }
-    
-    .btn-save {
-        background: #667eea;
-        color: white;
-    }
-    
-    .btn-export {
-        background: #48bb78;
-        color: white;
-    }
-    
-    .btn-clear {
-        background: #f56565;
-        color: white;
-    }
-    
-    /* ==========================================================================
-       FIREBASE STATUS BAR
-       ========================================================================== */
-    
+    /* FIREBASE STATUS - OTIMIZADO PARA MOBILE */
     .firebase-status {
         background: #e3f2fd;
         border: 1px solid #2196f3;
@@ -355,7 +85,7 @@
         padding: 8px 12px;
         margin-bottom: 15px;
         text-align: center;
-        font-size: 0.85em;
+        font-size: clamp(0.75em, 3vw, 0.85em);
         color: #1565c0;
         transition: all 0.3s ease;
     }
@@ -378,15 +108,12 @@
         color: #e65100;
     }
     
-    /* ==========================================================================
-       SEÇÃO DE AUTENTICAÇÃO
-       ========================================================================== */
-    
+    /* SEÇÃO DE AUTENTICAÇÃO - RESPONSIVA */
     .auth-section {
         background: #f8f9fa;
         border: 1px solid #e9ecef;
         border-radius: 8px;
-        padding: 12px;
+        padding: 10px;
         margin-bottom: 15px;
         text-align: center;
     }
@@ -396,28 +123,37 @@
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
+        margin-bottom: 10px;
     }
     
     #user-info {
-        font-size: 0.9em;
+        font-size: clamp(0.8em, 3.5vw, 0.9em);
         color: #495057;
         font-weight: 500;
+        flex: 1;
+        min-width: 120px;
     }
     
     .auth-buttons {
         display: flex;
-        gap: 8px;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
     }
     
     .auth-btn {
-        padding: 6px 12px;
+        padding: 6px 10px;
         border: none;
         border-radius: 6px;
-        font-size: 0.8em;
+        font-size: clamp(0.7em, 2.5vw, 0.8em);
         cursor: pointer;
         font-weight: 500;
         transition: all 0.3s ease;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
     }
     
     .auth-btn.login {
@@ -425,40 +161,466 @@
         color: white;
     }
     
-    .auth-btn.login:hover {
-        background: #3367d6;
-        transform: translateY(-1px);
-    }
-    
     .auth-btn.logout {
         background: #6c757d;
         color: white;
     }
     
-    .auth-btn.logout:hover {
-        background: #5a6268;
-        transform: translateY(-1px);
-    }
-    
     .auth-btn.clear {
         background: #fd7e14;
         color: white;
-        font-size: 0.75em;
     }
     
-    .auth-btn.clear:hover {
-        background: #e8630e;
-        transform: translateY(-1px);
+    .auth-btn:active {
+        transform: scale(0.95);
     }
     
-    @media (max-width: 768px) {
-        .auth-info {
-            flex-direction: column;
-            text-align: center;
+    #ios-tip {
+        font-size: clamp(0.7em, 2.8vw, 0.8em);
+        color: #666;
+        margin-top: 8px;
+        text-align: center;
+        padding: 6px;
+        background: #e8f4fd;
+        border-radius: 6px;
+    }
+    
+    /* LOGS VISUAIS - MÓVEL FRIENDLY */
+    #ios-logs {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 8px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: clamp(0.65em, 2.5vw, 0.75em);
+        max-height: 150px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #ios-warning {
+        background: #f8d7da;
+        border: 1px solid #dc3545;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px 0;
+        color: #721c24;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+    }
+    
+    .warning-buttons {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    
+    .warning-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: clamp(0.7em, 2.5vw, 0.75em);
+        cursor: pointer;
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    /* CRONÔMETRO - RESPONSIVO */
+    .timer-section {
+        background: #f0f4ff;
+        border-radius: 12px;
+        padding: 12px;
+        margin: 15px 0;
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: clamp(2em, 8vw, 2.5em);
+        font-weight: bold;
+        color: #667eea;
+        margin: 8px 0;
+        font-family: monospace;
+    }
+    
+    .timer-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .timer-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 80px;
+        max-width: 120px;
+    }
+    
+    .btn-start {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-stop {
+        background: #f56565;
+        color: white;
+    }
+    
+    .btn-reset {
+        background: #718096;
+        color: white;
+    }
+    
+    .quick-timer {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+        padding: 4px 8px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 6px;
+        font-size: clamp(0.7em, 2.8vw, 0.75em);
+        cursor: pointer;
+        min-width: 40px;
+    }
+    
+    .quick-btn:active {
+        background: #cbd5e0;
+    }
+    
+    /* TABS - OTIMIZADAS PARA MÓVEL */
+    .tabs {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #e0e0e0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab {
+        padding: 8px 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        color: #666;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        text-align: center;
+        flex: 1;
+        min-width: 100px;
+        white-space: nowrap;
+    }
+    
+    .tab small {
+        display: block;
+        font-size: clamp(0.65em, 2.5vw, 0.7em);
+        color: #999;
+        margin-top: 2px;
+    }
+    
+    .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        font-weight: bold;
+    }
+    
+    .tab.active small {
+        color: #667eea;
+    }
+    
+    /* SEÇÕES DE DIA */
+    .day-section {
+        display: none;
+    }
+    
+    .day-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+        font-weight: bold;
+        color: #667eea;
+        margin: 15px 0 10px 0;
+        font-size: clamp(0.9em, 4vw, 1em);
+        padding: 5px 0;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    /* CARTÕES DE EXERCÍCIO - RESPONSIVOS */
+    .exercise-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .exercise-card.core {
+        border-left-color: #48bb78;
+        background: #f0fff4;
+    }
+    
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .exercise-name {
+        font-weight: bold;
+        color: #333;
+        font-size: clamp(0.85em, 3.5vw, 0.95em);
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .series-info {
+        background: #667eea;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: clamp(0.75em, 3vw, 0.8em);
+        white-space: nowrap;
+    }
+    
+    .core .series-info {
+        background: #48bb78;
+    }
+    
+    /* GRID DE PESOS - RESPONSIVO */
+    .weight-tracking {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+        gap: 6px;
+    }
+    
+    .week-input {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .week-label {
+        font-size: clamp(0.65em, 2.5vw, 0.7em);
+        color: #666;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    /* INPUTS - OTIMIZADOS PARA MÓVEL */
+    input[type="number"], input[type="text"] {
+        padding: 8px 4px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: clamp(14px, 4vw, 16px);
+        text-align: center;
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        background: white;
+        min-height: 36px;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* NOTAS - RESPONSIVA */
+    .notes-section {
+        margin-top: 15px;
+        padding: 12px;
+        background: #f0f4ff;
+        border-radius: 12px;
+    }
+    
+    .notes-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: clamp(0.85em, 3.5vw, 0.9em);
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: clamp(13px, 3.5vw, 14px);
+        resize: vertical;
+        min-height: 70px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: white;
+    }
+    
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* BOTÕES DE AÇÃO - RESPONSIVOS */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    button {
+        padding: 12px 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: clamp(0.8em, 3.5vw, 0.85em);
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+        min-width: 100px;
+        min-height: 44px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    button:active {
+        transform: scale(0.98);
+    }
+    
+    .btn-save {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-export {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-clear {
+        background: #f56565;
+        color: white;
+    }
+    
+    /* MELHORIAS PARA iOS */
+    @supports (-webkit-appearance: none) {
+        input[type="number"], input[type="text"], textarea {
+            -webkit-appearance: none;
+            border-radius: 8px;
+        }
+        
+        button {
+            -webkit-appearance: none;
+        }
+    }
+    
+    /* LANDSCAPE MODE */
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+        .container {
+            padding: 10px;
+        }
+        
+        h1 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .timer-display {
+            font-size: 1.8em;
+            margin: 5px 0;
+        }
+        
+        .exercise-card {
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+    }
+    
+    /* MELHORIAS ESPECÍFICAS PARA TELAS PEQUENAS */
+    @media (max-width: 360px) {
+        .container {
+            padding: 10px;
+        }
+        
+        .weight-tracking {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
         
         .auth-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .auth-btn {
+            width: 100%;
             justify-content: center;
+        }
+        
+        .timer-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .timer-btn {
+            max-width: none;
+        }
+    }
+    
+    /* DARK MODE SUPPORT */
+    @media (prefers-color-scheme: dark) {
+        .container {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .exercise-card {
+            background: #2d2d2d;
+        }
+        
+        .exercise-card.core {
+            background: #1e3a1e;
+        }
+        
+        input, textarea {
+            background: #2d2d2d;
+            color: #e0e0e0;
+            border-color: #404040;
+        }
+        
+        .section-title {
+            color: #8ab4f8;
+        }
+        
+        .exercise-name {
+            color: #e0e0e0;
         }
     }
 </style>
@@ -481,576 +643,559 @@
                 <span id="user-info">👤 Visitante</span>
                 <div class="auth-buttons">
                     <button id="login-btn" class="auth-btn login" onclick="AuthManager.signInWithGoogle()" style="display: none;">
-                        🔐 Entrar com Google
+                        🔐 Login Google
                     </button>
                     <button id="logout-btn" class="auth-btn logout" onclick="AuthManager.signOut()" style="display: none;">
                         🚪 Sair
                     </button>
                     <button id="clear-session-btn" class="auth-btn clear" onclick="AuthManager.clearSession()" style="display: none;">
-                        🧹 Limpar Sessão
+                        🧹 Limpar
                     </button>
-                    <button id="test-oauth-btn" class="auth-btn" onclick="AuthManager.testOAuthConfiguration()" style="background: #dc3545; color: white; display: inline-block; margin: 2px;">
-                        🔧 Testar OAuth
-                    </button>
-                    <button id="offline-mode-btn" class="auth-btn" onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; display: inline-block; margin: 2px;">
-                        💾 Modo Offline
-                    </button>
-                    <button id="ios-diagnostic-btn" class="auth-btn" onclick="AuthManager.detectiOSAuthProblems()" style="background: #17a2b8; color: white; display: inline-block; margin: 2px;">
-                        🩺 Diagnóstico iOS
-                    </button>
-                    <button id="show-logs-btn" class="auth-btn" onclick="AuthManager.toggleVisualLogs()" style="background: #28a745; color: white; display: inline-block; margin: 2px;">
-                        📋 Ver Logs
+                    <button id="offline-mode-btn" class="auth-btn" onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; display: inline-block;">
+                        💾 Offline
                     </button>
                 </div>
             </div>
+            
             <!-- Dica específica para iOS -->
-            <div id="ios-tip" style="display: none; font-size: 0.8em; color: #666; margin-top: 8px; text-align: center;">
-                🍎 <strong>iPhone/iPad:</strong> Se o login falhar, use "Limpar Sessão" primeiro
+            <div id="ios-tip" style="display: none;">
+                🍎 <strong>iPhone/iPad:</strong> Se o login falhar, use "Limpar" primeiro
             </div>
         </div>
         
-
+        <!-- LOG VISUAL PARA iOS -->
+        <div id="ios-logs" style="display: none;">
+            <div style="font-weight: bold; margin-bottom: 5px;">📱 Logs iOS:</div>
+            <div id="ios-logs-content"></div>
+        </div>
         
-    <!-- LOG VISUAL PARA iOS -->
-    <div id="ios-logs" style="display: none; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 0.8em; max-height: 200px; overflow-y: auto;">
-        <div style="font-weight: bold; margin-bottom: 5px;">📱 Logs iOS:</div>
-        <div id="ios-logs-content"></div>
-    </div>
-    
-    <!-- ALERTA ESPECÍFICO PARA PROBLEMAS DO iOS -->
-    <div id="ios-warning" style="display: none; background: #f8d7da; border: 1px solid #dc3545; border-radius: 8px; padding: 12px; margin: 10px 0; color: #721c24;">
-        <div style="font-weight: bold; margin-bottom: 8px;">🚨 Problema de Autenticação Detectado</div>
-        <div style="font-size: 0.9em; margin-bottom: 10px;">
-            <strong>Falha no login Google (inclusive Chrome iOS)</strong><br/>
-            Isso indica problema de configuração OAuth no Google Cloud Console, não limitação do navegador.
+        <!-- ALERTA PARA PROBLEMAS OAUTH -->
+        <div id="ios-warning" style="display: none;">
+            <div style="font-weight: bold; margin-bottom: 8px;">🚨 Problema OAuth Detectado</div>
+            <div style="margin-bottom: 8px;">
+                Falha no login Google. Problema de configuração OAuth no Google Cloud Console.
+            </div>
+            <div class="warning-buttons">
+                <button class="warning-btn" onclick="AuthManager.enableOfflineMode()">
+                    💾 Usar Offline
+                </button>
+                <button class="warning-btn" style="background: #6c757d;" onclick="document.getElementById('ios-warning').style.display='none'">
+                    ✖️ Fechar
+                </button>
+            </div>
         </div>
-        <div style="background: #fff; border: 1px solid #dc3545; border-radius: 4px; padding: 8px; margin: 8px 0; font-size: 0.85em;">
-            <strong>🎯 Causa Provável:</strong> Domínio "fernandesvb.github.io" não autorizado nas configurações OAuth
+        
+        <div class="info-box">
+            <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
+            <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
-            <button onclick="AuthManager.testOAuthConfiguration()" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
-                🔧 Verificar OAuth
-            </button>
-            <button onclick="AuthManager.enableOfflineMode()" style="background: #6f42c1; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
-                💾 Usar Offline
-            </button>
-            <button onclick="document.getElementById('ios-warning').style.display='none'" style="background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; cursor: pointer;">
-                ✖️ Fechar
-            </button>
+        
+        <!-- CRONÔMETRO -->
+        <div class="timer-section">
+            <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</div>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div class="timer-buttons">
+                <button class="timer-btn btn-start" onclick="startTimer()">▶️ Start</button>
+                <button class="timer-btn btn-stop" onclick="stopTimer()">⏸️ Pause</button>
+                <button class="timer-btn btn-reset" onclick="resetTimer()">🔄 Reset</button>
+            </div>
+            <div class="quick-timer">
+                <button class="quick-btn" onclick="setTimer(30)">30s</button>
+                <button class="quick-btn" onclick="setTimer(45)">45s</button>
+                <button class="quick-btn" onclick="setTimer(60)">1min</button>
+                <button class="quick-btn" onclick="setTimer(90)">1:30</button>
+                <button class="quick-btn" onclick="setTimer(120)">2min</button>
+            </div>
         </div>
-    </div>
-    
-    <div class="info-box">
-        <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
-        <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
-    </div>
-    
-    <!-- CRONÔMETRO -->
-    <div class="timer-section">
-        <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</div>
-        <div class="timer-display" id="timerDisplay">00:00</div>
-        <div class="timer-buttons">
-            <button class="timer-btn btn-start" onclick="startTimer()">▶️ Iniciar</button>
-            <button class="timer-btn btn-stop" onclick="stopTimer()">⏸️ Pausar</button>
-            <button class="timer-btn btn-reset" onclick="resetTimer()">🔄 Zerar</button>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showDay(1)">Dia 1<br><small>Peito/Tri</small></button>
+            <button class="tab" onclick="showDay(2)">Dia 2<br><small>Costas/Bi</small></button>
+            <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
         </div>
-        <div class="quick-timer">
-            <button class="quick-btn" onclick="setTimer(30)">30s</button>
-            <button class="quick-btn" onclick="setTimer(45)">45s</button>
-            <button class="quick-btn" onclick="setTimer(60)">1min</button>
-            <button class="quick-btn" onclick="setTimer(90)">1:30</button>
-            <button class="quick-btn" onclick="setTimer(120)">2min</button>
-        </div>
-    </div>
-    
-    <div class="tabs">
-        <button class="tab active" onclick="showDay(1)">Dia 1<br><small>Peito/Tri</small></button>
-        <button class="tab" onclick="showDay(2)">Dia 2<br><small>Costas/Bi</small></button>
-        <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
-    </div>
-    
-    <!-- DIA 1 -->
+        
+        <!-- DIA 1 -->
         <section id="day1" class="day-section active" role="tabpanel" aria-labelledby="day1-title">
             <h2 id="day1-title" class="section-title">PEITO E TRÍCEPS</h2>
         
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Supino Máquina Smith</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="1">
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Supino Máquina Smith</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Crucifixo Halteres</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Tríceps Polia</span>
-                <span class="series-info">3x15</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Crucifixo Halteres</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Tríceps Testa</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="section-title">🎯 CORE</div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Prancha Frontal</span>
-                <span class="series-info">3x30-45s</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Tríceps Polia</span>
+                    <span class="series-info">3x15</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Superman (Lombar)</span>
-                <span class="series-info">3x15</span>
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Tríceps Testa</span>
+                    <span class="series-info">3x12</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="4">
+                    </div>
+                </div>
             </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" placeholder="reps" data-exercise="superman" data-week="1">
+            
+            <div class="section-title">🎯 CORE</div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Prancha Frontal</span>
+                    <span class="series-info">3x30-45s</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" placeholder="reps" data-exercise="superman" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" placeholder="reps" data-exercise="superman" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" placeholder="reps" data-exercise="superman" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha1" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha1" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha1" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha1" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Superman (Lombar)</span>
+                    <span class="series-info">3x15</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" placeholder="reps" data-exercise="superman" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" placeholder="reps" data-exercise="superman" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" placeholder="reps" data-exercise="superman" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" placeholder="reps" data-exercise="superman" data-week="4">
+                    </div>
+                </div>
+            </div>
         </section>
     
-    <!-- DIA 2 -->
+        <!-- DIA 2 -->
         <section id="day2" class="day-section" role="tabpanel" aria-labelledby="day2-title">
             <h2 id="day2-title" class="section-title">COSTAS E BÍCEPS</h2>
         
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Remada Máquina</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="1">
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Remada Máquina</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Puxada Frontal</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Rosca Direta</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Puxada Frontal</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Rosca Martelo</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="section-title">🎯 CORE</div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Prancha Lateral</span>
-                <span class="series-info">3x20-30s cada</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Rosca Direta</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Ponte (Glúteo/Lombar)</span>
-                <span class="series-info">3x15</span>
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Rosca Martelo</span>
+                    <span class="series-info">3x12</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="4">
+                    </div>
+                </div>
             </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="1">
+            
+            <div class="section-title">🎯 CORE</div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Prancha Lateral</span>
+                    <span class="series-info">3x20-30s cada</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Ponte (Glúteo/Lombar)</span>
+                    <span class="series-info">3x15</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" placeholder="reps" data-exercise="ponte" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" placeholder="reps" data-exercise="ponte" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" placeholder="reps" data-exercise="ponte" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" placeholder="reps" data-exercise="ponte" data-week="4">
+                    </div>
+                </div>
+            </div>
         </section>
     
-    <!-- DIA 3 -->
+        <!-- DIA 3 -->
         <section id="day3" class="day-section" role="tabpanel" aria-labelledby="day3-title">
             <h2 id="day3-title" class="section-title">PERNAS</h2>
         
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Leg Press</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="1">
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Leg Press</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Cadeira Extensora</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Cadeira Flexora</span>
-                <span class="series-info">3x12</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Cadeira Extensora</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="4">
-                </div>
-            </div>
-        </div>
-        
-        <div class="exercise-card">
-            <div class="exercise-header">
-                <span class="exercise-name">Panturrilha</span>
-                <span class="series-info">3x20</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="1">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="section-title">🎯 CORE</div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Abdominal Bicicleta</span>
-                <span class="series-info">3x20 (10 cada)</span>
-            </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="1">
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Cadeira Flexora</span>
+                    <span class="series-info">3x12</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="exercise-card core">
-            <div class="exercise-header">
-                <span class="exercise-name">Gato-Vaca (Mobilidade)</span>
-                <span class="series-info">3x10 lento</span>
+            
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-name">Panturrilha</span>
+                    <span class="series-info">3x20</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="4">
+                    </div>
+                </div>
             </div>
-            <div class="weight-tracking">
-                <div class="week-input">
-                    <label class="week-label">Sem 1</label>
-                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="1">
+            
+            <div class="section-title">🎯 CORE</div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Abdominal Bicicleta</span>
+                    <span class="series-info">3x20 (10 cada)</span>
                 </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 2</label>
-                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="2">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 3</label>
-                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="3">
-                </div>
-                <div class="week-input">
-                    <label class="week-label">Sem 4</label>
-                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="4">
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="4">
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="exercise-card core">
+                <div class="exercise-header">
+                    <span class="exercise-name">Gato-Vaca (Mobilidade)</span>
+                    <span class="series-info">3x10 lento</span>
+                </div>
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="4">
+                    </div>
+                </div>
+            </div>
         </section>
     
-    <div class="notes-section">
-        <div class="notes-title">📝 Observações</div>
-        <textarea id="notes" placeholder="Como se sentiu, dores, progressos..."></textarea>
+        <div class="notes-section">
+            <div class="notes-title">📝 Observações</div>
+            <textarea id="notes" placeholder="Como se sentiu, dores, progressos..."></textarea>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn-save" onclick="saveData()">💾 Salvar</button>
+            <button class="btn-export" onclick="exportData()">📥 Exportar</button>
+            <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
+        </div>
     </div>
-    
-    <div class="action-buttons">
-        <button class="btn-save" onclick="saveData()">💾 Salvar</button>
-        <button class="btn-export" onclick="exportData()">📥 Exportar</button>
-        <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
-    </div>
-</div>
 
 <script>
     // CRONÔMETRO
@@ -1064,12 +1209,10 @@
         const display = document.getElementById('timerDisplay');
         display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         
-        // Muda cor se for contagem regressiva
         if (isCountdown) {
             if (timerSeconds <= 0) {
                 display.style.color = '#f56565';
                 if (timerSeconds === 0) {
-                    // Vibra no celular se possível
                     if (navigator.vibrate) navigator.vibrate(500);
                     stopTimer();
                 }
@@ -1091,7 +1234,6 @@
                     if (timerSeconds <= 0) {
                         updateTimerDisplay();
                         if (timerSeconds < 0) {
-                            // Continua contando depois do zero
                             isCountdown = false;
                             timerSeconds = 0;
                         }
@@ -1126,9 +1268,7 @@
         startTimer();
     }
     
-    // Função simples para trocar de aba
     function showDay(day) {
-        // Remove active de tudo
         document.querySelectorAll('.tab').forEach(tab => {
             tab.classList.remove('active');
         });
@@ -1136,16 +1276,651 @@
             section.classList.remove('active');
         });
         
-        // Adiciona active no dia selecionado
         document.querySelectorAll('.tab')[day-1].classList.add('active');
         document.getElementById('day' + day).classList.add('active');
     }
     
-    // Salvar dados
+    // =====================================================================
+    // FIREBASE E CONFIGURAÇÃO OTIMIZADA PARA iOS
+    // =====================================================================
+    
+    const FirebaseConfig = {
+        config: {
+            apiKey: "AIzaSyBLZwcbCRqahZj1SXP7Zr9tlqhsoTYg7qg",
+            authDomain: "meu-treino-app-668e5.firebaseapp.com",
+            projectId: "meu-treino-app-668e5",
+            storageBucket: "meu-treino-app-668e5.firebasestorage.app",
+            messagingSenderId: "441652448957",
+            appId: "1:441652448957:web:e72cc230975f229faeb1d4"
+        },
+        
+        isInitialized: false,
+        isConnected: false,
+        retryCount: 0,
+        maxRetries: 3,
+        
+        async init() {
+            try {
+                if (typeof firebase === 'undefined') {
+                    console.log('Firebase não carregado, usando localStorage');
+                    this.updateStatus('offline', '💾 Modo Local');
+                    return false;
+                }
+                
+                if (this.config.apiKey === "CONFIGURE_SUA_API_KEY" || !this.config.apiKey) {
+                    console.log('Configure o Firebase em FirebaseConfig.config');
+                    this.updateStatus('offline', '⚙️ Firebase não configurado');
+                    return false;
+                }
+                
+                // Inicialização com timeout
+                const initPromise = new Promise((resolve, reject) => {
+                    try {
+                        firebase.initializeApp(this.config);
+                        this.db = firebase.firestore();
+                        this.auth = firebase.auth();
+                        
+                        // Configurações específicas para iOS
+                        this.auth.settings.appVerificationDisabledForTesting = false;
+                        
+                        resolve(true);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+                
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout na inicialização')), 10000);
+                });
+                
+                await Promise.race([initPromise, timeoutPromise]);
+                
+                this.isInitialized = true;
+                this.updateStatus('connected', '☁️ Firebase Conectado');
+                
+                console.log('Firebase inicializado com sucesso');
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao inicializar Firebase:', error);
+                this.updateStatus('error', '❌ Erro de conexão - modo local');
+                return false;
+            }
+        },
+        
+        updateStatus(status, message) {
+            const statusElement = document.getElementById('firebase-status');
+            const iconElement = document.getElementById('status-icon');
+            const textElement = document.getElementById('status-text');
+            
+            if (!statusElement) return;
+            
+            statusElement.className = 'firebase-status';
+            
+            switch (status) {
+                case 'connected':
+                    statusElement.classList.add('connected');
+                    iconElement.textContent = '☁️';
+                    this.isConnected = true;
+                    break;
+                case 'error':
+                    statusElement.classList.add('error');
+                    iconElement.textContent = '❌';
+                    this.isConnected = false;
+                    break;
+                case 'offline':
+                    statusElement.classList.add('offline');
+                    iconElement.textContent = '💾';
+                    this.isConnected = false;
+                    break;
+                default:
+                    iconElement.textContent = '🔄';
+                    this.isConnected = false;
+            }
+            
+            textElement.textContent = message;
+            statusElement.style.display = 'block';
+            
+            if (status === 'connected') {
+                setTimeout(() => {
+                    statusElement.style.opacity = '0.7';
+                }, 3000);
+            }
+        }
+    };
+    
+    // =====================================================================
+    // DATABASE UNIFICADO OTIMIZADO
+    // =====================================================================
+    
+    const UnifiedDatabase = {
+        async save(data) {
+            const results = { localStorage: false, firebase: false };
+            
+            // Sempre salva no localStorage
+            try {
+                localStorage.setItem('treino', JSON.stringify(data));
+                results.localStorage = true;
+                console.log('Dados salvos no localStorage');
+            } catch (error) {
+                console.error('Erro ao salvar no localStorage:', error);
+            }
+            
+            // Salva no Firebase se disponível
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).set({
+                        ...data,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                        version: Date.now()
+                    });
+                    results.firebase = true;
+                    console.log('Dados salvos no Firebase');
+                } catch (error) {
+                    console.error('Erro ao salvar no Firebase:', error);
+                    FirebaseConfig.updateStatus('error', '❌ Erro ao salvar');
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        },
+        
+        async load() {
+            try {
+                if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                    const firebaseData = await this.loadFromFirebase();
+                    if (firebaseData) {
+                        localStorage.setItem('treino', JSON.stringify(firebaseData));
+                        console.log('Dados carregados do Firebase');
+                        return firebaseData;
+                    }
+                }
+                
+                const localData = this.loadFromLocalStorage();
+                if (localData) {
+                    console.log('Dados carregados do localStorage');
+                }
+                return localData;
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                return this.loadFromLocalStorage();
+            }
+        },
+        
+        loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('treino');
+                return saved ? JSON.parse(saved) : null;
+            } catch (error) {
+                console.error('Erro ao carregar do localStorage:', error);
+                return null;
+            }
+        },
+        
+        async loadFromFirebase() {
+            if (!FirebaseConfig.isInitialized) return null;
+            
+            try {
+                const userId = AuthManager.getUserId();
+                const doc = await FirebaseConfig.db.collection('workouts').doc(userId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    delete data.lastUpdated;
+                    delete data.version;
+                    return data;
+                }
+                return null;
+                
+            } catch (error) {
+                console.error('Erro ao carregar do Firebase:', error);
+                return null;
+            }
+        },
+        
+        async clear() {
+            const results = { localStorage: false, firebase: false };
+            
+            try {
+                localStorage.removeItem('treino');
+                results.localStorage = true;
+            } catch (error) {
+                console.error('Erro ao limpar localStorage:', error);
+            }
+            
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).delete();
+                    results.firebase = true;
+                    console.log('Dados removidos do Firebase');
+                } catch (error) {
+                    console.error('Erro ao limpar Firebase:', error);
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        }
+    };
+    
+    // =====================================================================
+    // AUTENTICAÇÃO OTIMIZADA PARA iOS
+    // =====================================================================
+    
+    const AuthManager = {
+        currentUser: null,
+        isIOSDevice: /iPad|iPhone|iPod/.test(navigator.userAgent),
+        
+        init() {
+            if (!FirebaseConfig.isInitialized) {
+                this.updateUI(null);
+                return;
+            }
+            
+            // Configuração específica para iOS
+            if (this.isIOSDevice) {
+                this.configureIOSAuth();
+            }
+            
+            // Escuta mudanças no estado de autenticação
+            FirebaseConfig.auth.onAuthStateChanged(async (user) => {
+                this.currentUser = user;
+                this.updateUI(user);
+                
+                if (user) {
+                    FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + (user.displayName || user.email));
+                    await this.loadUserData();
+                    RealtimeSync.start();
+                } else {
+                    RealtimeSync.stop();
+                }
+            });
+            
+            // Verifica redirect result para iOS
+            if (this.isIOSDevice) {
+                setTimeout(() => this.checkRedirectResult(), 1000);
+            }
+        },
+        
+        configureIOSAuth() {
+            // Configurações específicas para iOS
+            try {
+                // Limpa cache de auth ao inicializar
+                if (FirebaseConfig.auth) {
+                    FirebaseConfig.auth.useDeviceLanguage();
+                }
+                
+                console.log('Configurações iOS aplicadas');
+            } catch (error) {
+                console.error('Erro ao configurar iOS:', error);
+            }
+        },
+        
+        async signInWithGoogle() {
+            if (!FirebaseConfig.isInitialized) {
+                alert('Firebase não configurado');
+                return;
+            }
+            
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                let result;
+                
+                if (this.isIOSDevice) {
+                    // iOS - usar redirect com configuração otimizada
+                    provider.setCustomParameters({
+                        prompt: 'select_account',
+                        display: 'popup'
+                    });
+                    
+                    this.showAuthLoading(true);
+                    
+                    // Salva tentativa
+                    localStorage.setItem('auth_attempt', JSON.stringify({
+                        timestamp: Date.now(),
+                        type: 'ios_redirect'
+                    }));
+                    
+                    await FirebaseConfig.auth.signInWithRedirect(provider);
+                    return; // Redirect recarrega a página
+                } else {
+                    // Desktop - usar popup
+                    result = await FirebaseConfig.auth.signInWithPopup(provider);
+                }
+                
+                await this.migrateLocalData();
+                return result;
+                
+            } catch (error) {
+                console.error('Erro no login:', error);
+                this.handleAuthError(error);
+            }
+        },
+        
+        handleAuthError(error) {
+            this.showAuthLoading(false);
+            
+            // Registra falha para iOS
+            if (this.isIOSDevice) {
+                this.recordIOSAuthFailure();
+            }
+            
+            switch (error.code) {
+                case 'auth/popup-blocked':
+                    alert('Popup bloqueado! Permita popups para este site.');
+                    break;
+                case 'auth/popup-closed-by-user':
+                    console.log('Login cancelado pelo usuário');
+                    break;
+                case 'auth/unauthorized-domain':
+                    this.showOAuthError();
+                    break;
+                case 'auth/network-request-failed':
+                    alert('Erro de rede. Verifique sua conexão.');
+                    break;
+                default:
+                    alert('Erro no login: ' + error.message);
+            }
+        },
+        
+        showOAuthError() {
+            const warning = document.getElementById('ios-warning');
+            if (warning) {
+                warning.style.display = 'block';
+            }
+            
+            alert('Domínio não autorizado! Verifique as configurações OAuth no Google Cloud Console.');
+        },
+        
+        async signOut() {
+            if (!FirebaseConfig.isInitialized) return;
+            
+            try {
+                await FirebaseConfig.auth.signOut();
+                console.log('Logout realizado com sucesso');
+            } catch (error) {
+                console.error('Erro no logout:', error);
+            }
+        },
+        
+        async clearSession() {
+            try {
+                console.log('Limpando sessão...');
+                
+                if (FirebaseConfig.isInitialized) {
+                    await FirebaseConfig.auth.signOut();
+                }
+                
+                // Limpa todos os dados locais
+                ['treino', 'ios_auth_failures', 'oauth_problem_detected', 'auth_attempt']
+                    .forEach(key => localStorage.removeItem(key));
+                
+                // Limpa cache se disponível
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                
+                alert('Sessão limpa! A página será recarregada.');
+                window.location.reload();
+                
+            } catch (error) {
+                console.error('Erro ao limpar sessão:', error);
+                alert('Erro ao limpar sessão. Tente recarregar manualmente.');
+            }
+        },
+        
+        async checkRedirectResult() {
+            try {
+                const authAttempt = localStorage.getItem('auth_attempt');
+                if (authAttempt) {
+                    localStorage.removeItem('auth_attempt');
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const result = await FirebaseConfig.auth.getRedirectResult();
+                
+                if (result && result.user) {
+                    await this.migrateLocalData();
+                    FirebaseConfig.updateStatus('connected', '✅ Login realizado!');
+                    return;
+                }
+                
+                // Verifica se há problema OAuth
+                if (result && !result.user) {
+                    setTimeout(() => {
+                        const currentUser = FirebaseConfig.auth.currentUser;
+                        if (!currentUser) {
+                            localStorage.setItem('oauth_problem_detected', 'true');
+                            this.showOAuthError();
+                        }
+                    }, 3000);
+                }
+                
+            } catch (error) {
+                console.error('Erro no redirect result:', error);
+                this.showAuthLoading(false);
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    this.showOAuthError();
+                }
+            }
+        },
+        
+        showAuthLoading(show) {
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (loginBtn) {
+                if (show) {
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = '🔄 Carregando...';
+                    loginBtn.style.opacity = '0.7';
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 Login Google';
+                    loginBtn.style.opacity = '1';
+                }
+            }
+        },
+        
+        recordIOSAuthFailure() {
+            if (!this.isIOSDevice) return;
+            
+            setTimeout(() => {
+                const currentUser = FirebaseConfig.auth.currentUser;
+                if (currentUser) return;
+                
+                const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
+                localStorage.setItem('ios_auth_failures', failures.toString());
+                
+                if (failures >= 2) {
+                    localStorage.setItem('oauth_problem_detected', 'true');
+                    this.showOAuthError();
+                }
+            }, 3000);
+        },
+        
+        enableOfflineMode() {
+            const message = this.isIOSDevice ? 
+                '💾 MODO OFFLINE ATIVADO!\n\n' +
+                '✅ Dados salvos apenas no dispositivo\n' +
+                '✅ Não precisa de login Google\n' +
+                '✅ Funciona 100% no Safari iOS\n\n' +
+                '⚠️ Limitação: Sem sincronização entre dispositivos\n\n' +
+                '💡 Para backup: Use "Exportar" regularmente' :
+                '💾 Modo offline ativado para este dispositivo.';
+                
+            alert(message);
+            
+            FirebaseConfig.isConnected = false;
+            FirebaseConfig.updateStatus('offline', '💾 Modo Offline Ativo');
+            this.updateUI(null);
+        },
+        
+        updateUI(user) {
+            const authSection = document.getElementById('auth-section');
+            const userInfo = document.getElementById('user-info');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const clearSessionBtn = document.getElementById('clear-session-btn');
+            const iosTip = document.getElementById('ios-tip');
+            
+            if (!authSection) return;
+            
+            authSection.style.display = 'block';
+            
+            if (user) {
+                userInfo.textContent = `👤 ${user.displayName || user.email}`;
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+                if (clearSessionBtn) clearSessionBtn.style.display = this.isIOSDevice ? 'inline-block' : 'none';
+                if (iosTip) iosTip.style.display = 'none';
+            } else {
+                userInfo.textContent = '👤 Modo Local';
+                loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
+                logoutBtn.style.display = 'none';
+                if (clearSessionBtn) clearSessionBtn.style.display = this.isIOSDevice ? 'inline-block' : 'none';
+                if (iosTip) iosTip.style.display = this.isIOSDevice ? 'block' : 'none';
+            }
+        },
+        
+        async loadUserData() {
+            try {
+                const data = await UnifiedDatabase.load();
+                if (data) {
+                    document.querySelectorAll('input').forEach(input => {
+                        if (input.dataset.exercise && input.dataset.week) {
+                            const key = input.dataset.exercise + '_w' + input.dataset.week;
+                            if (data[key]) {
+                                input.value = data[key];
+                            }
+                        }
+                    });
+                    
+                    if (data.notes) {
+                        document.getElementById('notes').value = data.notes;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do usuário:', error);
+            }
+        },
+        
+        async migrateLocalData() {
+            try {
+                const localData = UnifiedDatabase.loadFromLocalStorage();
+                if (localData && Object.keys(localData).length > 0) {
+                    const migrate = confirm('Encontramos dados locais. Migrar para sua conta?');
+                    if (migrate) {
+                        await UnifiedDatabase.save(localData);
+                        console.log('Dados migrados com sucesso');
+                    }
+                }
+            } catch (error) {
+                console.error('Erro na migração:', error);
+            }
+        },
+        
+        getUserId() {
+            return this.currentUser ? this.currentUser.uid : 'default_user';
+        }
+    };
+    
+    // =====================================================================
+    // SINCRONIZAÇÃO EM TEMPO REAL
+    // =====================================================================
+    
+    const RealtimeSync = {
+        unsubscribe: null,
+        
+        start() {
+            if (!FirebaseConfig.isInitialized || !AuthManager.currentUser) return;
+            
+            const userId = AuthManager.getUserId();
+            
+            this.unsubscribe = FirebaseConfig.db
+                .collection('workouts')
+                .doc(userId)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        delete data.lastUpdated;
+                        delete data.version;
+                        
+                        this.updateInterfaceIfChanged(data);
+                        console.log('Dados sincronizados em tempo real');
+                    }
+                }, (error) => {
+                    console.error('Erro na sincronização:', error);
+                });
+        },
+        
+        stop() {
+            if (this.unsubscribe) {
+                this.unsubscribe();
+                this.unsubscribe = null;
+                console.log('Sincronização em tempo real parada');
+            }
+        },
+        
+        updateInterfaceIfChanged(newData) {
+            const currentData = {};
+            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
+                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+                currentData[key] = input.value;
+            });
+            currentData.notes = document.getElementById('notes').value;
+            
+            let hasChanges = false;
+            
+            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
+                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+                const newValue = newData[key] || '';
+                
+                if (input.value !== newValue) {
+                    input.value = newValue;
+                    hasChanges = true;
+                }
+            });
+            
+            const notesElement = document.getElementById('notes');
+            const newNotes = newData.notes || '';
+            if (notesElement.value !== newNotes) {
+                notesElement.value = newNotes;
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                this.showSyncNotification();
+            }
+        },
+        
+        showSyncNotification() {
+            const statusElement = document.getElementById('firebase-status');
+            if (statusElement) {
+                const originalText = statusElement.querySelector('#status-text').textContent;
+                statusElement.querySelector('#status-text').textContent = '🔄 Dados atualizados';
+                
+                setTimeout(() => {
+                    statusElement.querySelector('#status-text').textContent = originalText;
+                }, 2000);
+            }
+        }
+    };
+    
+    // =====================================================================
+    // FUNÇÕES PRINCIPAIS
+    // =====================================================================
+    
     async function saveData() {
         const data = {};
         
-        // Salva todos os inputs
         document.querySelectorAll('input').forEach(input => {
             if (input.dataset.exercise && input.dataset.week) {
                 const key = input.dataset.exercise + '_w' + input.dataset.week;
@@ -1153,14 +1928,12 @@
             }
         });
         
-        // Salva as notas
         data.notes = document.getElementById('notes').value;
         
-        // Salva usando o sistema unificado (Firebase + localStorage)
         try {
             const success = await UnifiedDatabase.save(data);
             if (success) {
-        alert('✅ Dados salvos!');
+                alert('✅ Dados salvos!');
             } else {
                 alert('⚠️ Erro ao salvar dados');
             }
@@ -1170,32 +1943,28 @@
         }
     }
     
-    // Carregar dados
     async function loadData() {
         try {
             const data = await UnifiedDatabase.load();
             if (data) {
-            // Carrega os inputs
-            document.querySelectorAll('input').forEach(input => {
-                if (input.dataset.exercise && input.dataset.week) {
-                    const key = input.dataset.exercise + '_w' + input.dataset.week;
-                    if (data[key]) {
-                        input.value = data[key];
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.dataset.exercise && input.dataset.week) {
+                        const key = input.dataset.exercise + '_w' + input.dataset.week;
+                        if (data[key]) {
+                            input.value = data[key];
+                        }
                     }
+                });
+                
+                if (data.notes) {
+                    document.getElementById('notes').value = data.notes;
                 }
-            });
-            
-            // Carrega as notas
-            if (data.notes) {
-                document.getElementById('notes').value = data.notes;
-            }
             }
         } catch (error) {
             console.error('Erro ao carregar dados:', error);
         }
     }
     
-    // Exportar CSV
     function exportData() {
         let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
         
@@ -1230,7 +1999,6 @@
             csv += row + '\n';
         });
         
-        // Download
         const blob = new Blob([csv], { type: 'text/csv' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -1240,17 +2008,15 @@
         alert('📥 Arquivo exportado!');
     }
     
-    // Limpar dados
     async function clearData() {
         if (confirm('⚠️ Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
             try {
                 const success = await UnifiedDatabase.clear();
                 
-                // Limpa a interface
-            document.querySelectorAll('input').forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('notes').value = '';
+                document.querySelectorAll('input').forEach(input => {
+                    input.value = '';
+                });
+                document.getElementById('notes').value = '';
                 
                 if (success) {
                     alert('🗑️ Todos os dados foram limpos!');
@@ -1264,980 +2030,73 @@
         }
     }
     
-    // =====================================================================
-    // MÓDULO FIREBASE E CONFIGURAÇÃO
-    // =====================================================================
-    
-    const FirebaseConfig = {
-        // 🔥 CONFIGURAÇÃO FIREBASE - PERSONALIZADA PARA SEU PROJETO
-        // ⚠️  IMPORTANTE: Verifique se o domínio https://fernandesvb.github.io 
-        //    está autorizado no Google Cloud Console > OAuth 2.0 Client IDs
-        config: {
-            apiKey: "AIzaSyBLZwcbCRqahZj1SXP7Zr9tlqhsoTYg7qg",
-            authDomain: "meu-treino-app-668e5.firebaseapp.com",
-            projectId: "meu-treino-app-668e5",
-            storageBucket: "meu-treino-app-668e5.firebasestorage.app",
-            messagingSenderId: "441652448957",
-            appId: "1:441652448957:web:e72cc230975f229faeb1d4"
-        },
-        
-        // Estado da conexão
-        isInitialized: false,
-        isConnected: false,
-        
-        /**
-         * Inicializa o Firebase
-         */
-        async init() {
-            try {
-                // Verifica se o Firebase está disponível
-                if (typeof firebase === 'undefined') {
-                    console.log('🔄 Firebase não carregado, usando localStorage');
-                    this.updateStatus('offline', '💾 Modo Local');
-                    return false;
-                }
-                
-                // Verifica se a configuração foi personalizada
-                if (this.config.apiKey === "CONFIGURE_SUA_API_KEY" || !this.config.apiKey) {
-                    console.log('⚙️ Configure o Firebase em FirebaseConfig.config');
-                    this.updateStatus('offline', '⚙️ Firebase não configurado - usando modo local');
-                    return false;
-                }
-                
-                // Inicializa o Firebase
-                firebase.initializeApp(this.config);
-                this.db = firebase.firestore();
-                this.auth = firebase.auth();
-                
-                this.isInitialized = true;
-                this.updateStatus('connected', '☁️ Conectado ao Firebase');
-                
-                console.log('✅ Firebase inicializado com sucesso!');
-                return true;
-                
-            } catch (error) {
-                console.error('❌ Erro ao inicializar Firebase:', error);
-                this.updateStatus('error', '❌ Erro de conexão - usando modo local');
-                return false;
-            }
-        },
-        
-        /**
-         * Atualiza o status visual da conexão
-         */
-        updateStatus(status, message) {
-            const statusElement = document.getElementById('firebase-status');
-            const iconElement = document.getElementById('status-icon');
-            const textElement = document.getElementById('status-text');
-            
-            if (!statusElement) return;
-            
-            // Remove classes antigas
-            statusElement.className = 'firebase-status';
-            
-            // Adiciona nova classe e atualiza conteúdo
-            switch (status) {
-                case 'connected':
-                    statusElement.classList.add('connected');
-                    iconElement.textContent = '☁️';
-                    this.isConnected = true;
-                    break;
-                case 'error':
-                    statusElement.classList.add('error');
-                    iconElement.textContent = '❌';
-                    this.isConnected = false;
-                    break;
-                case 'offline':
-                    statusElement.classList.add('offline');
-                    iconElement.textContent = '💾';
-                    this.isConnected = false;
-                    break;
-                default:
-                    iconElement.textContent = '🔄';
-                    this.isConnected = false;
-            }
-            
-            textElement.textContent = message;
-            statusElement.style.display = 'block';
-            
-            // Auto-hide status após 5 segundos se conectado
-            if (status === 'connected') {
-                setTimeout(() => {
-                    statusElement.style.opacity = '0.7';
-                }, 3000);
-            }
-        }
-    };
-    
-    // =====================================================================
-    // MÓDULO DE DATABASE UNIFICADO (FIREBASE + LOCALSTORAGE)
-    // =====================================================================
-    
-    const UnifiedDatabase = {
-        /**
-         * Salva dados usando Firebase ou localStorage como fallback
-         */
-        async save(data) {
-            const results = { localStorage: false, firebase: false };
-            
-            // Sempre salva no localStorage como backup
-            try {
-                localStorage.setItem('treino', JSON.stringify(data));
-                results.localStorage = true;
-                console.log('💾 Dados salvos no localStorage');
-            } catch (error) {
-                console.error('❌ Erro ao salvar no localStorage:', error);
-            }
-            
-            // Salva no Firebase se disponível
-            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
-                try {
-                    const userId = AuthManager.getUserId();
-                    await FirebaseConfig.db.collection('workouts').doc(userId).set({
-                        ...data,
-                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                        version: Date.now()
-                    });
-                    results.firebase = true;
-                    console.log('☁️ Dados salvos no Firebase');
-                } catch (error) {
-                    console.error('❌ Erro ao salvar no Firebase:', error);
-                    FirebaseConfig.updateStatus('error', '❌ Erro ao salvar na nuvem');
-                }
-            }
-            
-            return results.localStorage || results.firebase;
-        },
-        
-        /**
-         * Carrega dados do Firebase ou localStorage
-         */
-        async load() {
-            try {
-                // Tenta carregar do Firebase primeiro
-                if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
-                    const firebaseData = await this.loadFromFirebase();
-                    if (firebaseData) {
-                        // Sincroniza com localStorage
-                        localStorage.setItem('treino', JSON.stringify(firebaseData));
-                        console.log('☁️ Dados carregados do Firebase');
-                        return firebaseData;
-                    }
-                }
-                
-                // Fallback para localStorage
-                const localData = this.loadFromLocalStorage();
-                if (localData) {
-                    console.log('💾 Dados carregados do localStorage');
-                }
-                return localData;
-                
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                return this.loadFromLocalStorage();
-            }
-        },
-        
-        /**
-         * Carrega do localStorage
-         */
-        loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('treino');
-                return saved ? JSON.parse(saved) : null;
-            } catch (error) {
-                console.error('Erro ao carregar do localStorage:', error);
-                return null;
-            }
-        },
-        
-        /**
-         * Carrega do Firebase
-         */
-        async loadFromFirebase() {
-            if (!FirebaseConfig.isInitialized) {
-                return null;
-            }
-            
-            try {
-                const userId = AuthManager.getUserId();
-                const doc = await FirebaseConfig.db.collection('workouts').doc(userId).get();
-                
-                if (doc.exists) {
-                    const data = doc.data();
-                    // Remove campos internos do Firebase
-                    delete data.lastUpdated;
-                    delete data.version;
-                    return data;
-                }
-                
-                return null;
-                
-            } catch (error) {
-                console.error('❌ Erro ao carregar do Firebase:', error);
-                return null;
-            }
-        },
-        
-        /**
-         * Limpa todos os dados
-         */
-        async clear() {
-            const results = { localStorage: false, firebase: false };
-            
-            try {
-                // Limpa localStorage
-                localStorage.removeItem('treino');
-                results.localStorage = true;
-            } catch (error) {
-                console.error('Erro ao limpar localStorage:', error);
-            }
-            
-            // Limpa Firebase se disponível
-            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected) {
-                try {
-                    const userId = AuthManager.getUserId();
-                    await FirebaseConfig.db.collection('workouts').doc(userId).delete();
-                    results.firebase = true;
-                    console.log('☁️ Dados removidos do Firebase');
-                } catch (error) {
-                    console.error('Erro ao limpar Firebase:', error);
-                }
-            }
-            
-            return results.localStorage || results.firebase;
-        }
-    };
-    
-    // =====================================================================
-    // MÓDULO DE AUTENTICAÇÃO
-    // =====================================================================
-    
-    const AuthManager = {
-        currentUser: null,
-        
-        /**
-         * Inicializa o sistema de autenticação
-         */
-        init() {
-            if (!FirebaseConfig.isInitialized) {
-                this.updateUI(null);
-                return;
-            }
-            
-            // Verifica redirect result (apenas para iOS)
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                setTimeout(() => {
-                    this.checkRedirectResult();
-                }, 500);
-            }
-            
-            // Escuta mudanças no estado de autenticação
-            FirebaseConfig.auth.onAuthStateChanged(async (user) => {
-                this.currentUser = user;
-                this.updateUI(user);
-                
-                if (user) {
-                    // Atualiza status visual
-                    FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + user.email);
-                    
-                    // Recarrega dados do usuário específico
-                    await this.loadUserData();
-                    // Inicia sincronização em tempo real
-                    RealtimeSync.start();
-                } else {
-                    // Para sincronização em tempo real
-                    RealtimeSync.stop();
-                }
-            });
-        },
-        
-        /**
-         * Login com Google
-         */
-        async signInWithGoogle() {
-            if (!FirebaseConfig.isInitialized) {
-                alert('⚙️ Firebase não configurado');
-                return;
-            }
-            
-            try {
-                // Detecta iOS
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                
-                // Configuração do provider
-                const provider = new firebase.auth.GoogleAuthProvider();
-                provider.addScope('profile');
-                provider.addScope('email');
-                
-                if (isIOS) {
-                    // iOS - usar redirect
-                    provider.setCustomParameters({
-                        prompt: 'select_account'
-                    });
-                    
-                    // Salva tentativa para verificação posterior
-                    localStorage.setItem('auth_attempt', JSON.stringify({
-                        timestamp: Date.now(),
-                        type: 'ios_redirect'
-                    }));
-                    
-                    this.showAuthLoading(true);
-                    await FirebaseConfig.auth.signInWithRedirect(provider);
-                    return; // Redirect recarrega a página
-                } else {
-                    // Desktop - usar popup
-                    const result = await FirebaseConfig.auth.signInWithPopup(provider);
-                    
-                    // Migra dados locais para a conta do usuário
-                    await this.migrateLocalData();
-                    return result;
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro no login:', error);
-                
-                if (error.code === 'auth/popup-blocked') {
-                    alert('🚫 Popup bloqueado! Permita popups para este site.');
-                } else if (error.code === 'auth/popup-closed-by-user') {
-                    // Login cancelado pelo usuário - não mostrar alerta
-                    console.log('Login cancelado pelo usuário');
-                } else if (error.code === 'auth/unauthorized-domain') {
-                    alert('🚫 Domínio não autorizado!\n\nVerifique as configurações OAuth no Google Cloud Console.');
-                } else {
-                    alert('❌ Erro no login: ' + error.message);
-                }
-            }
-        },
-        
-        /**
-         * Logout
-         */
-        async signOut() {
-            if (!FirebaseConfig.isInitialized) return;
-            
-            try {
-                await FirebaseConfig.auth.signOut();
-                console.log('👋 Logout realizado com sucesso');
-            } catch (error) {
-                console.error('❌ Erro no logout:', error);
-            }
-        },
-        
-        /**
-         * Limpa sessão (útil para resolver conflitos no iOS)
-         */
-        async clearSession() {
-            try {
-                console.log('🧹 Limpando sessão...');
-                this.addVisualLog('🧹 Iniciando limpeza de sessão...');
-                
-                // Limpa Firebase Auth
-                if (FirebaseConfig.isInitialized) {
-                    await FirebaseConfig.auth.signOut();
-                }
-                
-                // Limpa localStorage (dados de treino)
-                localStorage.removeItem('treino');
-                
-                // Limpa dados de debug e tentativas de auth
-                localStorage.removeItem('ios_auth_failures');
-                localStorage.removeItem('oauth_problem_detected');
-                localStorage.removeItem('auth_attempt');
-                
-                // Limpa qualquer cache do navegador relacionado ao Firebase
-                if ('caches' in window) {
-                    const cacheNames = await caches.keys();
-                    await Promise.all(
-                        cacheNames.map(cacheName => caches.delete(cacheName))
-                    );
-                }
-                
-                this.addVisualLog('✅ Sessão limpa completamente');
-                
-                // Recarrega a página para limpar completamente o estado
-                alert('🧹 Sessão limpa! A página será recarregada.\n\n✅ Todos os dados de tentativas de login foram removidos.\n✅ Cache do navegador limpo.\n✅ Estado do Firebase resetado.');
-                window.location.reload();
-                
-            } catch (error) {
-                console.error('❌ Erro ao limpar sessão:', error);
-                this.addVisualLog('❌ Erro ao limpar sessão: ' + error.message);
-                alert('⚠️ Erro ao limpar sessão. Tente recarregar a página manualmente.');
-            }
-        },
-        
-        /**
-         * Verifica resultado de redirect (específico para iOS)
-         */
-        async checkRedirectResult() {
-            try {
-                // Verifica se houve tentativa de auth
-                const authAttempt = localStorage.getItem('auth_attempt');
-                if (authAttempt) {
-                    localStorage.removeItem('auth_attempt');
-                }
-                
-                // Aguarda Firebase estabilizar
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const result = await FirebaseConfig.auth.getRedirectResult();
-                
-                if (result && result.user) {
-                    // Login bem-sucedido
-                    await this.migrateLocalData();
-                    FirebaseConfig.updateStatus('connected', '✅ Login realizado com sucesso!');
-                    return;
-                }
-                
-                if (result && result.credential === null && result.user === null) {
-                    // Possível problema OAuth - tenta estratégias de recuperação
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                    
-                    let currentUser = FirebaseConfig.auth.currentUser;
-                    
-                    if (!currentUser) {
-                        try {
-                            await FirebaseConfig.auth.currentUser?.reload();
-                            currentUser = FirebaseConfig.auth.currentUser;
-                        } catch (e) {
-                            console.error('Erro no reload:', e);
-                        }
-                    }
-                    
-                    if (currentUser) {
-                        FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + currentUser.email);
-                        await this.migrateLocalData();
-                        return;
-                    } else {
-                        // Problema OAuth detectado
-                        FirebaseConfig.updateStatus('error', '❌ Problema de autenticação');
-                        localStorage.setItem('oauth_problem_detected', 'true');
-                    }
-                }
-                
-            } catch (error) {
-                console.error('❌ Erro no redirect result:', error);
-                this.showAuthLoading(false);
-                
-                if (error.code === 'auth/unauthorized-domain') {
-                    alert('🚫 Domínio não autorizado!\n\nVerifique as configurações OAuth no Google Cloud Console.');
-                }
-            }
-        },
-        
-        /**
-         * Mostra/esconde indicador de loading durante auth
-         */
-        showAuthLoading(show) {
-            const loginBtn = document.getElementById('login-btn');
-            
-            if (loginBtn) {
-                if (show) {
-                    loginBtn.disabled = true;
-                    loginBtn.textContent = '🔄 Redirecionando...';
-                    loginBtn.style.opacity = '0.7';
-                } else {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = '🔐 Entrar com Google';
-                    loginBtn.style.opacity = '1';
-                }
-            }
-        },
-        
-
-        
-        /**
-         * Diagnóstico específico para problemas no iOS
-         */
-        diagnoseiOSIssues() {
-            // Esta função não faz mais nada automaticamente
-            // Use os botões "🩺 Diagnóstico iOS" ou "🔧 Testar OAuth" para diagnósticos
-        },
-        
-
-        
-        /**
-         * Testa configurações OAuth específicas
-         */
-        testOAuthConfiguration() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const currentDomain = window.location.hostname;
-            const protocol = window.location.protocol;
-            
-            this.addVisualLog('🔧 Testando configuração OAuth...');
-            
-            let resultado = '🔍 DIAGNÓSTICO OAUTH AVANÇADO\n\n';
-            resultado += '📋 SUA CONFIGURAÇÃO ATUAL:\n';
-            resultado += `• Domínio: ${currentDomain}\n`;
-            resultado += `• URL: ${protocol}//${currentDomain}\n`;
-            resultado += `• Firebase Project: ${FirebaseConfig.config?.projectId}\n`;
-            resultado += `• Auth Domain: ${FirebaseConfig.config?.authDomain}\n\n`;
-            
-            resultado += '✅ CONFIGURAÇÕES NECESSÁRIAS:\n\n';
-            resultado += '1️⃣ GOOGLE CLOUD CONSOLE:\n';
-            resultado += `• JavaScript Origins: ${protocol}//${currentDomain}\n`;
-            resultado += `• Redirect URIs: ${protocol}//${currentDomain}/__/auth/handler\n\n`;
-            
-            resultado += '2️⃣ OAUTH CONSENT SCREEN:\n';
-            resultado += '• Status: PUBLICADO (não em teste)\n';
-            resultado += '• Usuários de teste: seu email\n\n';
-            
-            resultado += '⏰ PROBLEMA COMUM:\n';
-            resultado += '🚨 Google demora 5-24 HORAS para aplicar mudanças OAuth!\n\n';
-            
-            resultado += '🔧 TESTES IMEDIATOS:\n';
-            resultado += '1. Use "💾 Modo Offline" (funciona sempre)\n';
-            resultado += '2. Aguarde 2-3 horas e teste novamente\n';
-            resultado += '3. Ou tente no computador (desktop)\n\n';
-            
-            if (isIOS) {
-                resultado += '📱 ESPECÍFICO iOS:\n';
-                resultado += 'Como falha no Safari E Chrome iOS = OAuth issue\n';
-                resultado += '(Se fosse limitação do Safari, funcionaria no Chrome)\n\n';
-            }
-            
-            resultado += '💡 DICA IMPORTANTE:\n';
-            resultado += 'Se você fez mudanças OAuth hoje, aguarde até amanhã!\n';
-            resultado += 'Google OAuth demora para propagar globalmente.';
-            
-            alert(resultado);
-            
-            // Teste de conectividade Firebase
-            this.testFirebaseConnectivity();
-            
-            // Sugere modo offline
-            if (confirm('🎯 Quer ativar MODO OFFLINE enquanto aguarda a propagação OAuth?')) {
-                this.enableOfflineMode();
-            }
-        },
-        
-        /**
-         * Testa conectividade Firebase
-         */
-        async testFirebaseConnectivity() {
-            this.addVisualLog('🔍 Testando conectividade Firebase...');
-            
-            try {
-                // Testa se Firebase está acessível
-                const user = FirebaseConfig.auth.currentUser;
-                this.addVisualLog('👤 Current user: ' + (user ? user.email : 'null'));
-                
-                // Testa configuração
-                const config = FirebaseConfig.config;
-                this.addVisualLog('🔑 Project ID: ' + (config?.projectId || 'não encontrado'));
-                this.addVisualLog('🌐 Auth Domain: ' + (config?.authDomain || 'não encontrado'));
-                
-                // Testa se consegue acessar auth
-                const providers = FirebaseConfig.auth.app.options;
-                this.addVisualLog('⚙️ Firebase inicializado: ' + (providers ? 'Sim' : 'Não'));
-                
-                this.addVisualLog('✅ Firebase conectado e configurado corretamente');
-                
-            } catch (error) {
-                this.addVisualLog('❌ Erro Firebase: ' + error.message);
-                console.error('Erro ao testar Firebase:', error);
-            }
-        },
-        
-        /**
-         * Ativa modo offline completo (para casos onde Firebase não funciona)
-         */
-        enableOfflineMode() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            const message = isIOS ? 
-                '💾 MODO OFFLINE ATIVADO!\n\n' +
-                '✅ Seus dados serão salvos apenas no dispositivo\n' +
-                '✅ Não precisa de login Google\n' +
-                '✅ Funciona 100% no Safari iOS\n\n' +
-                '⚠️ Limitações:\n' +
-                '• Sem sincronização entre dispositivos\n' +
-                '• Dados podem ser perdidos se limpar navegador\n\n' +
-                '💡 Para sincronizar:\n' +
-                '• Use o botão "Exportar" regularmente\n' +
-                '• Ou acesse pelo computador' :
-                '💾 Modo offline ativado para este dispositivo.';
-                
-            alert(message);
-            
-            // Desabilita Firebase temporariamente
-            FirebaseConfig.isConnected = false;
-            FirebaseConfig.updateStatus('offline', '💾 Modo Offline - Dados salvos localmente');
-            
-            // Força UI para modo offline
-            this.updateUI(null);
-            this.addVisualLog('💾 Modo offline ativado pelo usuário');
-        },
-        
-        /**
-         * Detecta problemas do iOS Safari (apenas quando solicitado)
-         */
-        detectiOSAuthProblems() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) {
-                alert('ℹ️ Esta função é específica para dispositivos iOS.');
-                return;
-            }
-            
-            const currentUser = FirebaseConfig.auth.currentUser;
-            const failedAttempts = localStorage.getItem('ios_auth_failures') || '0';
-            
-            let resultado = '🔍 DIAGNÓSTICO iOS\n\n';
-            resultado += `👤 Usuário logado: ${currentUser ? currentUser.email : 'Não'}\n`;
-            resultado += `❌ Tentativas falhas: ${failedAttempts}\n`;
-            resultado += `📱 Dispositivo: iOS ${/Chrome/.test(navigator.userAgent) ? 'Chrome' : 'Safari'}\n\n`;
-            
-            if (currentUser) {
-                resultado += '✅ TUDO OK!\n';
-                resultado += 'Usuário está conectado com sucesso.';
-            } else if (parseInt(failedAttempts) >= 3) {
-                resultado += '🚨 PROBLEMA DETECTADO!\n';
-                resultado += 'Múltiplas tentativas de login falharam.\n\n';
-                resultado += '💡 SOLUÇÕES:\n';
-                resultado += '1. Use "💾 Modo Offline"\n';
-                resultado += '2. Teste no computador\n';
-                resultado += '3. Aguarde propagação OAuth (24h)';
-            } else {
-                resultado += 'ℹ️ Nenhum problema detectado.\n';
-                resultado += 'Se houver dificuldades, use "🔧 Testar OAuth".';
-            }
-            
-            alert(resultado);
-        },
-        
-        /**
-         * Registra falha de autenticação no iOS (simplificado)
-         */
-        recordiOSAuthFailure() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) return;
-            
-            // Aguarda para verificar se realmente falhou
-            setTimeout(() => {
-                const currentUser = FirebaseConfig.auth.currentUser;
-                if (currentUser) {
-                    // Se conseguiu logar, não conta como falha
-                    return;
-                }
-                
-                const failures = parseInt(localStorage.getItem('ios_auth_failures') || '0') + 1;
-                localStorage.setItem('ios_auth_failures', failures.toString());
-                
-                // Marca problema OAuth se múltiplas falhas no Chrome
-                if (failures >= 3 && /Chrome/.test(navigator.userAgent)) {
-                    localStorage.setItem('oauth_problem_detected', 'true');
-                }
-            }, 3000);
-        },
-        
-        /**
-         * Mostra/esconde logs visuais na página
-         */
-        toggleVisualLogs() {
-            const logsDiv = document.getElementById('ios-logs');
-            if (logsDiv) {
-                logsDiv.style.display = logsDiv.style.display === 'none' ? 'block' : 'none';
-            }
-        },
-        
-        /**
-         * Adiciona log visual na página (além do console)
-         */
-        addVisualLog(message) {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) return;
-            
-            const logsDiv = document.getElementById('ios-logs');
-            const logsContent = document.getElementById('ios-logs-content');
-            
-            if (logsDiv && logsContent) {
-                // Mostra a div de logs
-                logsDiv.style.display = 'block';
-                
-                // Adiciona timestamp
-                const timestamp = new Date().toLocaleTimeString();
-                const logEntry = document.createElement('div');
-                logEntry.style.cssText = 'margin: 2px 0; color: #495057;';
-                logEntry.innerHTML = `<span style="color: #6c757d;">[${timestamp}]</span> ${message}`;
-                
-                logsContent.appendChild(logEntry);
-                
-                // Scroll para o final
-                logsContent.scrollTop = logsContent.scrollHeight;
-                
-                // Limita a 50 logs
-                while (logsContent.children.length > 50) {
-                    logsContent.removeChild(logsContent.firstChild);
-                }
-            }
-        },
-        
-        /**
-         * Atualiza a interface baseada no usuário
-         */
-        updateUI(user) {
-            const authSection = document.getElementById('auth-section');
-            const userInfo = document.getElementById('user-info');
-            const loginBtn = document.getElementById('login-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            const clearSessionBtn = document.getElementById('clear-session-btn');
-            const iosTip = document.getElementById('ios-tip');
-            
-            if (!authSection) return;
-            
-            authSection.style.display = 'block';
-            
-            // Detecta iOS para mostrar o botão "Limpar Sessão"
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            // Log de debug para iOS
-            if (isIOS) {
-                console.log('🍎 iOS detectado na updateUI');
-                console.log('🔍 Firebase inicializado?', FirebaseConfig.isInitialized);
-                console.log('👤 Usuário logado?', !!user);
-            }
-            
-            if (user) {
-                // Usuário logado
-                userInfo.textContent = `👤 ${user.displayName || user.email}`;
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'inline-block';
-                // Mostra botão limpar SEMPRE no iOS (logado ou não)
-                if (clearSessionBtn) {
-                    clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
-                }
-                // Esconde dica quando logado
-                if (iosTip) iosTip.style.display = 'none';
-            } else {
-                // Usuário não logado
-                userInfo.textContent = '👤 Modo Local';
-                loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
-                logoutBtn.style.display = 'none';
-                // Mostra botão limpar SEMPRE no iOS (mesmo sem Firebase)
-                if (clearSessionBtn) {
-                    clearSessionBtn.style.display = isIOS ? 'inline-block' : 'none';
-                    if (isIOS) {
-                        console.log('🧹 Botão Limpar Sessão configurado para mostrar no iOS');
-                    }
-                }
-                // Mostra dica específica para iOS
-                if (iosTip) iosTip.style.display = isIOS ? 'block' : 'none';
-            }
-        },
-        
-        /**
-         * Carrega dados específicos do usuário
-         */
-        async loadUserData() {
-            try {
-                const data = await UnifiedDatabase.load();
-                if (data) {
-                    // Popula interface com dados do usuário
-                    document.querySelectorAll('input').forEach(input => {
-                        if (input.dataset.exercise && input.dataset.week) {
-                            const key = input.dataset.exercise + '_w' + input.dataset.week;
-                            if (data[key]) {
-                                input.value = data[key];
-                            }
-                        }
-                    });
-                    
-                    if (data.notes) {
-                        document.getElementById('notes').value = data.notes;
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dados do usuário:', error);
-            }
-        },
-        
-        /**
-         * Migra dados locais para a conta do usuário
-         */
-        async migrateLocalData() {
-            try {
-                const localData = UnifiedDatabase.loadFromLocalStorage();
-                if (localData && Object.keys(localData).length > 0) {
-                    const migrate = confirm('🔄 Encontramos dados locais. Deseja migrar para sua conta?');
-                    if (migrate) {
-                        await UnifiedDatabase.save(localData);
-                        console.log('✅ Dados migrados com sucesso');
-                    }
-                }
-            } catch (error) {
-                console.error('Erro na migração:', error);
-            }
-        },
-        
-        /**
-         * Obtém ID do usuário atual
-         */
-        getUserId() {
-            return this.currentUser ? this.currentUser.uid : 'default_user';
-        }
-    };
-    
-    // =====================================================================
-    // SINCRONIZAÇÃO EM TEMPO REAL
-    // =====================================================================
-    
-    const RealtimeSync = {
-        unsubscribe: null,
-        
-        /**
-         * Inicia sincronização em tempo real
-         */
-        start() {
-            if (!FirebaseConfig.isInitialized || !AuthManager.currentUser) {
-                return;
-            }
-            
-            const userId = AuthManager.getUserId();
-            
-            // Escuta mudanças no documento do usuário
-            this.unsubscribe = FirebaseConfig.db
-                .collection('workouts')
-                .doc(userId)
-                .onSnapshot((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        // Remove campos internos
-                        delete data.lastUpdated;
-                        delete data.version;
-                        
-                        // Atualiza interface apenas se dados mudaram externamente
-                        this.updateInterfaceIfChanged(data);
-                        
-                        console.log('🔄 Dados sincronizados em tempo real');
-                    }
-                }, (error) => {
-                    console.error('❌ Erro na sincronização:', error);
-                });
-        },
-        
-        /**
-         * Para sincronização em tempo real
-         */
-        stop() {
-            if (this.unsubscribe) {
-                this.unsubscribe();
-                this.unsubscribe = null;
-                console.log('⏹️ Sincronização em tempo real parada');
-            }
-        },
-        
-        /**
-         * Atualiza interface apenas se dados mudaram
-         */
-        updateInterfaceIfChanged(newData) {
-            // Coleta dados atuais da interface
-            const currentData = {};
-            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
-                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
-                currentData[key] = input.value;
-            });
-            currentData.notes = document.getElementById('notes').value;
-            
-            // Compara e atualiza apenas campos diferentes
-            let hasChanges = false;
-            
-            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
-                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
-                const newValue = newData[key] || '';
-                
-                if (input.value !== newValue) {
-                    input.value = newValue;
-                    hasChanges = true;
-                }
-            });
-            
-            const notesElement = document.getElementById('notes');
-            const newNotes = newData.notes || '';
-            if (notesElement.value !== newNotes) {
-                notesElement.value = newNotes;
-                hasChanges = true;
-            }
-            
-            if (hasChanges) {
-                // Mostra notificação sutil de sincronização
-                this.showSyncNotification();
-            }
-        },
-        
-        /**
-         * Mostra notificação de sincronização
-         */
-        showSyncNotification() {
-            const statusElement = document.getElementById('firebase-status');
-            if (statusElement) {
-                const originalText = statusElement.querySelector('#status-text').textContent;
-                statusElement.querySelector('#status-text').textContent = '🔄 Dados atualizados';
-                
-                setTimeout(() => {
-                    statusElement.querySelector('#status-text').textContent = originalText;
-                }, 2000);
-            }
-        }
-    };
-    
-    // Auto-salvar
+    // Auto-salvar otimizado
     document.addEventListener('input', (event) => {
-        // Auto-save apenas para inputs de treino e notas
         if (event.target.matches('input[data-exercise], #notes')) {
-        clearTimeout(window.saveTimer);
+            clearTimeout(window.saveTimer);
             window.saveTimer = setTimeout(async () => {
-            const data = {};
-            document.querySelectorAll('input').forEach(input => {
-                if (input.dataset.exercise && input.dataset.week) {
-                    const key = input.dataset.exercise + '_w' + input.dataset.week;
-                    data[key] = input.value;
-                }
-            });
-            data.notes = document.getElementById('notes').value;
+                const data = {};
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.dataset.exercise && input.dataset.week) {
+                        const key = input.dataset.exercise + '_w' + input.dataset.week;
+                        data[key] = input.value;
+                    }
+                });
+                data.notes = document.getElementById('notes').value;
                 
-                // Salva usando o sistema unificado
                 try {
                     await UnifiedDatabase.save(data);
                 } catch (error) {
                     console.error('Erro no auto-save:', error);
                 }
-            }, 2000); // 2 segundos para reduzir calls ao Firebase
+            }, 2000);
         }
     });
     
     // Inicialização da aplicação
     async function initApp() {
         try {
-            // 1. Inicializa o Firebase
             const firebaseInitialized = await FirebaseConfig.init();
             
-            // 2. Inicializa autenticação (se Firebase disponível)
             if (firebaseInitialized) {
                 AuthManager.init();
                 
-                // Aguarda um pouco para o estado de auth ser definido
                 setTimeout(() => {
-                    // 3. Inicia sincronização em tempo real (se usuário autenticado)
                     if (AuthManager.currentUser) {
                         RealtimeSync.start();
                     }
                 }, 1000);
             } else {
-                // Mesmo sem Firebase, configura UI básica
                 AuthManager.updateUI(null);
             }
             
-            // 4. Carrega dados salvos
             await loadData();
             
         } catch (error) {
-            console.error('❌ Erro na inicialização:', error);
+            console.error('Erro na inicialização:', error);
         }
     }
     
     // Carregar ao iniciar
     window.addEventListener('load', initApp);
+    
+    // Prevenção de zoom em inputs no iOS
+    if (AuthManager.isIOSDevice) {
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        });
+        
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    }
 </script>
 
 </body>
