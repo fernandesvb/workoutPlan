@@ -1586,7 +1586,8 @@
                         type: 'ios_redirect'
                     }));
                     
-                    await FirebaseConfig.auth.signInWithRedirect(provider);
+                   // await FirebaseConfig.auth.signInWithRedirect(provider);
+                    const result = await FirebaseConfig.auth.signInWithPopup(provider);
                     return; // Redirect recarrega a página
                 } else {
                     // Desktop - usar popup
