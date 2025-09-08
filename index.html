@@ -11,14 +11,12 @@
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="Aplicativo de controle de treino personalizado com cronômetro integrado e sincronização na nuvem">
 
-```
 <title>Meu Treino - 30min</title>
 
 <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-```
 
 <style>
     * {
@@ -389,7 +387,14 @@
         -webkit-appearance: none;
         appearance: none;
         background: white;
+        color: #333;
+        font-weight: 600;
         min-height: 36px;
+    }
+    
+    input::placeholder {
+        color: #999;
+        font-weight: 400;
     }
     
     input:focus {
@@ -420,11 +425,18 @@
         border-radius: 8px;
         font-family: inherit;
         font-size: clamp(13px, 3.5vw, 14px);
+        color: #333;
+        font-weight: 500;
         resize: vertical;
         min-height: 70px;
         -webkit-appearance: none;
         appearance: none;
         background: white;
+    }
+    
+    textarea::placeholder {
+        color: #999;
+        font-weight: 400;
     }
     
     textarea:focus {
@@ -555,8 +567,13 @@
         
         input, textarea {
             background: #2d2d2d;
-            color: #e0e0e0;
+            color: #f0f0f0;
             border-color: #404040;
+            font-weight: 600;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: #999;
         }
         
         .section-title {
@@ -575,7 +592,6 @@
         <h1>💪 Meu Treino + Core</h1>
         <p class="subtitle">30-35 min/dia com fortalecimento</p>
 
-```
     <!-- Status de Conexão Firebase -->
     <div id="firebase-status" class="firebase-status" style="display: none;">
         <span id="status-icon">🔄</span>
@@ -1111,7 +1127,6 @@
         <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
     </div>
 </div>
-```
 
 <script>
     // =====================================================================
