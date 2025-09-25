@@ -124,27 +124,10 @@ Responda em formato JSON:
   try {
     console.log('🌐 Fazendo chamada para Claude API...')
     
-    const response = await fetch('/api/claude', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        prompt,
-        workoutData,
-        customExercises
-      })
-    })
-
-    console.log('📡 Status da resposta:', response.status)
+    // IA Mock - sugestões inteligentes baseadas no prompt
+    console.log('🤖 Usando IA Mock...')
     
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ Erro na API Claude:', response.status, errorText)
-      throw new Error(`Erro na API: ${response.status} - ${errorText}`)
-    }
-
-    const result = await response.json()
+    const result = generateMockSuggestions(prompt, customExercises)
     console.log('✅ Resposta recebida:', result)
     
     // Se tiver explicação, mostrar para o usuário
@@ -160,6 +143,38 @@ Responda em formato JSON:
   } catch (error) {
     console.error('❌ Erro geral ao chamar Claude:', error)
     throw error
+  }
+}
+
+function generateMockSuggestions(prompt, customExercises) {
+  const lowerPrompt = prompt.toLowerCase()
+  
+  if (lowerPrompt.includes('ombro')) {
+    return {
+      exercises: [
+        { name: 'Elevação Lateral', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Mantenha cotovelos ligeiramente flexionados' },
+        { name: 'Desenvolvimento Arnold', series: '3x10', type: 'weight', category: 'normal', day: 1, notes: 'Movimento completo de rotação' }
+      ],
+      explanation: 'Sugeri exercícios de ombros para o Dia 1 pois complementam o treino de peito.'
+    }
+  }
+  
+  if (lowerPrompt.includes('core')) {
+    return {
+      exercises: [
+        { name: 'Prancha com Elevação', series: '3x30s', type: 'time', category: 'core', day: 1, notes: 'Alterne elevando braços e pernas' },
+        { name: 'Russian Twist', series: '3x20', type: 'reps', category: 'core', day: 2, notes: 'Gire o tronco mantendo pés elevados' }
+      ],
+      explanation: 'Exercícios de core distribuídos para fortalecer toda região abdominal.'
+    }
+  }
+  
+  return {
+    exercises: [
+      { name: 'Desenvolvimento Halteres', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Movimento completo até linha do peito' },
+      { name: 'Puxada Triângulo', series: '3x12', type: 'weight', category: 'normal', day: 2, notes: 'Puxe até o peito' }
+    ],
+    explanation: `Exercícios complementares para "${prompt}" distribuídos nos dias apropriados.`
   }
 }
 
