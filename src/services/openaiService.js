@@ -1,9 +1,4 @@
-const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY
-
 export async function analyzeWorkoutAndSuggest(workoutData, customExercises) {
-  if (!CLAUDE_API_KEY) {
-    throw new Error('Claude API key não configurada')
-  }
 
   // Preparar dados do treino atual
   const workoutSummary = prepareWorkoutSummary(workoutData, customExercises)
@@ -24,36 +19,8 @@ Por favor, analise e forneça:
 Responda em português brasileiro, seja específico e prático.
 `
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'user',
-            content: `Você é um personal trainer experiente. ${prompt}`
-          }
-        ]
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erro na API: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.content[0].text
-  } catch (error) {
-    console.error('Erro ao chamar Claude:', error)
-    throw error
-  }
+  // Esta função não é mais usada - usar generateExerciseSuggestions
+  return 'Função descontinuada'
 }
 
 function prepareWorkoutSummary(workoutData, customExercises) {
@@ -126,11 +93,6 @@ function prepareWorkoutSummary(workoutData, customExercises) {
 export async function generateExerciseSuggestions(prompt, workoutData, customExercises) {
   console.log('🤖 Iniciando geração de sugestões de IA...')
   console.log('📝 Prompt:', prompt)
-  console.log('🔑 API Key disponível:', !!CLAUDE_API_KEY)
-  
-  if (!CLAUDE_API_KEY) {
-    throw new Error('Claude API key não configurada')
-  }
 
   const workoutContext = prepareWorkoutSummary(workoutData, customExercises)
   
