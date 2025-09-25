@@ -485,6 +485,11 @@
         color: white;
     }
     
+    .btn-add {
+        background: #9f7aea;
+        color: white;
+    }
+    
     /* MELHORIAS PARA iOS */
     @supports (-webkit-appearance: none) {
         input[type="number"], input[type="text"], textarea {
@@ -550,6 +555,217 @@
         }
     }
     
+    /* MODAL STYLES */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .modal-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+    }
+    
+    .close:hover {
+        color: #000;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9em;
+    }
+    
+    .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+    }
+    
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .ai-section {
+        background: #f0f4ff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .ai-title {
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .ai-input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .ai-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-right: 8px;
+    }
+    
+    .ai-btn:hover {
+        background: #5a67d8;
+    }
+    
+    .ai-btn:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+    }
+    
+    .ai-suggestions {
+        margin-top: 15px;
+        padding: 10px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        display: none;
+    }
+    
+    .suggestion-item {
+        padding: 8px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .suggestion-item:hover {
+        background: #e9ecef;
+        border-color: #667eea;
+    }
+    
+    .suggestion-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+    }
+    
+    .suggestion-desc {
+        font-size: 0.8em;
+        color: #666;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .modal-btn {
+        flex: 1;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9em;
+        font-weight: 600;
+        cursor: pointer;
+        min-width: 100px;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
     /* DARK MODE SUPPORT */
     @media (prefers-color-scheme: dark) {
         .container {
@@ -582,6 +798,30 @@
         
         .exercise-name {
             color: #e0e0e0;
+        }
+        
+        .modal-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+        
+        .form-input, .form-select, .form-textarea, .ai-input {
+            background: #404040;
+            color: #f0f0f0;
+            border-color: #555;
+        }
+        
+        .ai-section {
+            background: #1e2a4a;
+        }
+        
+        .suggestion-item {
+            background: #404040;
+            color: #e0e0e0;
+        }
+        
+        .suggestion-item:hover {
+            background: #4a5568;
         }
     }
 </style>
@@ -1124,7 +1364,87 @@
     <div class="action-buttons">
         <button class="btn-save" onclick="saveData()">💾 Salvar</button>
         <button class="btn-export" onclick="exportData()">📥 Exportar</button>
+        <button class="btn-add" onclick="openAddExerciseModal()">➕ Novo Exercício</button>
         <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Exercício -->
+<div id="addExerciseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">➕ Novo Exercício</h2>
+            <span class="close" onclick="closeAddExerciseModal()">&times;</span>
+        </div>
+        
+        <!-- Seção de IA -->
+        <div class="ai-section">
+            <div class="ai-title">
+                🤖 Sugestão com IA
+            </div>
+            <input type="text" class="ai-input" id="aiPrompt" placeholder="Ex: exercício para fortalecer ombros, exercício de core para iniciantes...">
+            <button class="ai-btn" onclick="getAISuggestions()" id="aiBtn">
+                ✨ Gerar Sugestões
+            </button>
+            <button class="ai-btn" onclick="clearAISuggestions()">
+                🗑️ Limpar
+            </button>
+            
+            <div id="aiSuggestions" class="ai-suggestions">
+                <!-- Sugestões aparecerão aqui -->
+            </div>
+        </div>
+        
+        <form id="exerciseForm">
+            <div class="form-group">
+                <label class="form-label">Nome do Exercício *</label>
+                <input type="text" class="form-input" id="exerciseName" required placeholder="Ex: Supino Inclinado">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Dia do Treino *</label>
+                <select class="form-select" id="exerciseDay" required>
+                    <option value="">Selecione o dia</option>
+                    <option value="1">Dia 1 - Peito/Tríceps</option>
+                    <option value="2">Dia 2 - Costas/Bíceps</option>
+                    <option value="3">Dia 3 - Pernas</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tipo de Exercício *</label>
+                <select class="form-select" id="exerciseType" required>
+                    <option value="">Selecione o tipo</option>
+                    <option value="weight">Com Peso (kg)</option>
+                    <option value="reps">Repetições</option>
+                    <option value="time">Tempo (segundos)</option>
+                    <option value="text">Texto Livre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Séries e Repetições *</label>
+                <input type="text" class="form-input" id="exerciseSeries" required placeholder="Ex: 3x12, 3x30s, 4x8-10">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" id="exerciseCategory">
+                    <option value="normal">Exercício Normal</option>
+                    <option value="core">Core/Funcional</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Observações</label>
+                <textarea class="form-textarea" id="exerciseNotes" placeholder="Dicas de execução, cuidados especiais..."></textarea>
+            </div>
+        </form>
+        
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn btn-secondary" onclick="closeAddExerciseModal()">Cancelar</button>
+            <button type="button" class="modal-btn btn-primary" onclick="addNewExercise()">➕ Adicionar</button>
+        </div>
     </div>
 </div>
 
@@ -1663,6 +1983,7 @@
     function exportData() {
         let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
         
+        // Exercícios padrão
         const exercises = [
             'Supino Smith,supino',
             'Crucifixo,crucifixo',
@@ -1684,11 +2005,22 @@
             'Gato-Vaca,gato-vaca'
         ];
         
+        // Adicionar exercícios padrão
         exercises.forEach(ex => {
             const [name, id] = ex.split(',');
             let row = name;
             for (let w = 1; w <= 4; w++) {
                 const input = document.querySelector(`input[data-exercise="${id}"][data-week="${w}"]`);
+                row += ',' + (input?.value || '');
+            }
+            csv += row + '\n';
+        });
+        
+        // Adicionar exercícios personalizados
+        ExerciseManager.customExercises.forEach(exercise => {
+            let row = exercise.name;
+            for (let w = 1; w <= 4; w++) {
+                const input = document.querySelector(`input[data-exercise="${exercise.id}"][data-week="${w}"]`);
                 row += ',' + (input?.value || '');
             }
             csv += row + '\n';
@@ -1780,6 +2112,9 @@
                 AuthManager.updateUI(null);
             }
             
+            // Inicializar gerenciador de exercícios
+            ExerciseManager.init();
+            
             await loadData();
             
         } catch (error) {
@@ -1789,6 +2124,371 @@
     
     // Carregar ao iniciar
     window.addEventListener('load', initApp);
+    
+    // =====================================================================
+    // GERENCIAMENTO DE EXERCÍCIOS
+    // =====================================================================
+    
+    const ExerciseManager = {
+        customExercises: [],
+        
+        init() {
+            this.loadCustomExercises();
+        },
+        
+        loadCustomExercises() {
+            try {
+                const saved = localStorage.getItem('customExercises');
+                this.customExercises = saved ? JSON.parse(saved) : [];
+                this.renderCustomExercises();
+            } catch (error) {
+                console.error('Erro ao carregar exercícios personalizados:', error);
+            }
+        },
+        
+        saveCustomExercises() {
+            try {
+                localStorage.setItem('customExercises', JSON.stringify(this.customExercises));
+            } catch (error) {
+                console.error('Erro ao salvar exercícios personalizados:', error);
+            }
+        },
+        
+        addExercise(exercise) {
+            const id = 'custom_' + Date.now();
+            const newExercise = {
+                id,
+                name: exercise.name,
+                day: parseInt(exercise.day),
+                type: exercise.type,
+                series: exercise.series,
+                category: exercise.category || 'normal',
+                notes: exercise.notes || '',
+                created: new Date().toISOString()
+            };
+            
+            this.customExercises.push(newExercise);
+            this.saveCustomExercises();
+            this.renderCustomExercises();
+            
+            return newExercise;
+        },
+        
+        removeExercise(id) {
+            this.customExercises = this.customExercises.filter(ex => ex.id !== id);
+            this.saveCustomExercises();
+            this.renderCustomExercises();
+            
+            // Remove dados salvos do exercício
+            for (let week = 1; week <= 4; week++) {
+                const key = `${id}_w${week}`;
+                const data = UnifiedDatabase.loadFromLocalStorage() || {};
+                delete data[key];
+                localStorage.setItem('treino', JSON.stringify(data));
+            }
+        },
+        
+        renderCustomExercises() {
+            this.customExercises.forEach(exercise => {
+                const daySection = document.getElementById(`day${exercise.day}`);
+                if (daySection && !document.getElementById(`exercise_${exercise.id}`)) {
+                    this.createExerciseCard(exercise, daySection);
+                }
+            });
+        },
+        
+        createExerciseCard(exercise, container) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `exercise-card ${exercise.category === 'core' ? 'core' : ''}`;
+            cardDiv.id = `exercise_${exercise.id}`;
+            
+            const placeholder = this.getPlaceholder(exercise.type);
+            const step = this.getStep(exercise.type);
+            
+            cardDiv.innerHTML = `
+                <div class="exercise-header">
+                    <span class="exercise-name">${exercise.name}</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="series-info">${exercise.series}</span>
+                        <button onclick="ExerciseManager.removeExercise('${exercise.id}')" 
+                                style="background: #f56565; color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 0.7em; cursor: pointer;"
+                                title="Remover exercício">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                ${exercise.notes ? `<div style="font-size: 0.8em; color: #666; margin-bottom: 8px; font-style: italic;">${exercise.notes}</div>` : ''}
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="4">
+                    </div>
+                </div>
+            `;
+            
+            // Adiciona no final da seção, antes das notas
+            const notesSection = document.querySelector('.notes-section');
+            container.insertBefore(cardDiv, notesSection);
+        },
+        
+        getPlaceholder(type) {
+            switch (type) {
+                case 'weight': return 'kg';
+                case 'reps': return 'reps';
+                case 'time': return 'seg';
+                default: return 'valor';
+            }
+        },
+        
+        getStep(type) {
+            return type === 'weight' ? '2.5' : null;
+        }
+    };
+    
+    // =====================================================================
+    // INTEGRAÇÃO COM IA
+    // =====================================================================
+    
+    const AIAssistant = {
+        async getSuggestions(prompt) {
+            // Simulação de IA - em produção, conectaria com OpenAI, Gemini, etc.
+            const suggestions = this.generateSuggestions(prompt.toLowerCase());
+            
+            // Simula delay de API
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            return suggestions;
+        },
+        
+        generateSuggestions(prompt) {
+            const suggestions = [];
+            
+            // Sugestões baseadas em palavras-chave
+            if (prompt.includes('ombro') || prompt.includes('deltoid')) {
+                suggestions.push(
+                    { name: 'Elevação Lateral', series: '3x12', type: 'weight', category: 'normal', notes: 'Manter cotovelos ligeiramente flexionados' },
+                    { name: 'Desenvolvimento Arnold', series: '3x10', type: 'weight', category: 'normal', notes: 'Movimento completo de rotação' },
+                    { name: 'Elevação Frontal', series: '3x12', type: 'weight', category: 'normal', notes: 'Controlar a descida' }
+                );
+            }
+            
+            if (prompt.includes('core') || prompt.includes('abdom') || prompt.includes('prancha')) {
+                suggestions.push(
+                    { name: 'Prancha com Elevação', series: '3x30s', type: 'time', category: 'core', notes: 'Alternar elevação de braços e pernas' },
+                    { name: 'Dead Bug', series: '3x10 cada', type: 'reps', category: 'core', notes: 'Manter lombar no chão' },
+                    { name: 'Mountain Climber', series: '3x20', type: 'reps', category: 'core', notes: 'Ritmo controlado' }
+                );
+            }
+            
+            if (prompt.includes('perna') || prompt.includes('quadr') || prompt.includes('glut')) {
+                suggestions.push(
+                    { name: 'Agachamento Búlgaro', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Pé traseiro elevado' },
+                    { name: 'Stiff', series: '3x12', type: 'weight', category: 'normal', notes: 'Manter joelhos levemente flexionados' },
+                    { name: 'Afundo', series: '3x10 cada', type: 'weight', category: 'normal', notes: 'Descer até 90 graus' }
+                );
+            }
+            
+            if (prompt.includes('costas') || prompt.includes('dorsal') || prompt.includes('lat')) {
+                suggestions.push(
+                    { name: 'Pulldown Neutro', series: '3x12', type: 'weight', category: 'normal', notes: 'Pegada neutra, puxar até o peito' },
+                    { name: 'Remada Unilateral', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Apoiar joelho e mão no banco' },
+                    { name: 'Face Pull', series: '3x15', type: 'weight', category: 'normal', notes: 'Puxar até a face, cotovelos altos' }
+                );
+            }
+            
+            if (prompt.includes('peito') || prompt.includes('peitoral')) {
+                suggestions.push(
+                    { name: 'Supino Inclinado', series: '3x10', type: 'weight', category: 'normal', notes: 'Inclinação de 30-45 graus' },
+                    { name: 'Flexão Diamante', series: '3x8-12', type: 'reps', category: 'normal', notes: 'Mãos formando diamante' },
+                    { name: 'Crossover', series: '3x12', type: 'weight', category: 'normal', notes: 'Movimento de abraço' }
+                );
+            }
+            
+            if (prompt.includes('braço') || prompt.includes('bícep') || prompt.includes('trícep')) {
+                suggestions.push(
+                    { name: 'Rosca 21', series: '3x21', type: 'weight', category: 'normal', notes: '7 reps parciais baixo + 7 alto + 7 completas' },
+                    { name: 'Tríceps Francês', series: '3x12', type: 'weight', category: 'normal', notes: 'Cotovelos fixos' },
+                    { name: 'Rosca Concentrada', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Apoiar cotovelo na coxa' }
+                );
+            }
+            
+            if (prompt.includes('iniciante') || prompt.includes('começar')) {
+                suggestions.push(
+                    { name: 'Agachamento Livre', series: '3x15', type: 'reps', category: 'normal', notes: 'Começar sem peso' },
+                    { name: 'Flexão de Joelhos', series: '3x8-12', type: 'reps', category: 'normal', notes: 'Flexão modificada' },
+                    { name: 'Prancha Básica', series: '3x20-30s', type: 'time', category: 'core', notes: 'Manter alinhamento' }
+                );
+            }
+            
+            // Se não encontrou sugestões específicas, adiciona algumas genéricas
+            if (suggestions.length === 0) {
+                suggestions.push(
+                    { name: 'Exercício Funcional', series: '3x12', type: 'reps', category: 'normal', notes: 'Adapte conforme necessário' },
+                    { name: 'Mobilidade Articular', series: '3x10', type: 'reps', category: 'core', notes: 'Movimento lento e controlado' }
+                );
+            }
+            
+            return suggestions.slice(0, 4); // Máximo 4 sugestões
+        }
+    };
+    
+    // =====================================================================
+    // FUNÇÕES DO MODAL
+    // =====================================================================
+    
+    function openAddExerciseModal() {
+        document.getElementById('addExerciseModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddExerciseModal() {
+        document.getElementById('addExerciseModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Limpar formulário
+        document.getElementById('exerciseForm').reset();
+        clearAISuggestions();
+    }
+    
+    async function getAISuggestions() {
+        const prompt = document.getElementById('aiPrompt').value.trim();
+        if (!prompt) {
+            alert('Digite uma descrição do exercício que você precisa!');
+            return;
+        }
+        
+        const btn = document.getElementById('aiBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading"></span> Gerando...';
+        btn.disabled = true;
+        
+        try {
+            const suggestions = await AIAssistant.getSuggestions(prompt);
+            displayAISuggestions(suggestions);
+        } catch (error) {
+            console.error('Erro ao obter sugestões:', error);
+            alert('Erro ao gerar sugestões. Tente novamente.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+    
+    function displayAISuggestions(suggestions) {
+        const container = document.getElementById('aiSuggestions');
+        container.innerHTML = '';
+        
+        if (suggestions.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">Nenhuma sugestão encontrada. Tente uma descrição diferente.</p>';
+        } else {
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <div class="suggestion-name">${suggestion.name}</div>
+                    <div class="suggestion-desc">${suggestion.series} - ${suggestion.notes}</div>
+                `;
+                
+                item.onclick = () => applySuggestion(suggestion);
+                container.appendChild(item);
+            });
+        }
+        
+        container.style.display = 'block';
+    }
+    
+    function applySuggestion(suggestion) {
+        document.getElementById('exerciseName').value = suggestion.name;
+        document.getElementById('exerciseType').value = suggestion.type;
+        document.getElementById('exerciseSeries').value = suggestion.series;
+        document.getElementById('exerciseCategory').value = suggestion.category;
+        document.getElementById('exerciseNotes').value = suggestion.notes;
+        
+        // Feedback visual
+        const container = document.getElementById('aiSuggestions');
+        container.style.background = '#e8f5e8';
+        setTimeout(() => {
+            container.style.background = 'white';
+        }, 1000);
+    }
+    
+    function clearAISuggestions() {
+        document.getElementById('aiPrompt').value = '';
+        document.getElementById('aiSuggestions').style.display = 'none';
+    }
+    
+    function addNewExercise() {
+        const form = document.getElementById('exerciseForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        const exercise = {
+            name: document.getElementById('exerciseName').value.trim(),
+            day: document.getElementById('exerciseDay').value,
+            type: document.getElementById('exerciseType').value,
+            series: document.getElementById('exerciseSeries').value.trim(),
+            category: document.getElementById('exerciseCategory').value,
+            notes: document.getElementById('exerciseNotes').value.trim()
+        };
+        
+        try {
+            ExerciseManager.addExercise(exercise);
+            closeAddExerciseModal();
+            
+            // Feedback de sucesso
+            const btn = document.querySelector('.btn-add');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Adicionado!';
+            btn.style.background = '#48bb78';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#9f7aea';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Erro ao adicionar exercício:', error);
+            alert('Erro ao adicionar exercício. Tente novamente.');
+        }
+    }
+    
+    // Fechar modal clicando fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('addExerciseModal');
+        if (event.target === modal) {
+            closeAddExerciseModal();
+        }
+    }
     
     // Prevenção de zoom em inputs no iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
