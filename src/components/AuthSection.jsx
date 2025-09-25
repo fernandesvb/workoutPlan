@@ -4,7 +4,7 @@ export default function AuthSection({ user, onSignIn, onSignOut, onEnableOffline
   return (
     <div className="auth-section">
       <div className="auth-info">
-        <span id="user-info">
+        <span className="user-info">
           👤 {user ? (user.displayName || user.email) : 'Modo Local'}
         </span>
         <div className="auth-buttons">

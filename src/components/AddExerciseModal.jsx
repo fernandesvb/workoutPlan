@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { X, Sparkles, Trash2 } from 'lucide-react'
-import { generateAISuggestions } from '../services/aiSuggestions'
+import { generateExerciseSuggestions } from '../services/openaiService'
 
-export default function AddExerciseModal({ show, onClose, onAddExercise }) {
+export default function AddExerciseModal({ show, onClose, onAddExercise, onRemoveExercise, workoutData, customExercises }) {
   const [formData, setFormData] = useState({
     name: '',
     day: '',
@@ -48,7 +48,7 @@ export default function AddExerciseModal({ show, onClose, onAddExercise }) {
 
     setIsLoading(true)
     try {
-      const aiSuggestions = await generateAISuggestions(aiPrompt)
+      const aiSuggestions = await generateExerciseSuggestions(aiPrompt, workoutData, customExercises)
       setSuggestions(aiSuggestions)
       setShowSuggestions(true)
     } catch (error) {
@@ -63,6 +63,7 @@ export default function AddExerciseModal({ show, onClose, onAddExercise }) {
     setFormData(prev => ({
       ...prev,
       name: suggestion.name,
+      day: suggestion.day.toString(),
       type: suggestion.type,
       series: suggestion.series,
       category: suggestion.category,
@@ -83,10 +84,11 @@ export default function AddExerciseModal({ show, onClose, onAddExercise }) {
       <div className="modal-content">
         <div className="modal-header">
           <h2 className="modal-title">➕ Novo Exercício</h2>
-          <span className="close" onClick={onClose}>
-            <X size={24} />
-          </span>
+          <button className="close" onClick={onClose}>
+            <X size={16} />
+          </button>
         </div>
+        <div className="modal-body">
         
         {/* Seção de IA */}
         <div className="ai-section">
@@ -101,24 +103,26 @@ export default function AddExerciseModal({ show, onClose, onAddExercise }) {
             onChange={(e) => setAiPrompt(e.target.value)}
             placeholder="Ex: exercício para fortalecer ombros, exercício de core para iniciantes..."
           />
-          <button
-            className="ai-btn"
-            onClick={handleGetSuggestions}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <span className="loading"></span> Gerando...
-              </>
-            ) : (
-              <>
-                <Sparkles size={14} /> Gerar Sugestões
-              </>
-            )}
-          </button>
-          <button className="ai-btn" onClick={clearSuggestions}>
-            <Trash2 size={14} /> Limpar
-          </button>
+          <div className="ai-buttons">
+            <button
+              className="ai-btn"
+              onClick={handleGetSuggestions}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading"></span> Gerando...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={14} /> Gerar Sugestões
+                </>
+              )}
+            </button>
+            <button className="ai-btn" onClick={clearSuggestions}>
+              <Trash2 size={14} /> Limpar
+            </button>
+          </div>
           
           {showSuggestions && (
             <div className="ai-suggestions show">
@@ -127,110 +131,108 @@ export default function AddExerciseModal({ show, onClose, onAddExercise }) {
                   Nenhuma sugestão encontrada. Tente uma descrição diferente.
                 </p>
               ) : (
-                suggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    className="suggestion-item"
-                    onClick={() => applySuggestion(suggestion)}
-                  >
-                    <div className="suggestion-name">{suggestion.name}</div>
-                    <div className="suggestion-desc">
-                      {suggestion.series} - {suggestion.notes}
+                <>
+                  <div className="suggestions-header">
+                    <h4>Sugestões da IA</h4>
+                    <div className="add-buttons">
+                      <button 
+                        className="add-all-btn"
+                        onClick={() => {
+                          console.log('Botão Adicionar Todos clicado')
+                          console.log('Sugestões:', suggestions)
+                          
+                          if (!suggestions || suggestions.length === 0) {
+                            alert('⚠️ Nenhuma sugestão para adicionar!')
+                            return
+                          }
+                          
+                          let addedCount = 0
+                          suggestions.forEach((suggestion, index) => {
+                            const exerciseData = {
+                              name: suggestion.name,
+                              day: suggestion.day,
+                              type: suggestion.type,
+                              series: suggestion.series,
+                              category: suggestion.category || 'normal',
+                              notes: suggestion.notes || ''
+                            }
+                            console.log(`Adicionando exercício ${index + 1}:`, exerciseData)
+                            
+                            try {
+                              onAddExercise(exerciseData)
+                              addedCount++
+                            } catch (error) {
+                              console.error('Erro ao adicionar exercício:', error)
+                            }
+                          })
+                          
+                          alert(`✅ ${addedCount} exercícios adicionados ao treino!`)
+                          setSuggestions([])
+                          setShowSuggestions(false)
+                        }}
+                      >
+                        ➕ Adicionar Todos
+                      </button>
+                      
+
                     </div>
                   </div>
-                ))
+                  {suggestions.map((suggestion, index) => (
+                    <div key={index} className="suggestion-item">
+                      <div className="suggestion-content" onClick={() => applySuggestion(suggestion)}>
+                        <div className="suggestion-name">{suggestion.name}</div>
+                        <div className="suggestion-desc">
+                          Dia {suggestion.day} - {suggestion.series} - {suggestion.notes}
+                        </div>
+                      </div>
+                      <button 
+                        className="suggestion-add-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          const exerciseData = {
+                            name: suggestion.name,
+                            day: suggestion.day,
+                            type: suggestion.type,
+                            series: suggestion.series,
+                            category: suggestion.category || 'normal',
+                            notes: suggestion.notes || ''
+                          }
+                          console.log('Adicionando exercício:', exerciseData)
+                          onAddExercise(exerciseData)
+                          alert(`✅ ${suggestion.name} adicionado ao Dia ${suggestion.day}!`)
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           )}
         </div>
         
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Nome do Exercício *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="Ex: Supino Inclinado"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Dia do Treino *</label>
-            <select
-              className="form-select"
-              value={formData.day}
-              onChange={(e) => handleInputChange('day', e.target.value)}
-              required
-            >
-              <option value="">Selecione o dia</option>
-              <option value="1">Dia 1 - Peito/Tríceps</option>
-              <option value="2">Dia 2 - Costas/Bíceps</option>
-              <option value="3">Dia 3 - Pernas</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Tipo de Exercício *</label>
-            <select
-              className="form-select"
-              value={formData.type}
-              onChange={(e) => handleInputChange('type', e.target.value)}
-              required
-            >
-              <option value="">Selecione o tipo</option>
-              <option value="weight">Com Peso (kg)</option>
-              <option value="reps">Repetições</option>
-              <option value="time">Tempo (segundos)</option>
-              <option value="text">Texto Livre</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Séries e Repetições *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={formData.series}
-              onChange={(e) => handleInputChange('series', e.target.value)}
-              placeholder="Ex: 3x12, 3x30s, 4x8-10"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Categoria</label>
-            <select
-              className="form-select"
-              value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-            >
-              <option value="normal">Exercício Normal</option>
-              <option value="core">Core/Funcional</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Observações</label>
-            <textarea
-              className="form-textarea"
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Dicas de execução, cuidados especiais..."
-            />
-          </div>
-          
-          <div className="modal-buttons">
-            <button type="button" className="modal-btn btn-secondary" onClick={onClose}>
-              Cancelar
-            </button>
-            <button type="submit" className="modal-btn btn-primary">
-              ➕ Adicionar
-            </button>
-          </div>
-        </form>
+        <div className="manual-add-section" style={{ display: showSuggestions ? 'none' : 'block' }}>
+          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', margin: '20px 0' }}>
+            🤖 Use a IA acima para sugestões inteligentes ou
+          </p>
+          <button 
+            className="manual-add-btn"
+            onClick={() => {
+              // Mostrar formulário manual se necessário
+              alert('🛠️ Formulário manual será implementado se necessário')
+            }}
+          >
+            ➕ Adicionar Exercício Manualmente
+          </button>
+        </div>
+        </div>
+        
+        <div className="modal-buttons">
+          <button type="button" className="modal-btn btn-secondary" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   )

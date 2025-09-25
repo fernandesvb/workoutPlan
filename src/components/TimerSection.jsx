@@ -62,7 +62,7 @@ export default function TimerSection() {
 
   return (
     <div className="timer-section">
-      <div style={{ fontSize: '0.9em', color: '#666', marginBottom: '5px' }}>
+      <div className="timer-label">
         ⏱️ CRONÔMETRO
       </div>
       <div 

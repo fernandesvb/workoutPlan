@@ -32,55 +32,77 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
   return (
     <div className={`exercise-card ${exercise.category === 'core' ? 'core' : ''}`}>
       <div className="exercise-header">
-        <span className="exercise-name">{exercise.name}</span>
+        <div className="exercise-info">
+          <div className="exercise-name">{exercise.name}</div>
+          {exercise.notes && (
+            <div className="exercise-notes">{exercise.notes}</div>
+          )}
+        </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <span className="series-info">{exercise.series}</span>
           {isCustom && (
             <button
               onClick={handleRemove}
-              style={{
-                background: '#f56565',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '2px 6px',
-                fontSize: '0.7em',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center'
-              }}
+              className="remove-btn"
               title="Remover exercício"
             >
-              <X size={12} />
+              <X size={14} />
             </button>
           )}
         </div>
       </div>
       
-      {exercise.notes && (
-        <div style={{
-          fontSize: '0.8em',
-          color: '#666',
-          marginBottom: '8px',
-          fontStyle: 'italic'
-        }}>
-          {exercise.notes}
-        </div>
-      )}
-      
-      <div className="weight-tracking">
-        {[1, 2, 3, 4].map(week => (
-          <div key={week} className="week-input">
-            <label className="week-label">Sem {week}</label>
+      <div className="exercise-tracking">
+        <div className="current-session">
+          <label className="session-label">{exercise.name}</label>
+          <div className="session-inputs">
             <input
               type={getInputType(exercise.type)}
               step={getStep(exercise.type)}
               placeholder={getPlaceholder(exercise.type)}
-              value={workoutData[`${exercise.id}_w${week}`] || ''}
-              onChange={(e) => handleInputChange(week, e.target.value)}
+              value={workoutData[`${exercise.id}_current`] || ''}
+              onChange={(e) => handleInputChange('current', e.target.value)}
+              className="current-input"
             />
+            <button 
+              className="save-btn"
+              onClick={() => {
+                const currentValue = workoutData[`${exercise.id}_current`]
+                if (currentValue) {
+                  const today = new Date().toLocaleDateString('pt-BR')
+                  const historyKey = `${exercise.id}_history`
+                  const history = JSON.parse(workoutData[historyKey] || '[]')
+                  history.unshift({ date: today, value: currentValue })
+                  onWorkoutChange(historyKey, JSON.stringify(history.slice(0, 5)))
+                  onWorkoutChange(`${exercise.id}_current`, '')
+                  alert('✅ Treino salvo!')
+                }
+              }}
+            >
+              💾
+            </button>
           </div>
-        ))}
+        </div>
+        
+        <div className="exercise-history">
+          <label className="history-label">📈 Últimos treinos</label>
+          <div className="history-list">
+            {(() => {
+              const history = JSON.parse(workoutData[`${exercise.id}_history`] || '[]')
+              return history.length > 0 ? (
+                history.slice(0, 3).map((entry, index) => (
+                  <div key={index} className="history-item">
+                    <span className="history-date">{entry.date}</span>
+                    <span className="history-value">{entry.value} {getPlaceholder(exercise.type)}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="no-history">Nenhum treino registrado</div>
+              )
+            })()
+            }
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,151 +1,180 @@
-# 🔥 Configuração do Firebase para Meu Treino
+# 🏋️ FitTracker Pro
 
-Este guia te ajudará a configurar o Firebase para sincronizar seus dados de treino na nuvem.
+**Seu treino personalizado com IA**
 
-## 📋 Pré-requisitos
-- Conta Google
-- Acesso ao [Firebase Console](https://console.firebase.google.com/)
+Um aplicativo moderno de treino que combina planejamento inteligente com sugestões de IA para criar o programa de exercícios perfeito.
 
-## 🚀 Passo a Passo
+## ✨ Funcionalidades
 
-### 1. Criar Projeto no Firebase
+### 🤖 **IA Integrada**
+- Sugestões inteligentes de exercícios baseadas em suas necessidades
+- Análise completa do seu treino atual
+- Distribuição automática entre os dias de treino
+- Dicas detalhadas de execução para cada exercício
 
-1. Acesse o [Firebase Console](https://console.firebase.google.com/)
-2. Clique em **"Criar um projeto"**
-3. Nome do projeto: `meu-treino-app` (ou outro nome)
-4. Desabilite o Google Analytics (opcional para este projeto)
-5. Clique em **"Criar projeto"**
+### 📊 **Tracking Avançado**
+- Sistema moderno de registro de pesos e repetições
+- Histórico dos últimos treinos
+- Progresso visual por exercício
+- Salvamento automático na nuvem
 
-### 2. Configurar Firestore Database
+### 🎯 **Treino Estruturado**
+- Programa de 3 dias: Peito/Tríceps, Costas/Bíceps, Pernas
+- Exercícios de core integrados
+- Cronômetro para descanso entre séries
+- Interface intuitiva e responsiva
 
-1. No menu lateral, clique em **"Firestore Database"**
-2. Clique em **"Criar banco de dados"**
-3. Escolha **"Iniciar no modo de teste"** (permite leitura/escrita por 30 dias)
-4. Escolha uma localização próxima (ex: `southamerica-east1`)
-5. Clique em **"Pronto"**
+### ☁️ **Sincronização**
+- Backup automático no Firebase
+- Acesso offline
+- Sincronização entre dispositivos
+- Exportação de dados
 
-### 3. Configurar Autenticação (Opcional)
+## 🚀 Como Usar
 
-1. No menu lateral, clique em **"Authentication"**
-2. Clique em **"Iniciar"**
-3. Na aba **"Sign-in method"**, clique em **"Google"**
-4. **Ative** o provedor Google
-5. Adicione seu email como **email de suporte**
-6. Clique em **"Salvar"**
+### Pré-requisitos
+- Node.js 18+
+- Conta no Firebase (opcional)
+- Chave da API Claude (para IA)
 
-### 4. Registrar Aplicativo Web
+### Instalação
 
-1. Na página inicial do projeto, clique no ícone **Web** (`</>`)
-2. Nome do app: `Meu Treino Web`
-3. **NÃO** marque "Firebase Hosting"
-4. Clique em **"Registrar app"**
-5. **Copie o código de configuração** que aparece
-
-### 5. Configurar no Código
-
-1. Abra o arquivo `index.html`
-2. Encontre a seção `FirebaseConfig.config`
-3. Substitua os valores placeholder pelos seus dados:
-
-```javascript
-config: {
-    apiKey: "SUA_API_KEY_AQUI",
-    authDomain: "meu-treino-app.firebaseapp.com",
-    projectId: "meu-treino-app",
-    storageBucket: "meu-treino-app.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef123456789"
-},
+1. **Clone o repositório**
+```bash
+git clone https://github.com/seu-usuario/fittracker-pro.git
+cd fittracker-pro
 ```
 
-### 6. Configurar Regras de Segurança (Recomendado)
-
-Para um uso mais seguro, configure regras personalizadas:
-
-1. No Firebase Console, vá em **"Firestore Database"**
-2. Clique em **"Regras"**
-3. Substitua por:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Permite leitura/escrita para usuários autenticados
-    match /workouts/{document} {
-      allow read, write: if request.auth != null && request.auth.uid == document;
-    }
-  }
-}
+2. **Instale as dependências**
+```bash
+npm install
 ```
 
-4. Clique em **"Publicar"**
+3. **Configure as variáveis de ambiente**
+```bash
+# Crie um arquivo .env na raiz do projeto
+CLAUDE_API_KEY=sua_chave_claude_aqui
+```
 
-> **Nota**: Essas regras garantem que cada usuário só acesse seus próprios dados!
+4. **Inicie o servidor de desenvolvimento**
+```bash
+# Terminal 1: Frontend
+npm run dev
 
-## 🎯 Testando a Configuração
+# Terminal 2: Servidor IA
+node proxy-server.js
+```
 
-1. Abra sua aplicação no navegador
-2. Verifique no console do navegador (F12):
-   - `✅ Firebase inicializado com sucesso!` = Configurado corretamente
-   - `⚙️ Configure o Firebase...` = Configuração pendente
-   - `❌ Erro ao inicializar Firebase` = Erro na configuração
+5. **Acesse o aplicativo**
+```
+http://localhost:5173
+```
 
-3. O status aparecerá no topo da aplicação:
-   - `☁️ Conectado ao Firebase` = Funcionando
-   - `💾 Modo Local` = Usando apenas localStorage
-   - `❌ Erro de conexão` = Problema na configuração
+## 🛠️ Tecnologias
 
-## 🔧 Funcionalidades Ativas
+- **Frontend**: React 18, Vite, Lucide Icons
+- **Backend**: Node.js, Express
+- **IA**: Claude 3 Haiku (Anthropic)
+- **Database**: Firebase Firestore
+- **Styling**: CSS3 com variáveis customizadas
+- **Deploy**: Vercel/Netlify ready
 
-Com Firebase configurado, você terá:
+## 📱 Funcionalidades da IA
 
-### 🔥 Recursos Básicos
-- ✅ **Sincronização automática** entre dispositivos
-- ✅ **Backup na nuvem** de todos os dados
-- ✅ **Fallback inteligente** para localStorage se offline
-- ✅ **Auto-save** otimizado (salva a cada 2 segundos)
+### Comandos Suportados
+- `"exercícios para ombros"` → Sugere exercícios específicos
+- `"treino de 20 minutos"` → Adapta duração do treino
+- `"exercícios de core"` → Foco em fortalecimento
+- `"treino mais intenso"` → Aumenta dificuldade
 
-### 👤 Autenticação (se configurada)
-- ✅ **Login com Google** - acesso seguro e fácil
-- ✅ **Dados pessoais** - cada usuário tem seus próprios dados
-- ✅ **Migração automática** - dados locais migram para a conta
-- ✅ **Multi-dispositivo** - acesse de qualquer lugar
+### Exemplos de Uso
+```
+🤖 "Preciso de exercícios para fortalecer os ombros"
+→ IA sugere: Elevação Lateral (Dia 1), Desenvolvimento Arnold (Dia 1)
 
-### 🔄 Sincronização em Tempo Real
-- ✅ **Atualização instantânea** quando dados mudam em outro dispositivo
-- ✅ **Notificações sutis** de sincronização
-- ✅ **Resolução de conflitos** automática
+🤖 "Quero um treino de 45 minutos"
+→ IA sugere exercícios adicionais para todos os dias
 
-## 🚨 Troubleshooting
+🤖 "Exercícios para melhorar a postura"
+→ IA sugere exercícios de costas e core distribuídos
+```
 
-### Erro "Firebase não carregado"
-- Verifique sua conexão com a internet
-- Scripts do Firebase podem estar bloqueados
+## 🎨 Design
 
-### Erro "Firebase não configurado"
-- Verifique se substituiu TODOS os valores placeholder
-- Certifique-se que não há espaços extras
+- **Interface moderna** com design sóbrio e profissional
+- **Responsivo** para desktop e mobile
+- **Tema escuro/claro** automático
+- **Animações suaves** e feedback visual
+- **Acessibilidade** completa
 
-### Erro de permissão
-- Verifique as regras do Firestore
-- Certifique-se que está no "modo de teste"
+## 📊 Estrutura do Projeto
 
-## 📊 Monitoramento
+```
+fittracker-pro/
+├── src/
+│   ├── components/          # Componentes React
+│   ├── hooks/              # Custom hooks
+│   ├── services/           # Serviços (Firebase, IA)
+│   └── index.css          # Estilos globais
+├── proxy-server.js        # Servidor IA
+├── package.json
+└── README.md
+```
 
-No Firebase Console você pode:
-- Ver seus dados salvos em **Firestore Database**
-- Monitorar uso em **Usage**
-- Ver logs de erro em **Functions** (se ativado)
+## 🔧 Configuração Avançada
 
-## 🔒 Segurança
+### Firebase Setup
+1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
+2. Ative Firestore Database
+3. Configure as regras de segurança
+4. Adicione as credenciais no código
 
-**IMPORTANTE**: As configurações atuais são para desenvolvimento/uso pessoal. Para produção, configure:
-- Regras de segurança mais restritivas
-- Autenticação de usuários
-- Limites de taxa (rate limiting)
+### Claude API
+1. Obtenha uma chave em [Anthropic](https://console.anthropic.com)
+2. Adicione no arquivo `.env`
+3. Configure os limites de uso
+
+## 🚀 Deploy
+
+### Frontend (Vercel)
+```bash
+npm run build
+vercel --prod
+```
+
+### Backend (Railway/Heroku)
+```bash
+# Configure as variáveis de ambiente
+# Deploy o proxy-server.js
+```
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 🎯 Roadmap
+
+- [ ] App mobile (React Native)
+- [ ] Mais modelos de IA
+- [ ] Planos de treino pré-definidos
+- [ ] Integração com wearables
+- [ ] Comunidade de usuários
+- [ ] Nutrição integrada
+
+## 📞 Suporte
+
+- 📧 Email: suporte@fittracker.com
+- 💬 Discord: [FitTracker Community](https://discord.gg/fittracker)
+- 🐛 Issues: [GitHub Issues](https://github.com/seu-usuario/fittracker-pro/issues)
 
 ---
 
-🎉 **Pronto!** Agora sua aplicação de treino está conectada ao Firebase!
-
-Se tiver dúvidas, consulte a [documentação oficial do Firebase](https://firebase.google.com/docs).
+**Desenvolvido com ❤️ para revolucionar seus treinos**

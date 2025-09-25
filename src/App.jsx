@@ -19,6 +19,11 @@ function App() {
   const { workoutData, notes, updateWorkout, updateNotes, saveData, exportData, clearData } = useWorkoutData(user)
   const { customExercises, addExercise, removeExercise } = useExerciseManager()
 
+  // Função para remover exercício (para usar no modal)
+  const handleRemoveExercise = (exerciseId) => {
+    removeExercise(exerciseId)
+  }
+
   const handleSave = async () => {
     const success = await saveData()
     if (success) {
@@ -43,10 +48,13 @@ function App() {
 
   return (
     <div className="container">
-      <h1>💪 Meu Treino + Core</h1>
-      <p className="subtitle">30-35 min/dia com fortalecimento</p>
+      <div className="header">
+        <h1>🏋️ FitTracker Pro</h1>
+        <p className="subtitle">Seu treino personalizado com IA</p>
+      </div>
+      <div className="content">
 
-      <FirebaseStatus status={firebaseStatus} />
+
       
       <AuthSection 
         user={user}
@@ -55,10 +63,7 @@ function App() {
         onEnableOffline={enableOffline}
       />
       
-      <div className="info-box">
-        <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
-        <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
-      </div>
+
       
       <TimerSection />
       
@@ -82,7 +87,7 @@ function App() {
           <Download size={16} /> Exportar
         </button>
         <button className="btn-add" onClick={() => setShowModal(true)}>
-          <Plus size={16} /> Novo Exercício
+          <Plus size={16} /> Novo Exercício com IA
         </button>
         <button className="btn-clear" onClick={handleClear}>
           <Trash2 size={16} /> Limpar
@@ -93,7 +98,11 @@ function App() {
         show={showModal}
         onClose={() => setShowModal(false)}
         onAddExercise={handleAddExercise}
+        onRemoveExercise={handleRemoveExercise}
+        workoutData={workoutData}
+        customExercises={customExercises}
       />
+      </div>
     </div>
   )
 }
