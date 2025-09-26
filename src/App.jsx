@@ -77,21 +77,32 @@ function App() {
 
   const handleWorkoutGenerated = (result, profile) => {
     if (result.exercises) {
-      console.log('Criando novo treino:', result)
+      console.log('=== CRIANDO NOVO TREINO ===')
+      console.log('Exercícios recebidos da IA:', result.exercises.length)
       
-      // Limpar COMPLETAMENTE todos os dados antigos
-      const keysToRemove = []
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i)
-        if (key && (key.includes('custom_') || key === 'customExercises' || key === 'treino' || key === 'workoutMeta')) {
-          keysToRemove.push(key)
-        }
-      }
+      // LIMPEZA TOTAL - Remover TUDO relacionado a treinos
+      console.log('Limpando localStorage...')
+      const allKeys = Object.keys(localStorage)
+      const keysToRemove = allKeys.filter(key => 
+        key.includes('custom_') || 
+        key === 'customExercises' || 
+        key === 'treino' || 
+        key === 'workoutMeta' ||
+        key.includes('_current') ||
+        key.includes('_w1') ||
+        key.includes('_w2') ||
+        key.includes('_w3') ||
+        key.includes('_w4') ||
+        key.includes('_history')
+      )
+      
+      console.log('Removendo chaves:', keysToRemove)
       keysToRemove.forEach(key => localStorage.removeItem(key))
       
-      // Adicionar novos exercícios
+      // Criar novos exercícios com IDs únicos
+      const timestamp = Date.now()
       const exercises = result.exercises.map((ex, index) => ({
-        id: 'custom_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 5),
+        id: `custom_${timestamp}_${index}_${Math.random().toString(36).substr(2, 5)}`,
         name: ex.name,
         day: parseInt(ex.day),
         type: ex.type || 'weight',
@@ -101,20 +112,35 @@ function App() {
         created: new Date().toISOString()
       }))
       
-      console.log('Exercícios criados:', exercises.length, 'exercícios')
+      console.log('=== EXERCÍCIOS CRIADOS ===')
+      console.log('Total:', exercises.length)
+      exercises.forEach((ex, i) => {
+        console.log(`${i+1}. Dia ${ex.day}: ${ex.name} (${ex.series})`)
+      })
       
+      // Salvar novos exercícios
       localStorage.setItem('customExercises', JSON.stringify(exercises))
       
-      // Criar novo treino
-      createNewWorkout(exercises, profile)
+      // Criar metadados do treino
+      const workoutMeta = {
+        createdAt: new Date().toISOString(),
+        profile,
+        welcomeCompleted: true,
+        version: '3.0',
+        exerciseCount: exercises.length
+      }
+      localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
+      
+      console.log('=== TREINO SALVO ===')
+      console.log('Recarregando página...')
       
       // Fechar wizard
       setShowWizard(false)
       
-      // Recarregar página para atualizar estado
+      // Forçar recarga completa
       setTimeout(() => {
-        window.location.reload()
-      }, 500)
+        window.location.href = window.location.href
+      }, 300)
     }
   }
 
