@@ -106,9 +106,14 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
       }
     })
     
-    alert(`✅ Tentativa de adicionar ${suggestions.length} exercícios!`)
+    alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
     setSuggestions([])
     setShowSuggestions(false)
+    
+    // Forçar fechamento do modal para atualizar a tela
+    setTimeout(() => {
+      onClose()
+    }, 500)
   }
 
   if (!show) return null
@@ -135,6 +140,11 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
             className="ai-input"
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !isLoading) {
+                handleGetSuggestions()
+              }
+            }}
             placeholder="Ex: exercício para fortalecer ombros, exercício de core para iniciantes..."
           />
           <div className="ai-buttons">
