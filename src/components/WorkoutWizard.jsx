@@ -89,17 +89,23 @@ PERFIL:
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
 - Limitações: ${formData.limitations || 'Nenhuma'}
 
-Crie programa completo com 6-8 exercícios por dia.
+IMPORTANTE:
+- Crie EXATAMENTE ${formData.daysPerWeek} dias de treino
+- Cada dia deve ter 6-8 exercícios diferentes
+- Distribua os exercícios equilibradamente entre os dias
+- Use day: 1, day: 2, day: 3, etc.
 
-Responda APENAS com JSON:
+Responda APENAS com JSON válido:
 {
   "workoutPlan": {
-    "name": "Nome do Treino",
-    "description": "Descrição",
+    "name": "Treino ${goalLabels}",
+    "description": "Programa de ${formData.daysPerWeek} dias focado em ${goalLabels.toLowerCase()}",
     "duration": "6-8 semanas"
   },
   "exercises": [
-    {"name": "Nome", "day": 1, "series": "3x12", "type": "weight", "category": "normal", "notes": "Dica"}
+    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle a descida"},
+    {"name": "Crucifixo", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Foco na contração"},
+    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Mantenha as costas retas"}
   ]
 }`
 
@@ -303,8 +309,24 @@ Responda APENAS com JSON:
                   <button className="btn-secondary" onClick={() => setStep(5)}>
                     ← Ajustar
                   </button>
-                  <button className="btn-secondary" onClick={generatePreview}>
-                    🔄 Nova Sugestão
+                  <button 
+                    className="btn-secondary" 
+                    onClick={() => {
+                      setPreviewWorkout(null)
+                      generatePreview()
+                    }}
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <span className="loading"></span>
+                        Gerando...
+                      </>
+                    ) : (
+                      <>
+                        🔄 Nova Sugestão
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

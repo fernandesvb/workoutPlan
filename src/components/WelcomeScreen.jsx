@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Plus, RefreshCw, Calendar, TrendingUp } from 'lucide-react'
 import AuthSection from './AuthSection'
 
@@ -55,7 +54,10 @@ export default function WelcomeScreen({
         <div className="welcome-hero">
           <div className="hero-icon">🎯</div>
           <h1>Bem-vindo ao FitTracker Pro!</h1>
-          <p>Vamos criar seu treino personalizado com IA</p>
+          <p>Para começar, você precisa criar seu treino personalizado com IA</p>
+          <div className="hero-alert">
+            ⚠️ <strong>Primeiro passo:</strong> Clique em "Criar Meu Treino" abaixo
+          </div>
         </div>
 
         <div className="welcome-features">
@@ -92,6 +94,17 @@ export default function WelcomeScreen({
           >
             <Plus size={20} />
             Criar Meu Treino
+          </button>
+          
+          <button 
+            className="btn-secondary" 
+            onClick={() => {
+              console.log('Forçando modo existente')
+              onContinueExisting()
+            }}
+            style={{ marginTop: '12px' }}
+          >
+            Já tenho treino - Pular
           </button>
         </div>
       </div>
