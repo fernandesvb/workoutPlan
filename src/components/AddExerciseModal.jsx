@@ -78,12 +78,16 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
   }
 
   const handleAddAllSuggestions = () => {
+    console.log('=== DEBUG ADICIONAR TODOS ===')
+    console.log('Suggestions:', suggestions)
+    console.log('onAddExercise function:', onAddExercise)
+    
     if (!suggestions || suggestions.length === 0) {
       alert('⚠️ Nenhuma sugestão para adicionar!')
       return
     }
     
-    suggestions.forEach(suggestion => {
+    suggestions.forEach((suggestion, index) => {
       const exerciseData = {
         name: suggestion.name,
         day: suggestion.day,
@@ -92,10 +96,17 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
         category: suggestion.category || 'normal',
         notes: suggestion.notes || ''
       }
-      onAddExercise(exerciseData)
+      console.log(`Adicionando exercício ${index + 1}:`, exerciseData)
+      
+      try {
+        onAddExercise(exerciseData)
+        console.log(`Exercício ${index + 1} adicionado com sucesso`)
+      } catch (error) {
+        console.error(`Erro ao adicionar exercício ${index + 1}:`, error)
+      }
     })
     
-    alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
+    alert(`✅ Tentativa de adicionar ${suggestions.length} exercícios!`)
     setSuggestions([])
     setShowSuggestions(false)
   }
