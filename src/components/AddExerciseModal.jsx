@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { X, Sparkles, Trash2 } from 'lucide-react'
 import { generateExerciseSuggestions } from '../services/openaiService'
 
-export default function AddExerciseModal({ show, onClose, onAddExercise, onRemoveExercise, workoutData, customExercises }) {
+export default function AddExerciseModal({ show, onClose, onAddExercise, addExerciseDirectly, onRemoveExercise, workoutData, customExercises }) {
   const [formData, setFormData] = useState({
     name: '',
     day: '',
@@ -20,24 +20,29 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, customData = null) => {
     e.preventDefault()
-    if (!formData.name || !formData.day || !formData.type || !formData.series) {
+    const dataToUse = customData || formData
+    
+    if (!dataToUse.name || !dataToUse.day || !dataToUse.type || !dataToUse.series) {
       return
     }
     
-    onAddExercise(formData)
-    setFormData({
-      name: '',
-      day: '',
-      type: '',
-      series: '',
-      category: 'normal',
-      notes: ''
-    })
-    setAiPrompt('')
-    setSuggestions([])
-    setShowSuggestions(false)
+    onAddExercise(dataToUse, !!customData)
+    
+    if (!customData) {
+      setFormData({
+        name: '',
+        day: '',
+        type: '',
+        series: '',
+        category: 'normal',
+        notes: ''
+      })
+      setAiPrompt('')
+      setSuggestions([])
+      setShowSuggestions(false)
+    }
   }
 
   const handleGetSuggestions = async () => {
@@ -83,10 +88,10 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
       return
     }
     
-    // Sinalizar que estamos adicionando múltiplos
-    window.addingMultiple = true
-    
+    // Testar chamada direta
     suggestions.forEach((suggestion, index) => {
+      console.log(`Adicionando exercício ${index + 1}:`, suggestion)
+      
       const exerciseData = {
         name: suggestion.name,
         day: suggestion.day,
@@ -95,13 +100,12 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
         category: suggestion.category || 'normal',
         notes: suggestion.notes || ''
       }
-      onAddExercise(exerciseData)
+      
+      // Chamar addExercise diretamente
+      addExerciseDirectly(exerciseData)
     })
     
-    // Finalizar adição múltipla
-    window.addingMultiple = false
-    
-    alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
+    alert(`✅ ${suggestions.length} exercícios processados!`)
     setSuggestions([])
     setShowSuggestions(false)
     onClose()
