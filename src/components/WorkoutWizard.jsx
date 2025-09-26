@@ -14,6 +14,9 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
   })
   const [previewWorkout, setPreviewWorkout] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [customEquipments, setCustomEquipments] = useState('')
+  const [equipmentPhoto, setEquipmentPhoto] = useState(null)
+  const [analyzingPhoto, setAnalyzingPhoto] = useState(false)
 
   const goals = [
     { id: 'lose_weight', label: 'Emagrecer', icon: '🔥', desc: 'Queimar gordura e definir' },
@@ -49,7 +52,8 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
     { id: 'gym', label: 'Academia', desc: 'Acesso completo' },
     { id: 'home_full', label: 'Casa Completa', desc: 'Halteres, barras, etc' },
     { id: 'home_basic', label: 'Casa Básica', desc: 'Poucos equipamentos' },
-    { id: 'bodyweight', label: 'Peso Corporal', desc: 'Sem equipamentos' }
+    { id: 'bodyweight', label: 'Peso Corporal', desc: 'Sem equipamentos' },
+    { id: 'custom', label: 'Personalizado', desc: 'Descrever ou fotografar' }
   ]
 
   const handleSelect = (field, value) => {
@@ -132,13 +136,59 @@ Responda APENAS com JSON válido:
     if (step > 1) setStep(step - 1)
   }
 
+  const analyzeEquipmentPhoto = async (file) => {
+    setAnalyzingPhoto(true)
+    try {
+      const base64 = await convertToBase64(file)
+      
+      const prompt = `Analise esta foto e identifique todos os equipamentos de exercício visíveis. Liste apenas os equipamentos, separados por vírgula. Exemplo: "Halteres, Barra fixa, Esteira, Banco"`
+      
+      const response = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt,
+          image: base64
+        })
+      })
+      
+      if (!response.ok) throw new Error('Erro na análise')
+      
+      const result = await response.json()
+      setCustomEquipments(result.response || 'Não foi possível identificar equipamentos')
+      
+    } catch (error) {
+      console.error('Erro ao analisar foto:', error)
+      alert('Erro ao analisar foto. Tente descrever manualmente.')
+    } finally {
+      setAnalyzingPhoto(false)
+    }
+  }
+  
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+    })
+  }
+  
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setEquipmentPhoto(file)
+      analyzeEquipmentPhoto(file)
+    }
+  }
+
   const canProceed = () => {
     switch (step) {
       case 1: return formData.goals.length > 0
       case 2: return formData.daysPerWeek
       case 3: return formData.experience
       case 4: return formData.timeAvailable
-      case 5: return formData.equipment
+      case 5: return formData.equipment && (formData.equipment !== 'custom' || customEquipments.trim())
       case 6: return previewWorkout
       default: return false
     }
@@ -189,17 +239,15 @@ Responda APENAS com JSON válido:
           <div className="wizard-step">
             <div className="step-icon"><Calendar size={32} /></div>
             <h3>Quantos dias por semana você quer treinar?</h3>
-            <div className="options-list">
+            <div className="options-grid days-grid">
               {daysOptions.map(day => (
                 <button
                   key={day.id}
-                  className={`option-item ${formData.daysPerWeek === day.id ? 'selected' : ''}`}
+                  className={`option-card ${formData.daysPerWeek === day.id ? 'selected' : ''}`}
                   onClick={() => handleSelect('daysPerWeek', day.id)}
                 >
-                  <div className="option-content">
-                    <div className="option-label">{day.label}</div>
-                    <div className="option-desc">{day.desc}</div>
-                  </div>
+                  <div className="option-label">{day.label}</div>
+                  <div className="option-desc">{day.desc}</div>
                 </button>
               ))}
             </div>
@@ -210,17 +258,15 @@ Responda APENAS com JSON válido:
           <div className="wizard-step">
             <div className="step-icon"><Dumbbell size={32} /></div>
             <h3>Qual sua experiência com treinos?</h3>
-            <div className="options-list">
+            <div className="options-grid experience-grid">
               {experiences.map(exp => (
                 <button
                   key={exp.id}
-                  className={`option-item ${formData.experience === exp.id ? 'selected' : ''}`}
+                  className={`option-card ${formData.experience === exp.id ? 'selected' : ''}`}
                   onClick={() => handleSelect('experience', exp.id)}
                 >
-                  <div className="option-content">
-                    <div className="option-label">{exp.label}</div>
-                    <div className="option-desc">{exp.desc}</div>
-                  </div>
+                  <div className="option-label">{exp.label}</div>
+                  <div className="option-desc">{exp.desc}</div>
                 </button>
               ))}
             </div>
@@ -265,6 +311,57 @@ Responda APENAS com JSON válido:
               ))}
             </div>
 
+            {formData.equipment === 'custom' && (
+              <div className="custom-equipment-section">
+                <div className="equipment-options">
+                  <div className="option-method">
+                    <h4>📝 Descrever equipamentos:</h4>
+                    <textarea
+                      value={customEquipments}
+                      onChange={(e) => setCustomEquipments(e.target.value)}
+                      placeholder="Ex: 2 halteres de 10kg, barra fixa, tapete de yoga, faixa elástica..."
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="option-divider">OU</div>
+                  
+                  <div className="option-method">
+                    <h4>📷 Fotografar equipamentos:</h4>
+                    <div className="photo-upload">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        id="equipment-photo"
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="equipment-photo" className="upload-btn">
+                        {analyzingPhoto ? (
+                          <>
+                            <span className="loading"></span>
+                            Analisando foto...
+                          </>
+                        ) : (
+                          <>
+                            📷 Tirar/Escolher Foto
+                          </>
+                        )}
+                      </label>
+                      {equipmentPhoto && (
+                        <div className="photo-preview">
+                          <img 
+                            src={URL.createObjectURL(equipmentPhoto)} 
+                            alt="Equipamentos" 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="limitations-section">
               <label>Limitações ou preferências (opcional):</label>
               <textarea

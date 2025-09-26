@@ -137,7 +137,10 @@ export default function WelcomeScreen({
           <h2>Seu Treino Atual</h2>
           <div className="workout-age">
             <Calendar size={16} />
-            {workoutAge} dias
+            {workoutAge === 1 ? 'Criado hoje' : 
+             workoutAge < 7 ? `${workoutAge} dias` :
+             workoutAge < 30 ? `${Math.floor(workoutAge / 7)} semanas` :
+             `${Math.floor(workoutAge / 30)} meses`}
           </div>
         </div>
 
