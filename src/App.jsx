@@ -110,6 +110,10 @@ function App() {
             onCreateNew={handleCreateNew}
             onRenewWorkout={handleRenewWorkout}
             onContinueExisting={handleContinueExisting}
+            user={user}
+            onSignIn={signIn}
+            onSignOut={signOut}
+            onEnableOffline={enableOffline}
           />
         </div>
         
@@ -135,15 +139,14 @@ function App() {
         <p className="subtitle">Seu treino personalizado com IA</p>
       </div>
       <div className="content">
-
-
-      
-      <AuthSection 
-        user={user}
-        onSignIn={signIn}
-        onSignOut={signOut}
-        onEnableOffline={enableOffline}
-      />
+      <div className="back-to-home">
+        <button 
+          className="btn-back" 
+          onClick={() => window.location.reload()}
+        >
+          ← Voltar ao Início
+        </button>
+      </div>
       
       <TimerSection />
       
