@@ -79,10 +79,15 @@ function App() {
     if (result.exercises) {
       console.log('Criando novo treino:', result)
       
-      // Limpar TODOS os dados antigos
-      localStorage.removeItem('customExercises')
-      localStorage.removeItem('treino')
-      localStorage.removeItem('workoutMeta')
+      // Limpar COMPLETAMENTE todos os dados antigos
+      const keysToRemove = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && (key.includes('custom_') || key === 'customExercises' || key === 'treino' || key === 'workoutMeta')) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key))
       
       // Adicionar novos exercícios
       const exercises = result.exercises.map((ex, index) => ({
@@ -96,7 +101,7 @@ function App() {
         created: new Date().toISOString()
       }))
       
-      console.log('Exercícios criados:', exercises)
+      console.log('Exercícios criados:', exercises.length, 'exercícios')
       
       localStorage.setItem('customExercises', JSON.stringify(exercises))
       
