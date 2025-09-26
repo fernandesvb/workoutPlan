@@ -41,25 +41,43 @@ ${customExercises.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex
 
 SOLICITAÇÃO: "${prompt}"
 
-INSTRUÇÕES:
+INSTRUÇÕES OBRIGATÓRIAS:
 - SEMPRE analise os 3 dias completos do treino
-- Distribua exercícios nos dias apropriados: Dia 1=Peito/Tríceps/Ombros, Dia 2=Costas/Bíceps, Dia 3=Pernas
-- Sugira 2-3 exercícios distribuídos entre os dias
-- SEMPRE inclua dicas detalhadas
+- OBRIGATÓRIO: Distribua exercícios nos 3 dias (pelo menos 1 exercício por dia)
+- Dia 1=Peito/Tríceps/Ombros, Dia 2=Costas/Bíceps, Dia 3=Pernas
+- Para treinos mais longos (40+ min): sugira 4-6 exercícios total
+- Para treinos mais curtos: sugira remoções
+- SEMPRE inclua dicas detalhadas de execução
 
 Responda APENAS com JSON válido:
 {
   "exercises": [
     {
-      "name": "Nome do Exercício",
+      "name": "Exercício Dia 1",
       "series": "3x12",
       "type": "weight",
       "category": "normal",
       "day": 1,
       "notes": "Dica detalhada"
+    },
+    {
+      "name": "Exercício Dia 2",
+      "series": "3x12",
+      "type": "weight",
+      "category": "normal",
+      "day": 2,
+      "notes": "Dica detalhada"
+    },
+    {
+      "name": "Exercício Dia 3",
+      "series": "3x12",
+      "type": "weight",
+      "category": "normal",
+      "day": 3,
+      "notes": "Dica detalhada"
     }
   ],
-  "explanation": "Explicação detalhada"
+  "explanation": "Explicação de como distribuí nos 3 dias"
 }`
         }]
       })
