@@ -30,7 +30,7 @@ export function useWorkoutData(user) {
             })
           }
         } catch (error) {
-          console.error('Erro no auto-save:', error)
+          // Auto-save falhou silenciosamente
         }
       }
     }
@@ -73,7 +73,7 @@ export function useWorkoutData(user) {
         setNotes(data.notes || '')
       }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error)
+      // Erro silencioso - fallback para localStorage
     }
   }
 
@@ -106,7 +106,6 @@ export function useWorkoutData(user) {
       
       return true
     } catch (error) {
-      console.error('Erro ao salvar:', error)
       return false
     }
   }
@@ -177,7 +176,6 @@ export function useWorkoutData(user) {
       setNotes('')
       return true
     } catch (error) {
-      console.error('Erro ao limpar dados:', error)
       return false
     }
   }

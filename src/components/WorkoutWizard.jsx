@@ -171,16 +171,8 @@ RESPONDA APENAS O JSON COMPLETO:`
 
       const result = await response.json()
       
-      // Debug: verificar se IA respondeu
-      if (result.workoutPlan?.explanation) {
-        console.log('✅ IA respondeu com explicação:', result.workoutPlan.explanation)
-      } else {
-        console.log('⚠️ IA não gerou explicação')
-      }
-      
       // Se a IA não retornou exercícios suficientes, gerar manualmente
       if (!result.exercises || result.exercises.length < parseInt(formData.daysPerWeek) * exerciseCount) {
-        console.log('⚠️ Usando fallback - IA não gerou exercícios suficientes')
         result.exercises = generateFallbackExercises()
         
         // Adicionar explicação manual se IA não gerou
@@ -197,7 +189,6 @@ RESPONDA APENAS O JSON COMPLETO:`
       setPreviewWorkout(result)
       
     } catch (error) {
-      console.error('Erro ao gerar preview:', error)
       alert('Erro ao gerar preview. Tente novamente.')
     } finally {
       setIsGenerating(false)
@@ -230,7 +221,6 @@ RESPONDA APENAS O JSON COMPLETO:`
       setCustomEquipments(result.response || 'Não foi possível identificar equipamentos')
       
     } catch (error) {
-      console.error('Erro ao analisar foto:', error)
       alert('Erro ao analisar foto. Tente descrever manualmente.')
     } finally {
       setAnalyzingPhoto(false)
