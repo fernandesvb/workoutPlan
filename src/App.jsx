@@ -7,18 +7,22 @@ import WorkoutTabs from './components/WorkoutTabs'
 import WorkoutDay from './components/WorkoutDay'
 import NotesSection from './components/NotesSection'
 import AddExerciseModal from './components/AddExerciseModal'
-import AIUsageCounter from './components/AIUsageCounter'
+import WelcomeScreen from './components/WelcomeScreen'
+import WorkoutWizard from './components/WorkoutWizard'
 import { useFirebase } from './hooks/useFirebase'
 import { useWorkoutData } from './hooks/useWorkoutData'
 import { useExerciseManager } from './hooks/useExerciseManager'
+import { useWorkoutState } from './hooks/useWorkoutState'
 
 function App() {
   const [activeDay, setActiveDay] = useState(1)
   const [showModal, setShowModal] = useState(false)
+  const [showWizard, setShowWizard] = useState(false)
   
   const { firebaseStatus, user, signIn, signOut, enableOffline } = useFirebase()
   const { workoutData, notes, updateWorkout, updateNotes, saveData, exportData, clearData } = useWorkoutData(user)
   const { customExercises, addExercise, removeExercise } = useExerciseManager()
+  const { workoutState, createNewWorkout, renewWorkout, continueExistingWorkout, getWorkoutAge } = useWorkoutState()
 
   // Função para remover exercício (para usar no modal)
   const handleRemoveExercise = (exerciseId) => {
@@ -49,6 +53,81 @@ function App() {
     }
   }
 
+  const handleWorkoutGenerated = (result, profile) => {
+    if (result.exercises) {
+      // Limpar exercícios existentes
+      localStorage.removeItem('customExercises')
+      
+      // Adicionar novos exercícios
+      const exercises = result.exercises.map(ex => ({
+        id: 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: ex.name,
+        day: parseInt(ex.day),
+        type: ex.type,
+        series: ex.series,
+        category: ex.category || 'normal',
+        notes: ex.notes || '',
+        created: new Date().toISOString()
+      }))
+      
+      localStorage.setItem('customExercises', JSON.stringify(exercises))
+      
+      // Criar novo treino
+      createNewWorkout(exercises, profile)
+      
+      // Fechar wizard
+      setShowWizard(false)
+      
+      // Recarregar página para atualizar estado
+      window.location.reload()
+    }
+  }
+
+  const handleCreateNew = () => {
+    setShowWizard(true)
+  }
+
+  const handleRenewWorkout = () => {
+    setShowWizard(true)
+  }
+
+  const handleContinueExisting = () => {
+    continueExistingWorkout()
+  }
+
+  // Mostrar welcome screen se necessário
+  if (workoutState.showWelcome) {
+    return (
+      <div className="container">
+        <div className="header">
+          <h1>🏋️ FitTracker Pro</h1>
+          <p className="subtitle">Seu treino personalizado com IA</p>
+        </div>
+        <div className="content">
+          <WelcomeScreen 
+            hasExistingWorkout={workoutState.hasWorkout}
+            workoutAge={getWorkoutAge}
+            onCreateNew={handleCreateNew}
+            onRenewWorkout={handleRenewWorkout}
+            onContinueExisting={handleContinueExisting}
+          />
+        </div>
+        
+        {showWizard && (
+          <div className="modal show">
+            <div className="modal-content wizard-modal">
+              <WorkoutWizard 
+                onWorkoutGenerated={handleWorkoutGenerated}
+                onClose={() => setShowWizard(false)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // App principal
   return (
     <div className="container">
       <div className="header">
