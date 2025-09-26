@@ -87,46 +87,21 @@ export default function WelcomeScreen({
         <div className="welcome-actions">
           <button 
             className="btn-primary large" 
-            onClick={onCreateNew}
+            onClick={onContinueExisting}
           >
-            <Plus size={20} />
-            Criar Meu Treino
+            ▶️ Continuar treino
           </button>
           
           <button 
             className="btn-secondary" 
-            onClick={onContinueExisting}
+            onClick={onCreateNew}
             style={{ marginTop: '12px' }}
           >
-            Já tenho treino - Pular
+            <Plus size={20} />
+            Criar novo treino
           </button>
           
-          <button 
-            className="btn-danger" 
-            onClick={() => {
-              if (confirm('ATENÇÃO: Isso vai apagar TODOS os dados de treino. Continuar?')) {
-                const allKeys = Object.keys(localStorage)
-                const keysToRemove = allKeys.filter(key => 
-                  key.includes('custom_') || 
-                  key === 'customExercises' || 
-                  key === 'treino' || 
-                  key === 'workoutMeta' ||
-                  key.includes('_current') ||
-                  key.includes('_w1') ||
-                  key.includes('_w2') ||
-                  key.includes('_w3') ||
-                  key.includes('_w4') ||
-                  key.includes('_history')
-                )
-                keysToRemove.forEach(key => localStorage.removeItem(key))
-                alert('Dados limpos! Recarregando...')
-                window.location.reload()
-              }
-            }}
-            style={{ marginTop: '8px', fontSize: '12px' }}
-          >
-            🗑️ Limpar Tudo (Debug)
-          </button>
+
         </div>
       </div>
     )
@@ -181,8 +156,7 @@ export default function WelcomeScreen({
           className="btn-primary" 
           onClick={onContinueExisting}
         >
-          <TrendingUp size={16} />
-          Continuar Treino
+          ▶️ Continuar treino
         </button>
         
         <button 

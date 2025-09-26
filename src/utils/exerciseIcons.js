@@ -2,17 +2,17 @@
 export const getExerciseIcon = (category, type) => {
   const iconMap = {
     // Grupos musculares
-    'chest': { icon: '💪', color: '#ef4444', name: 'PEITO' },
-    'back': { icon: '🏋️', color: '#3b82f6', name: 'COSTAS' },
-    'shoulders': { icon: '🤸', color: '#f59e0b', name: 'OMBROS' },
-    'arms': { icon: '💪', color: '#10b981', name: 'BRAÇOS' },
-    'biceps': { icon: '💪', color: '#10b981', name: 'BÍCEPS' },
-    'triceps': { icon: '🔥', color: '#ef4444', name: 'TRÍCEPS' },
-    'legs': { icon: '🦵', color: '#8b5cf6', name: 'PERNAS' },
-    'glutes': { icon: '🍑', color: '#ec4899', name: 'GLÚTEOS' },
-    'core': { icon: '⚡', color: '#f59e0b', name: 'CORE' },
-    'abs': { icon: '⚡', color: '#f59e0b', name: 'ABDOMEN' },
-    'cardio': { icon: '❤️', color: '#ef4444', name: 'CARDIO' },
+    'chest': { icon: '💪', color: '#dc2626', name: 'PEITO' },
+    'back': { icon: '🤾', color: '#1d4ed8', name: 'COSTAS' },
+    'shoulders': { icon: '🎆', color: '#ea580c', name: 'OMBROS' },
+    'arms': { icon: '💪', color: '#059669', name: 'BRAÇOS' },
+    'biceps': { icon: '🤾', color: '#059669', name: 'BÍCEPS' },
+    'triceps': { icon: '🔥', color: '#dc2626', name: 'TRÍCEPS' },
+    'legs': { icon: '🦵', color: '#7c3aed', name: 'PERNAS' },
+    'glutes': { icon: '🍑', color: '#be185d', name: 'GLÚTEOS' },
+    'core': { icon: '⚡', color: '#d97706', name: 'CORE' },
+    'abs': { icon: '⚡', color: '#d97706', name: 'ABDOMEN' },
+    'cardio': { icon: '❤️', color: '#dc2626', name: 'CARDIO' },
     
     // Tipos de exercício
     'weight': { icon: '🏋️', color: '#6b7280', name: 'Peso' },

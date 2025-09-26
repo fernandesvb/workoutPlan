@@ -84,19 +84,20 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
             )}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div>
           <span className="series-info">{exercise.series}</span>
-          {isCustom && (
-            <button
-              onClick={handleRemove}
-              className="remove-btn"
-              title="Remover exercício"
-            >
-              <X size={14} />
-            </button>
-          )}
         </div>
       </div>
+      
+      {isCustom && (
+        <button
+          onClick={handleRemove}
+          className="remove-btn"
+          title="Remover exercício"
+        >
+          <X size={16} />
+        </button>
+      )}
       
       <div className="exercise-tracking">
         <div className="current-session">

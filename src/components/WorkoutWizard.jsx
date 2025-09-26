@@ -213,6 +213,20 @@ RESPONDA APENAS O JSON COMPLETO:`
     }
   }
   
+  const getPortugueseGroupName = (group) => {
+    const translations = {
+      'chest': 'Foco no peito - força e definição',
+      'back': 'Foco nas costas - postura e força',
+      'legs': 'Foco nas pernas - potência e resistência',
+      'shoulders': 'Foco nos ombros - estabilidade e força',
+      'biceps': 'Foco no bíceps - definição dos braços',
+      'triceps': 'Foco no tríceps - força dos braços',
+      'glutes': 'Foco nos glúteos - potência e forma',
+      'core': 'Foco no core - estabilidade e equilíbrio'
+    }
+    return translations[group] || 'Exercício de força'
+  }
+  
   const generateFallbackExercises = () => {
     const exerciseCount = getExerciseCount()
     const daysCount = parseInt(formData.daysPerWeek)
@@ -268,7 +282,7 @@ RESPONDA APENAS O JSON COMPLETO:`
               series: group === 'core' ? '3x30s' : '3x12',
               type: formData.equipment === 'gym' ? 'weight' : 'bodyweight',
               category: group,
-              notes: `Foco em ${group}`
+              notes: getPortugueseGroupName(group)
             })
             exercisesAdded++
           }
