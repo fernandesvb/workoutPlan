@@ -1,19 +1,57 @@
 import { useState } from 'react'
 import { Plus, RefreshCw, Calendar, TrendingUp } from 'lucide-react'
+import AuthSection from './AuthSection'
 
 export default function WelcomeScreen({ 
   hasExistingWorkout, 
   workoutAge, 
   onCreateNew, 
   onRenewWorkout, 
-  onContinueExisting 
+  onContinueExisting,
+  user,
+  onSignIn,
+  onSignOut,
+  onEnableOffline 
 }) {
   const shouldSuggestRenewal = workoutAge && workoutAge > 42 // 6 semanas
+
+  const getMotivationalQuote = () => {
+    const today = new Date().getDay() // 0-6
+    const quotes = [
+      '💪 Domingo é dia de planejamento! Prepare-se para uma semana incrível!',
+      '🔥 Segunda-feira, dia de começar com tudo! Vamos treinar!',
+      '⚡ Terça-feira de energia! Seu corpo agradece cada movimento!',
+      '🎯 Quarta-feira, metade da semana! Mantenha o foco nos seus objetivos!',
+      '🚀 Quinta-feira de superação! Você é mais forte que imagina!',
+      '🎆 Sexta-feira de finalização! Termine a semana com chave de ouro!',
+      '🌟 Sábado de conquistas! Cada treino te aproxima do seu melhor!'
+    ]
+    return quotes[today]
+  }
+
+  const getCurrentWorkoutDay = () => {
+    const today = new Date().getDay()
+    if (today === 1 || today === 4) return 'Dia 1 - Peito/Tríceps'
+    if (today === 2 || today === 5) return 'Dia 2 - Costas/Bíceps'
+    if (today === 3 || today === 6) return 'Dia 3 - Pernas'
+    return 'Dia de descanso ou escolha livre'
+  }
 
   if (!hasExistingWorkout) {
     // Novo usuário
     return (
       <div className="welcome-screen">
+        <AuthSection 
+          user={user}
+          onSignIn={onSignIn}
+          onSignOut={onSignOut}
+          onEnableOffline={onEnableOffline}
+        />
+        
+        <div className="motivational-quote">
+          <p>{getMotivationalQuote()}</p>
+        </div>
+        
         <div className="welcome-hero">
           <div className="hero-icon">🎯</div>
           <h1>Bem-vindo ao FitTracker Pro!</h1>
@@ -57,6 +95,24 @@ export default function WelcomeScreen({
   // Usuário existente
   return (
     <div className="welcome-screen existing">
+      <AuthSection 
+        user={user}
+        onSignIn={onSignIn}
+        onSignOut={onSignOut}
+        onEnableOffline={onEnableOffline}
+      />
+      
+      <div className="motivational-quote">
+        <p>{getMotivationalQuote()}</p>
+      </div>
+      
+      <div className="current-workout-info">
+        <div className="workout-day">
+          <strong>Treino de hoje:</strong>
+          <span>{getCurrentWorkoutDay()}</span>
+        </div>
+      </div>
+      
       <div className="workout-status">
         <div className="status-header">
           <h2>Seu Treino Atual</h2>
