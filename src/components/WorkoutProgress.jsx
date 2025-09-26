@@ -31,15 +31,15 @@ export default function WorkoutProgress({
     let estimatedTime = 0
 
     dayExercises.forEach(exercise => {
-      const exerciseData = workoutData[`${exercise.id}_w1`] // Semana atual
+      const exerciseData = workoutData[`${exercise.id}_current`] // Dados atuais
       
-      // Estimar tempo por exercício (3-4 min por exercício)
-      estimatedTime += 4
-      
-      if (exerciseData && exerciseData.current && exerciseData.current > 0) {
+      if (exerciseData && exerciseData.trim() !== '') {
         completed++
       }
     })
+    
+    // Estimar tempo apenas para exercícios restantes (3 min por exercício)
+    estimatedTime = (total - completed) * 3
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
 
@@ -47,7 +47,7 @@ export default function WorkoutProgress({
       completed,
       total,
       percentage,
-      estimatedTime: Math.max(0, (total - completed) * 4)
+      estimatedTime
     })
 
     // Notificar se treino foi completado

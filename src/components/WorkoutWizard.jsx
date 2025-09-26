@@ -84,34 +84,63 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
     try {
       const goalLabels = formData.goals.map(g => goals.find(goal => goal.id === g)?.label).join(' + ')
       
-      const prompt = `Crie um treino de ${formData.daysPerWeek} dias baseado no perfil:
+      // Calcular quantidade de exercícios baseado no tempo e experiência
+      const getExerciseCount = () => {
+        const timeMinutes = parseInt(formData.timeAvailable)
+        const experience = formData.experience
+        
+        let baseCount = 4 // Mínimo
+        
+        // Ajustar por tempo disponível
+        if (timeMinutes >= 60) baseCount = 8
+        else if (timeMinutes >= 45) baseCount = 7
+        else if (timeMinutes >= 30) baseCount = 6
+        else if (timeMinutes >= 20) baseCount = 5
+        
+        // Ajustar por experiência
+        if (experience === 'beginner') baseCount = Math.max(4, baseCount - 1)
+        else if (experience === 'advanced') baseCount = Math.min(8, baseCount + 1)
+        
+        return baseCount
+      }
       
-PERFIL:
+      const exerciseCount = getExerciseCount()
+      
+      const prompt = `Crie um treino completo de ${formData.daysPerWeek} dias baseado no perfil:
+
+PERFIL DO USUÁRIO:
 - Objetivos: ${goalLabels}
 - Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-- Tempo: ${formData.timeAvailable}min/dia
+- Tempo disponível: ${formData.timeAvailable} minutos por dia
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
 - Limitações: ${formData.limitations || 'Nenhuma'}
 
-IMPORTANTE:
-- Crie EXATAMENTE ${formData.daysPerWeek} dias de treino
-- Cada dia deve ter 6-8 exercícios diferentes
-- Distribua os exercícios equilibradamente entre os dias
-- Use day: 1, day: 2, day: 3, etc.
+INSTRUÇÕES OBRIGATÓRIAS:
+1. Crie EXATAMENTE ${formData.daysPerWeek} dias de treino
+2. CADA DIA deve ter EXATAMENTE ${exerciseCount} exercícios diferentes
+3. Adapte a intensidade para ${experiences.find(e => e.id === formData.experience)?.label}
+4. Considere o tempo de ${formData.timeAvailable}min por treino
+5. Use day: 1, day: 2, day: 3, etc. (números)
+6. Distribua os grupos musculares equilibradamente
 
-Responda APENAS com JSON válido:
+EXEMPLO do formato esperado:
 {
   "workoutPlan": {
     "name": "Treino ${goalLabels}",
-    "description": "Programa de ${formData.daysPerWeek} dias focado em ${goalLabels.toLowerCase()}",
+    "description": "Programa de ${formData.daysPerWeek} dias",
     "duration": "6-8 semanas"
   },
   "exercises": [
     {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle a descida"},
     {"name": "Crucifixo", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Foco na contração"},
-    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Mantenha as costas retas"}
+    {"name": "Desenvolvimento", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Movimento controlado"},
+    {"name": "Tríceps Testa", "day": 1, "series": "3x12", "type": "weight", "category": "triceps", "notes": "Cotovelos fixos"},
+    {"name": "Abdominal", "day": 1, "series": "3x15", "type": "bodyweight", "category": "core", "notes": "Contração total"},
+    {"name": "Prancha", "day": 1, "series": "3x30s", "type": "bodyweight", "category": "core", "notes": "Corpo alinhado"}
   ]
-}`
+}
+
+Responda APENAS com o JSON válido:`
 
       const response = await fetch('/api/claude', {
         method: 'POST',
@@ -296,17 +325,15 @@ Responda APENAS com JSON válido:
           <div className="wizard-step">
             <div className="step-icon"><Dumbbell size={32} /></div>
             <h3>Quais equipamentos você tem?</h3>
-            <div className="options-list">
+            <div className="options-grid">
               {equipments.map(eq => (
                 <button
                   key={eq.id}
-                  className={`option-item ${formData.equipment === eq.id ? 'selected' : ''}`}
+                  className={`option-card ${formData.equipment === eq.id ? 'selected' : ''}`}
                   onClick={() => handleSelect('equipment', eq.id)}
                 >
-                  <div className="option-content">
-                    <div className="option-label">{eq.label}</div>
-                    <div className="option-desc">{eq.desc}</div>
-                  </div>
+                  <div className="option-label">{eq.label}</div>
+                  <div className="option-desc">{eq.desc}</div>
                 </button>
               ))}
             </div>
