@@ -7,6 +7,7 @@ import WorkoutTabs from './components/WorkoutTabs'
 import WorkoutDay from './components/WorkoutDay'
 import NotesSection from './components/NotesSection'
 import AddExerciseModal from './components/AddExerciseModal'
+import AIUsageCounter from './components/AIUsageCounter'
 import { useFirebase } from './hooks/useFirebase'
 import { useWorkoutData } from './hooks/useWorkoutData'
 import { useExerciseManager } from './hooks/useExerciseManager'
@@ -63,7 +64,7 @@ function App() {
         onEnableOffline={enableOffline}
       />
       
-
+      <AIUsageCounter />
       
       <TimerSection />
       
