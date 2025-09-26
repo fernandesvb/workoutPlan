@@ -124,10 +124,27 @@ Responda em formato JSON:
   try {
     console.log('🌐 Fazendo chamada para Claude API...')
     
-    // IA Mock - sugestões inteligentes baseadas no prompt
-    console.log('🤖 Usando IA Mock...')
+    const response = await fetch('/api/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt,
+        workoutData,
+        customExercises
+      })
+    })
+
+    console.log('📡 Status da resposta:', response.status)
     
-    const result = generateMockSuggestions(prompt, customExercises)
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('❌ Erro na API Claude:', response.status, errorText)
+      throw new Error(`Erro na API: ${response.status} - ${errorText}`)
+    }
+
+    const result = await response.json()
     console.log('✅ Resposta recebida:', result)
     
     // Se tiver explicação, mostrar para o usuário
@@ -149,34 +166,63 @@ Responda em formato JSON:
 function generateMockSuggestions(prompt, customExercises) {
   const lowerPrompt = prompt.toLowerCase()
   
+  // Analisar exercícios já adicionados
+  const exercisesDay1 = customExercises.filter(ex => ex.day === 1).map(ex => ex.name.toLowerCase())
+  const exercisesDay2 = customExercises.filter(ex => ex.day === 2).map(ex => ex.name.toLowerCase())
+  const exercisesDay3 = customExercises.filter(ex => ex.day === 3).map(ex => ex.name.toLowerCase())
+  
   if (lowerPrompt.includes('ombro')) {
+    const hasLateral = exercisesDay1.some(name => name.includes('lateral'))
+    const hasArnold = exercisesDay1.some(name => name.includes('arnold'))
+    
+    const suggestions = []
+    if (!hasLateral) suggestions.push({ name: 'Elevação Lateral', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Mantenha cotovelos ligeiramente flexionados' })
+    if (!hasArnold) suggestions.push({ name: 'Desenvolvimento Arnold', series: '3x10', type: 'weight', category: 'normal', day: 1, notes: 'Movimento completo de rotação' })
+    
+    // Se já tem esses, sugerir outros
+    if (suggestions.length === 0) {
+      suggestions.push({ name: 'Elevação Posterior', series: '3x15', type: 'weight', category: 'normal', day: 1, notes: 'Incline o tronco e eleve lateralmente' })
+    }
+    
     return {
-      exercises: [
-        { name: 'Elevação Lateral', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Mantenha cotovelos ligeiramente flexionados' },
-        { name: 'Desenvolvimento Arnold', series: '3x10', type: 'weight', category: 'normal', day: 1, notes: 'Movimento completo de rotação' }
-      ],
-      explanation: 'Sugeri exercícios de ombros para o Dia 1 pois complementam o treino de peito.'
+      exercises: suggestions,
+      explanation: `Analisei seu treino atual. Você já tem ${customExercises.length} exercícios personalizados. Sugeri ombros para complementar o Dia 1 (Peito/Tríceps).`
     }
   }
   
-  if (lowerPrompt.includes('core')) {
+  if (lowerPrompt.includes('core') || lowerPrompt.includes('barriga') || lowerPrompt.includes('abdomen') || lowerPrompt.includes('trincar') || lowerPrompt.includes('tanquinho')) {
+    const coreExercises = customExercises.filter(ex => ex.category === 'core')
+    
+    const suggestions = [
+      { name: 'Prancha com Elevação', series: '3x45s', type: 'time', category: 'core', day: 1, notes: 'Alterne elevando braços e pernas, mantém core ativado' },
+      { name: 'Russian Twist', series: '3x25', type: 'reps', category: 'core', day: 2, notes: 'Gire o tronco com peso, pés elevados' },
+      { name: 'Mountain Climber', series: '3x30s', type: 'time', category: 'core', day: 3, notes: 'Movimento rápido, queima gordura abdominal' },
+      { name: 'Abdominal V-Up', series: '3x15', type: 'reps', category: 'core', day: 1, notes: 'Suba tronco e pernas simultaneamente' }
+    ]
+    
     return {
-      exercises: [
-        { name: 'Prancha com Elevação', series: '3x30s', type: 'time', category: 'core', day: 1, notes: 'Alterne elevando braços e pernas' },
-        { name: 'Russian Twist', series: '3x20', type: 'reps', category: 'core', day: 2, notes: 'Gire o tronco mantendo pés elevados' }
-      ],
-      explanation: 'Exercícios de core distribuídos para fortalecer toda região abdominal.'
+      exercises: suggestions.slice(0, 3),
+      explanation: `Para "trincar a barriga" precisa: 1) Exercícios de core (sugeri 3), 2) Cardio (já tem bicicleta), 3) Dieta (fundamental!). Você já tem ${coreExercises.length} exercícios de core. Distribuí nos 3 dias para trabalhar toda região abdominal.`
     }
   }
   
   if (lowerPrompt.includes('perna') || lowerPrompt.includes('coxa') || lowerPrompt.includes('glúteo')) {
+    const hasAfundo = exercisesDay3.some(name => name.includes('afundo'))
+    const hasStiff = exercisesDay3.some(name => name.includes('stiff'))
+    const hasAgachamento = exercisesDay3.some(name => name.includes('agachamento'))
+    
+    const suggestions = []
+    if (!hasAfundo) suggestions.push({ name: 'Afundo Alternado', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Descer até 90°, manter tronco ereto' })
+    if (!hasStiff) suggestions.push({ name: 'Stiff', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Trabalha posterior de coxa e glúteos' })
+    if (!hasAgachamento) suggestions.push({ name: 'Agachamento Livre', series: '3x15', type: 'weight', category: 'normal', day: 3, notes: 'Exercício completo para pernas' })
+    
+    if (suggestions.length === 0) {
+      suggestions.push({ name: 'Cadeira Abdutora', series: '3x15', type: 'weight', category: 'normal', day: 3, notes: 'Fortalece glúteo médio' })
+    }
+    
     return {
-      exercises: [
-        { name: 'Afundo Alternado', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Descer até 90°, manter tronco ereto' },
-        { name: 'Stiff', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Descer halteres mantendo pernas semi-flexionadas' },
-        { name: 'Agachamento Livre', series: '3x15', type: 'weight', category: 'normal', day: 3, notes: 'Descer até coxas paralelas ao chão' }
-      ],
-      explanation: 'Exercícios de pernas adicionais para o Dia 3, focando em quadríceps, posterior e glúteos.'
+      exercises: suggestions,
+      explanation: `Seu treino atual já tem: Leg Press, Extensora, Flexora, Panturrilha. Você adicionou ${exercisesDay3.length} exercícios no Dia 3. Sugeri complementos para pernas.`
     }
   }
   
