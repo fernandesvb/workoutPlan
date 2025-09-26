@@ -29,55 +29,25 @@ export default async function handler(req, res) {
         max_tokens: 800,
         messages: [{
           role: 'user',
-          content: `Você é um personal trainer brasileiro experiente.
+          content: `Você é um personal trainer experiente.
 
-TREINO ATUAL COMPLETO (30-35 min por dia):
-Dia 1 - Peito/Tríceps: Supino Máquina Smith, Crucifixo Halteres, Tríceps Polia, Tríceps Testa, Prancha Frontal, Superman
-Dia 2 - Costas/Bíceps: Remada Máquina, Puxada Frontal, Rosca Direta, Rosca Martelo, Prancha Lateral, Ponte
-Dia 3 - Pernas: Leg Press, Cadeira Extensora, Cadeira Flexora, Panturrilha, Abdominal Bicicleta, Gato-Vaca
+TREINO ATUAL:
+Dia 1: Peito/Tríceps - 6 exercícios
+Dia 2: Costas/Bíceps - 6 exercícios  
+Dia 3: Pernas - 6 exercícios
 
-EXERCÍCIOS JÁ ADICIONADOS:
-${customExercises.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex.day}) - ${ex.series}`).join('\n') : 'Nenhum exercício personalizado ainda'}
+EXERCÍCIOS EXTRAS: ${customExercises.length} já adicionados
 
 SOLICITAÇÃO: "${prompt}"
 
-INSTRUÇÕES OBRIGATÓRIAS:
-- SEMPRE analise os 3 dias completos do treino
-- OBRIGATÓRIO: Distribua exercícios nos 3 dias (pelo menos 1 exercício por dia)
-- Dia 1=Peito/Tríceps/Ombros, Dia 2=Costas/Bíceps, Dia 3=Pernas
-- Para treinos mais longos (40+ min): sugira 4-6 exercícios total
-- Para treinos mais curtos: sugira remoções
-- SEMPRE inclua dicas detalhadas de execução
+Sugira 3-4 exercícios distribuídos nos dias apropriados.
 
-Responda APENAS com JSON válido:
+Responda APENAS com JSON:
 {
   "exercises": [
-    {
-      "name": "Exercício Dia 1",
-      "series": "3x12",
-      "type": "weight",
-      "category": "normal",
-      "day": 1,
-      "notes": "Dica detalhada"
-    },
-    {
-      "name": "Exercício Dia 2",
-      "series": "3x12",
-      "type": "weight",
-      "category": "normal",
-      "day": 2,
-      "notes": "Dica detalhada"
-    },
-    {
-      "name": "Exercício Dia 3",
-      "series": "3x12",
-      "type": "weight",
-      "category": "normal",
-      "day": 3,
-      "notes": "Dica detalhada"
-    }
+    {"name": "Nome", "series": "3x12", "type": "weight", "category": "normal", "day": 1, "notes": "Dica"}
   ],
-  "explanation": "Explicação de como distribuí nos 3 dias"
+  "explanation": "Explicação"
 }`
         }]
       })
@@ -101,12 +71,17 @@ Responda APENAS com JSON válido:
       const result = JSON.parse(content)
       res.json(result)
     } catch (parseError) {
-      // Fallback
+      console.error('Erro ao parsear JSON:', parseError)
+      console.log('Conteúdo problemático:', content)
+      
+      // Tentar extrair exercícios do texto mesmo sem JSON válido
       const fallback = {
         exercises: [
-          { name: 'Exercício Sugerido', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Dica de execução' }
+          { name: 'Desenvolvimento com Halteres', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Para treino de 45min, adicione este exercício completo' },
+          { name: 'Remada Curvada', series: '3x12', type: 'weight', category: 'normal', day: 2, notes: 'Fortalece toda região das costas' },
+          { name: 'Agachamento Livre', series: '3x15', type: 'weight', category: 'normal', day: 3, notes: 'Exercício fundamental para pernas' }
         ],
-        explanation: `Baseado em "${prompt}", sugeri exercícios complementares.`
+        explanation: `Para "${prompt}", sugeri exercícios distribuídos nos 3 dias para aumentar a duração do treino. A IA teve dificuldade para processar, mas estas são sugestões válidas.`
       }
       res.json(fallback)
     }
