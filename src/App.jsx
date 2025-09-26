@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Timer, Plus, Save, Download, Trash2 } from 'lucide-react'
-import FirebaseStatus from './components/FirebaseStatus'
 import AuthSection from './components/AuthSection'
 import TimerSection from './components/TimerSection'
 import WorkoutTabs from './components/WorkoutTabs'
@@ -142,7 +141,9 @@ function App() {
       <div className="back-to-home">
         <button 
           className="btn-back" 
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            renewWorkout()
+          }}
         >
           ← Voltar ao Início
         </button>
