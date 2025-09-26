@@ -42,10 +42,9 @@ function App() {
     }
   }
 
-  const handleAddExercise = (exercise) => {
+  const handleAddExercise = (exercise, keepModalOpen = false) => {
     addExercise(exercise)
-    // Só fecha modal se não estiver adicionando múltiplos
-    if (!window.addingMultiple) {
+    if (!keepModalOpen) {
       setShowModal(false)
     }
   }
@@ -100,6 +99,7 @@ function App() {
         show={showModal}
         onClose={() => setShowModal(false)}
         onAddExercise={handleAddExercise}
+        addExerciseDirectly={addExercise}
         onRemoveExercise={handleRemoveExercise}
         workoutData={workoutData}
         customExercises={customExercises}
