@@ -83,30 +83,21 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
       return
     }
     
-    console.log('Adicionando todas as sugestões:', suggestions)
-    
-    let addedCount = 0
-    suggestions.forEach((suggestion, index) => {
-      setTimeout(() => {
-        const exerciseData = {
-          name: suggestion.name,
-          day: parseInt(suggestion.day),
-          type: suggestion.type,
-          series: suggestion.series,
-          category: suggestion.category || 'normal',
-          notes: suggestion.notes || ''
-        }
-        console.log(`Exercício ${index + 1}:`, exerciseData)
-        onAddExercise(exerciseData)
-        addedCount++
-        
-        if (addedCount === suggestions.length) {
-          alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
-          setSuggestions([])
-          setShowSuggestions(false)
-        }
-      }, index * 100)
+    suggestions.forEach(suggestion => {
+      const exerciseData = {
+        name: suggestion.name,
+        day: suggestion.day,
+        type: suggestion.type,
+        series: suggestion.series,
+        category: suggestion.category || 'normal',
+        notes: suggestion.notes || ''
+      }
+      onAddExercise(exerciseData)
     })
+    
+    alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
+    setSuggestions([])
+    setShowSuggestions(false)
   }
 
   if (!show) return null
