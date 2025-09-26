@@ -20,6 +20,13 @@ export function useWorkoutState() {
       const hasWorkout = customExercises.length > 0
       const workoutCreatedAt = workoutMeta.createdAt
       const workoutProfile = workoutMeta.profile
+      
+      console.log('Debug loadWorkoutState:', {
+        customExercises: customExercises.length,
+        hasWorkout,
+        workoutMeta,
+        showWelcome: !hasWorkout || !workoutMeta.welcomeCompleted
+      })
 
       setWorkoutState({
         hasWorkout,
