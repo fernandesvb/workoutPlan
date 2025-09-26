@@ -44,7 +44,10 @@ function App() {
 
   const handleAddExercise = (exercise) => {
     addExercise(exercise)
-    setShowModal(false)
+    // Só fecha modal se não estiver adicionando múltiplos
+    if (!window.addingMultiple) {
+      setShowModal(false)
+    }
   }
 
   return (
