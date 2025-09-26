@@ -93,6 +93,7 @@ export function useWorkoutState() {
 
   return {
     workoutState,
+    setWorkoutState,
     createNewWorkout,
     renewWorkout,
     continueExistingWorkout,
