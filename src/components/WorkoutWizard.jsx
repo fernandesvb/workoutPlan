@@ -135,9 +135,15 @@ ${getDayPlan()}
 
 🎯 CRIE AGORA ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAIS seguindo o plano acima.
 
-📋 ADICIONE TAMBÉM:
-- "explanation": Uma explicação de 2-3 linhas sobre a estratégia do treino criado
-- "tips": 2-3 dicas importantes para o usuário
+📋 ADICIONE TAMBÉM uma explicação NATURAL como personal trainer:
+- "explanation": Explique em 2-3 linhas POR QUE escolheu essa divisão e estratégia
+- "tips": 3 dicas PRÁTICAS e REALISTAS para maximizar resultados
+
+⚠️ IMPORTANTE:
+- Fale diretamente com o usuário ("você", "seu")
+- Descanso entre treinos: 24-48h (não sempre 48h!)
+- Seja específico sobre a estratégia escolhida
+- Dicas práticas, não genéricas
 
 FORMATO FINAL:
 {
@@ -145,8 +151,8 @@ FORMATO FINAL:
     "name": "Programa ${goalLabels}",
     "description": "Treino profissional ${formData.daysPerWeek}x por semana",
     "duration": "8-12 semanas",
-    "explanation": "Este treino foi estruturado para...",
-    "tips": ["Mantenha 48h de descanso entre treinos", "Hidrate-se bem"]
+    "explanation": "Estruturei seu treino focando em...",
+    "tips": ["Descanse 24h entre treinos do mesmo grupo muscular", "Aumente a carga gradualmente", "Mantenha a técnica sempre em primeiro lugar"]
   },
   "exercises": [...]
 }
@@ -165,9 +171,27 @@ RESPONDA APENAS O JSON COMPLETO:`
 
       const result = await response.json()
       
+      // Debug: verificar se IA respondeu
+      if (result.workoutPlan?.explanation) {
+        console.log('✅ IA respondeu com explicação:', result.workoutPlan.explanation)
+      } else {
+        console.log('⚠️ IA não gerou explicação')
+      }
+      
       // Se a IA não retornou exercícios suficientes, gerar manualmente
       if (!result.exercises || result.exercises.length < parseInt(formData.daysPerWeek) * exerciseCount) {
+        console.log('⚠️ Usando fallback - IA não gerou exercícios suficientes')
         result.exercises = generateFallbackExercises()
+        
+        // Adicionar explicação manual se IA não gerou
+        if (!result.workoutPlan) {
+          result.workoutPlan = {
+            name: `Programa ${goalLabels}`,
+            description: `Treino profissional ${formData.daysPerWeek}x por semana`,
+            explanation: 'Estruturei seu treino com base nos seus objetivos, dividindo os grupos musculares para otimizar recuperação e resultados.',
+            tips: ['Descanse 24h entre treinos do mesmo grupo', 'Aumente carga progressivamente', 'Foque na execução correta']
+          }
+        }
       }
       
       setPreviewWorkout(result)
