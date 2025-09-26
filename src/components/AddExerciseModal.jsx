@@ -77,6 +77,29 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
     setShowSuggestions(false)
   }
 
+  const handleAddAllSuggestions = () => {
+    if (!suggestions || suggestions.length === 0) {
+      alert('⚠️ Nenhuma sugestão para adicionar!')
+      return
+    }
+    
+    suggestions.forEach(suggestion => {
+      const exerciseData = {
+        name: suggestion.name,
+        day: suggestion.day,
+        type: suggestion.type,
+        series: suggestion.series,
+        category: suggestion.category || 'normal',
+        notes: suggestion.notes || ''
+      }
+      onAddExercise(exerciseData)
+    })
+    
+    alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
+    setSuggestions([])
+    setShowSuggestions(false)
+  }
+
   if (!show) return null
 
   return (
@@ -137,39 +160,7 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
                     <div className="add-buttons">
                       <button 
                         className="add-all-btn"
-                        onClick={() => {
-                          console.log('Botão Adicionar Todos clicado')
-                          console.log('Sugestões:', suggestions)
-                          
-                          if (!suggestions || suggestions.length === 0) {
-                            alert('⚠️ Nenhuma sugestão para adicionar!')
-                            return
-                          }
-                          
-                          let addedCount = 0
-                          suggestions.forEach((suggestion, index) => {
-                            const exerciseData = {
-                              name: suggestion.name,
-                              day: suggestion.day,
-                              type: suggestion.type,
-                              series: suggestion.series,
-                              category: suggestion.category || 'normal',
-                              notes: suggestion.notes || ''
-                            }
-                            console.log(`Adicionando exercício ${index + 1}:`, exerciseData)
-                            
-                            try {
-                              onAddExercise(exerciseData)
-                              addedCount++
-                            } catch (error) {
-                              console.error('Erro ao adicionar exercício:', error)
-                            }
-                          })
-                          
-                          alert(`✅ ${addedCount} exercícios adicionados ao treino!`)
-                          setSuggestions([])
-                          setShowSuggestions(false)
-                        }}
+                        onClick={handleAddAllSuggestions}
                       >
                         ➕ Adicionar Todos
                       </button>
