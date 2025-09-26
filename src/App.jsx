@@ -76,30 +76,11 @@ function App() {
   }
 
   const handleWorkoutGenerated = (result, profile) => {
-    if (result.exercises) {
-      console.log('=== CRIANDO NOVO TREINO ===')
-      console.log('Exercícios recebidos da IA:', result.exercises.length)
+    if (result.exercises && result.exercises.length > 0) {
+      console.log('=== PROCESSANDO TREINO GERADO ===')
+      console.log('Exercícios recebidos:', result.exercises.length)
       
-      // LIMPEZA TOTAL - Remover TUDO relacionado a treinos
-      console.log('Limpando localStorage...')
-      const allKeys = Object.keys(localStorage)
-      const keysToRemove = allKeys.filter(key => 
-        key.includes('custom_') || 
-        key === 'customExercises' || 
-        key === 'treino' || 
-        key === 'workoutMeta' ||
-        key.includes('_current') ||
-        key.includes('_w1') ||
-        key.includes('_w2') ||
-        key.includes('_w3') ||
-        key.includes('_w4') ||
-        key.includes('_history')
-      )
-      
-      console.log('Removendo chaves:', keysToRemove)
-      keysToRemove.forEach(key => localStorage.removeItem(key))
-      
-      // Criar novos exercícios com IDs únicos
+      // Criar exercícios com IDs únicos
       const timestamp = Date.now()
       const exercises = result.exercises.map((ex, index) => ({
         id: `custom_${timestamp}_${index}_${Math.random().toString(36).substr(2, 5)}`,
@@ -112,35 +93,30 @@ function App() {
         created: new Date().toISOString()
       }))
       
-      console.log('=== EXERCÍCIOS CRIADOS ===')
-      console.log('Total:', exercises.length)
+      console.log('Exercícios processados:')
       exercises.forEach((ex, i) => {
         console.log(`${i+1}. Dia ${ex.day}: ${ex.name} (${ex.series})`)
       })
       
-      // Salvar novos exercícios
-      localStorage.setItem('customExercises', JSON.stringify(exercises))
+      // Usar o hook para criar o treino (ele já faz a limpeza)
+      const success = createNewWorkout(exercises, profile)
       
-      // Criar metadados do treino
-      const workoutMeta = {
-        createdAt: new Date().toISOString(),
-        profile,
-        welcomeCompleted: true,
-        version: '3.0',
-        exerciseCount: exercises.length
+      if (success) {
+        console.log('Treino criado com sucesso!')
+        setShowWizard(false)
+        
+        // Forçar recarga após um delay
+        setTimeout(() => {
+          console.log('Recarregando página...')
+          window.location.reload()
+        }, 500)
+      } else {
+        console.error('Falha ao criar treino')
+        alert('Erro ao criar treino. Tente novamente.')
       }
-      localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
-      
-      console.log('=== TREINO SALVO ===')
-      console.log('Recarregando página...')
-      
-      // Fechar wizard
-      setShowWizard(false)
-      
-      // Forçar recarga completa
-      setTimeout(() => {
-        window.location.href = window.location.href
-      }, 300)
+    } else {
+      console.error('Nenhum exercício recebido')
+      alert('Erro: Nenhum exercício foi gerado. Tente novamente.')
     }
   }
 
