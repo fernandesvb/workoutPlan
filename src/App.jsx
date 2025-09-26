@@ -37,8 +37,7 @@ function App() {
       }))
     }
     
-    // Mostrar notificação de XP ganho
-    console.log(`+${result.xpGained} XP - ${result.reason}`)
+    // XP ganho processado
   }
   
   const handleBadgeEarned = (badges) => {
@@ -77,9 +76,6 @@ function App() {
 
   const handleWorkoutGenerated = (result, profile) => {
     if (result.exercises && result.exercises.length > 0) {
-      console.log('=== PROCESSANDO TREINO GERADO ===')
-      console.log('Exercícios recebidos:', result.exercises.length)
-      
       // Criar exercícios com IDs únicos
       const timestamp = Date.now()
       const exercises = result.exercises.map((ex, index) => ({
@@ -93,29 +89,18 @@ function App() {
         created: new Date().toISOString()
       }))
       
-      console.log('Exercícios processados:')
-      exercises.forEach((ex, i) => {
-        console.log(`${i+1}. Dia ${ex.day}: ${ex.name} (${ex.series})`)
-      })
-      
       // Usar o hook para criar o treino (ele já faz a limpeza)
       const success = createNewWorkout(exercises, profile)
       
       if (success) {
-        console.log('Treino criado com sucesso!')
         setShowWizard(false)
-        
-        // Forçar recarga após um delay
         setTimeout(() => {
-          console.log('Recarregando página...')
           window.location.reload()
         }, 500)
       } else {
-        console.error('Falha ao criar treino')
         alert('Erro ao criar treino. Tente novamente.')
       }
     } else {
-      console.error('Nenhum exercício recebido')
       alert('Erro: Nenhum exercício foi gerado. Tente novamente.')
     }
   }
@@ -198,7 +183,11 @@ function App() {
       
       <TimerSection />
       
-      <WorkoutTabs activeDay={activeDay} onDayChange={setActiveDay} />
+      <WorkoutTabs 
+        activeDay={activeDay} 
+        onDayChange={setActiveDay} 
+        customExercises={customExercises}
+      />
       
       <WorkoutDay 
         day={activeDay}
