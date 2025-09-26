@@ -18,8 +18,8 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
     return type === 'weight' ? '2.5' : undefined
   }
 
-  const handleInputChange = (week, value) => {
-    const key = `${exercise.id}_w${week}`
+  const handleInputChange = (session, value) => {
+    const key = session === 'current' ? `${exercise.id}_current` : `${exercise.id}_w${session}`
     onWorkoutChange(key, value)
   }
 
