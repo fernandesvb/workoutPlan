@@ -9,7 +9,6 @@ export function useExerciseManager() {
     // Escutar mudanças no localStorage
     const handleStorageChange = (e) => {
       if (e.key === 'customExercises') {
-        console.log('Detectada mudança em customExercises, recarregando...')
         loadCustomExercises()
       }
     }
@@ -22,7 +21,6 @@ export function useExerciseManager() {
       const currentParsed = current ? JSON.parse(current) : []
       
       if (JSON.stringify(currentParsed) !== JSON.stringify(customExercises)) {
-        console.log('Detectada mudança local em customExercises, recarregando...')
         setCustomExercises(currentParsed)
       }
     }, 1000)

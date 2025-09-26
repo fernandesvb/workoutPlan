@@ -21,23 +21,7 @@ export function useWorkoutState() {
       const workoutCreatedAt = workoutMeta.createdAt
       const workoutProfile = workoutMeta.profile
       
-      console.log('=== CARREGANDO ESTADO DO TREINO ===')
-      console.log('Exercícios encontrados:', customExercises.length)
-      console.log('Tem treino:', hasWorkout)
-      console.log('Meta:', workoutMeta)
-      console.log('Mostrar welcome:', !hasWorkout || !workoutMeta.welcomeCompleted)
-      
-      if (customExercises.length > 0) {
-        console.log('Exercícios por dia:')
-        const byDay = {}
-        customExercises.forEach(ex => {
-          if (!byDay[ex.day]) byDay[ex.day] = []
-          byDay[ex.day].push(ex.name)
-        })
-        Object.keys(byDay).forEach(day => {
-          console.log(`Dia ${day}: ${byDay[day].length} exercícios - ${byDay[day].join(', ')}`)
-        })
-      }
+      // Estado carregado
 
       setWorkoutState({
         hasWorkout,
@@ -61,9 +45,6 @@ export function useWorkoutState() {
 
   const createNewWorkout = (exercises, profile) => {
     try {
-      console.log('=== CRIANDO NOVO TREINO NO HOOK ===')
-      console.log('Exercícios recebidos:', exercises.length)
-      
       const now = new Date().toISOString()
       
       // LIMPEZA TOTAL PRIMEIRO
@@ -81,7 +62,6 @@ export function useWorkoutState() {
         key.includes('_history')
       )
       
-      console.log('Limpando chaves no hook:', keysToRemove)
       keysToRemove.forEach(key => localStorage.removeItem(key))
       
       // Salvar novos exercícios
@@ -96,8 +76,6 @@ export function useWorkoutState() {
         exerciseCount: exercises.length
       }
       localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
-      
-      console.log('Treino salvo com sucesso!')
       
       setWorkoutState({
         hasWorkout: true,
