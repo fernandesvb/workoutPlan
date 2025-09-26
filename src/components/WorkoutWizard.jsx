@@ -1,22 +1,35 @@
 import { useState } from 'react'
-import { ArrowRight, ArrowLeft, Sparkles, Target, Clock, Dumbbell } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Sparkles, Target, Clock, Dumbbell, Calendar } from 'lucide-react'
 
 export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
   const [step, setStep] = useState(1)
+  const totalSteps = 6
   const [formData, setFormData] = useState({
-    goal: '',
+    goals: [],
+    daysPerWeek: '',
     experience: '',
     timeAvailable: '',
     equipment: '',
     limitations: ''
   })
+  const [previewWorkout, setPreviewWorkout] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
   const goals = [
     { id: 'lose_weight', label: 'Emagrecer', icon: '🔥', desc: 'Queimar gordura e definir' },
     { id: 'gain_muscle', label: 'Ganhar Massa', icon: '💪', desc: 'Hipertrofia muscular' },
     { id: 'tone', label: 'Definir', icon: '✨', desc: 'Tonificar e esculpir' },
-    { id: 'fitness', label: 'Condicionamento', icon: '⚡', desc: 'Melhorar resistência' }
+    { id: 'fitness', label: 'Condicionamento', icon: '⚡', desc: 'Melhorar resistência' },
+    { id: 'strength', label: 'Força', icon: '🏋️', desc: 'Aumentar força máxima' },
+    { id: 'flexibility', label: 'Flexibilidade', icon: '🧘', desc: 'Melhorar mobilidade' }
+  ]
+
+  const daysOptions = [
+    { id: '2', label: '2 dias', desc: 'Iniciante ou pouco tempo' },
+    { id: '3', label: '3 dias', desc: 'Padrão recomendado' },
+    { id: '4', label: '4 dias', desc: 'Intermediário' },
+    { id: '5', label: '5 dias', desc: 'Avançado' },
+    { id: '6', label: '6 dias', desc: 'Máximo recomendado' }
   ]
 
   const experiences = [
@@ -40,43 +53,50 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
   ]
 
   const handleSelect = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    if (field === 'goals') {
+      setFormData(prev => {
+        const currentGoals = prev.goals || []
+        const isSelected = currentGoals.includes(value)
+        const newGoals = isSelected 
+          ? currentGoals.filter(g => g !== value)
+          : [...currentGoals, value]
+        return { ...prev, goals: newGoals }
+      })
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }))
+    }
   }
 
-  const nextStep = () => {
-    if (step < 4) setStep(step + 1)
+  const nextStep = async () => {
+    if (step === 5) {
+      // Gerar preview antes do último step
+      await generatePreview()
+    }
+    if (step < totalSteps) setStep(step + 1)
   }
 
-  const prevStep = () => {
-    if (step > 1) setStep(step - 1)
-  }
-
-  const generateWorkout = async () => {
+  const generatePreview = async () => {
     setIsGenerating(true)
     try {
-      // Chamar IA para gerar treino completo
-      const prompt = `Crie um treino completo de 3 dias baseado no perfil:
+      const goalLabels = formData.goals.map(g => goals.find(goal => goal.id === g)?.label).join(' + ')
       
-PERFIL DO USUÁRIO:
-- Objetivo: ${goals.find(g => g.id === formData.goal)?.label}
+      const prompt = `Crie um treino de ${formData.daysPerWeek} dias baseado no perfil:
+      
+PERFIL:
+- Objetivos: ${goalLabels}
 - Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-- Tempo disponível: ${formData.timeAvailable} minutos por dia
+- Tempo: ${formData.timeAvailable}min/dia
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
 - Limitações: ${formData.limitations || 'Nenhuma'}
 
-INSTRUÇÕES:
-- Crie um programa de 3 dias (Dia 1, Dia 2, Dia 3)
-- Distribua exercícios apropriados para cada dia
-- Considere o nível de experiência para séries/repetições
-- Adapte aos equipamentos disponíveis
-- Inclua 6-8 exercícios por dia
+Crie programa completo com 6-8 exercícios por dia.
 
 Responda APENAS com JSON:
 {
   "workoutPlan": {
     "name": "Nome do Treino",
-    "description": "Descrição do programa",
-    "duration": "X semanas"
+    "description": "Descrição",
+    "duration": "6-8 semanas"
   },
   "exercises": [
     {"name": "Nome", "day": 1, "series": "3x12", "type": "weight", "category": "normal", "notes": "Dica"}
@@ -92,22 +112,28 @@ Responda APENAS com JSON:
       if (!response.ok) throw new Error('Erro na API')
 
       const result = await response.json()
-      onWorkoutGenerated(result, formData)
+      setPreviewWorkout(result)
       
     } catch (error) {
-      console.error('Erro ao gerar treino:', error)
-      alert('Erro ao gerar treino. Tente novamente.')
+      console.error('Erro ao gerar preview:', error)
+      alert('Erro ao gerar preview. Tente novamente.')
     } finally {
       setIsGenerating(false)
     }
   }
 
+  const prevStep = () => {
+    if (step > 1) setStep(step - 1)
+  }
+
   const canProceed = () => {
     switch (step) {
-      case 1: return formData.goal
-      case 2: return formData.experience
-      case 3: return formData.timeAvailable
-      case 4: return formData.equipment
+      case 1: return formData.goals.length > 0
+      case 2: return formData.daysPerWeek
+      case 3: return formData.experience
+      case 4: return formData.timeAvailable
+      case 5: return formData.equipment
+      case 6: return previewWorkout
       default: return false
     }
   }
@@ -120,10 +146,10 @@ Responda APENAS com JSON:
           <div className="progress-bar">
             <div 
               className="progress-fill" 
-              style={{ width: `${(step / 4) * 100}%` }}
+              style={{ width: `${(step / totalSteps) * 100}%` }}
             />
           </div>
-          <span>Etapa {step} de 4</span>
+          <span>Etapa {step} de {totalSteps}</span>
         </div>
       </div>
 
@@ -131,13 +157,13 @@ Responda APENAS com JSON:
         {step === 1 && (
           <div className="wizard-step">
             <div className="step-icon"><Target size={32} /></div>
-            <h3>Qual é o seu objetivo?</h3>
+            <h3>Quais são seus objetivos? (pode escolher vários)</h3>
             <div className="options-grid">
               {goals.map(goal => (
                 <button
                   key={goal.id}
-                  className={`option-card ${formData.goal === goal.id ? 'selected' : ''}`}
-                  onClick={() => handleSelect('goal', goal.id)}
+                  className={`option-card ${formData.goals.includes(goal.id) ? 'selected' : ''}`}
+                  onClick={() => handleSelect('goals', goal.id)}
                 >
                   <div className="option-icon">{goal.icon}</div>
                   <div className="option-label">{goal.label}</div>
@@ -145,10 +171,36 @@ Responda APENAS com JSON:
                 </button>
               ))}
             </div>
+            {formData.goals.length > 0 && (
+              <div className="selected-goals">
+                <strong>Selecionados:</strong> {formData.goals.map(g => goals.find(goal => goal.id === g)?.label).join(', ')}
+              </div>
+            )}
           </div>
         )}
 
         {step === 2 && (
+          <div className="wizard-step">
+            <div className="step-icon"><Calendar size={32} /></div>
+            <h3>Quantos dias por semana você quer treinar?</h3>
+            <div className="options-list">
+              {daysOptions.map(day => (
+                <button
+                  key={day.id}
+                  className={`option-item ${formData.daysPerWeek === day.id ? 'selected' : ''}`}
+                  onClick={() => handleSelect('daysPerWeek', day.id)}
+                >
+                  <div className="option-content">
+                    <div className="option-label">{day.label}</div>
+                    <div className="option-desc">{day.desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
           <div className="wizard-step">
             <div className="step-icon"><Dumbbell size={32} /></div>
             <h3>Qual sua experiência com treinos?</h3>
@@ -169,7 +221,7 @@ Responda APENAS com JSON:
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="wizard-step">
             <div className="step-icon"><Clock size={32} /></div>
             <h3>Quanto tempo você tem por dia?</h3>
@@ -188,7 +240,7 @@ Responda APENAS com JSON:
           </div>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <div className="wizard-step">
             <div className="step-icon"><Dumbbell size={32} /></div>
             <h3>Quais equipamentos você tem?</h3>
@@ -218,6 +270,52 @@ Responda APENAS com JSON:
             </div>
           </div>
         )}
+
+        {step === 6 && (
+          <div className="wizard-step">
+            <div className="step-icon"><Sparkles size={32} /></div>
+            <h3>Seu Treino Personalizado</h3>
+            {previewWorkout ? (
+              <div className="workout-preview">
+                <div className="preview-header">
+                  <h4>{previewWorkout.workoutPlan?.name || 'Seu Treino'}</h4>
+                  <p>{previewWorkout.workoutPlan?.description}</p>
+                </div>
+                <div className="preview-days">
+                  {Array.from({length: parseInt(formData.daysPerWeek)}, (_, i) => i + 1).map(day => {
+                    const dayExercises = previewWorkout.exercises?.filter(ex => ex.day === day) || []
+                    return (
+                      <div key={day} className="preview-day">
+                        <h5>Dia {day}</h5>
+                        <div className="day-exercises">
+                          {dayExercises.map((ex, idx) => (
+                            <div key={idx} className="preview-exercise">
+                              <span className="ex-name">{ex.name}</span>
+                              <span className="ex-series">{ex.series}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="preview-actions">
+                  <button className="btn-secondary" onClick={() => setStep(5)}>
+                    ← Ajustar
+                  </button>
+                  <button className="btn-secondary" onClick={generatePreview}>
+                    🔄 Nova Sugestão
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="generating-preview">
+                <span className="loading"></span>
+                <p>Gerando seu treino personalizado...</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="wizard-footer">
@@ -229,32 +327,32 @@ Responda APENAS com JSON:
           {step === 1 ? 'Cancelar' : 'Voltar'}
         </button>
 
-        {step < 4 ? (
+        {step < totalSteps ? (
           <button 
             className="btn-primary" 
             onClick={nextStep}
-            disabled={!canProceed()}
+            disabled={!canProceed() || (step === 5 && isGenerating)}
           >
-            Próximo
-            <ArrowRight size={16} />
+            {step === 5 && isGenerating ? (
+              <>
+                <span className="loading"></span>
+                Gerando Preview...
+              </>
+            ) : (
+              <>
+                {step === 5 ? 'Gerar Preview' : 'Próximo'}
+                <ArrowRight size={16} />
+              </>
+            )}
           </button>
         ) : (
           <button 
             className="btn-primary" 
-            onClick={generateWorkout}
-            disabled={!canProceed() || isGenerating}
+            onClick={() => onWorkoutGenerated(previewWorkout, formData)}
+            disabled={!previewWorkout}
           >
-            {isGenerating ? (
-              <>
-                <span className="loading"></span>
-                Gerando...
-              </>
-            ) : (
-              <>
-                <Sparkles size={16} />
-                Gerar Treino
-              </>
-            )}
+            <Sparkles size={16} />
+            Confirmar Treino
           </button>
         )}
       </div>
