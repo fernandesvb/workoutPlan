@@ -12,17 +12,31 @@ export default function WorkoutTabs({ activeDay, onDayChange, customExercises })
       const dayExercises = customExercises.filter(ex => ex.day === dayNum)
       const categories = [...new Set(dayExercises.map(ex => ex.category))]
       
-      // Gerar subtítulo baseado nas categorias
+      // Gerar subtítulo mais inteligente baseado nas categorias
       let subtitle = 'Treino'
-      if (categories.includes('chest')) subtitle = 'Peito'
-      if (categories.includes('back')) subtitle = 'Costas'
-      if (categories.includes('legs')) subtitle = 'Pernas'
-      if (categories.includes('shoulders')) subtitle = 'Ombros'
-      if (categories.includes('core')) subtitle = 'Core'
-      if (categories.includes('cardio')) subtitle = 'Cardio'
       
-      // Se tem várias categorias, mostrar "Completo"
-      if (categories.length > 2) subtitle = 'Completo'
+      // Combinações específicas
+      if (categories.includes('chest') && categories.includes('triceps')) {
+        subtitle = 'Peito/Tri'
+      } else if (categories.includes('back') && categories.includes('biceps')) {
+        subtitle = 'Costas/Bi'
+      } else if (categories.includes('legs') || categories.includes('glutes')) {
+        subtitle = 'Pernas'
+      } else if (categories.includes('shoulders')) {
+        subtitle = 'Ombros'
+      } else if (categories.includes('chest')) {
+        subtitle = 'Peito'
+      } else if (categories.includes('back')) {
+        subtitle = 'Costas'
+      } else if (categories.includes('biceps') && categories.includes('triceps')) {
+        subtitle = 'Braços'
+      } else if (categories.includes('core')) {
+        subtitle = 'Core'
+      } else if (categories.includes('cardio')) {
+        subtitle = 'Cardio'
+      } else if (categories.length > 3) {
+        subtitle = 'Full Body'
+      }
       
       return {
         id: dayNum,

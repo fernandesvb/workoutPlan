@@ -86,42 +86,55 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
       
       const exerciseCount = getExerciseCount()
       
-      const prompt = `Você é um personal trainer expert. Crie um treino COMPLETO de ${formData.daysPerWeek} dias:
+      const getDayPlan = () => {
+        const days = parseInt(formData.daysPerWeek)
+        if (days === 2) return 'Dia 1: Corpo Superior | Dia 2: Corpo Inferior'
+        if (days === 3) return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas/Glúteos'
+        if (days === 4) return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas/Glúteos | Dia 4: Ombros/Core'
+        if (days === 5) return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas | Dia 4: Ombros | Dia 5: Braços/Core'
+        return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas | Dia 4: Ombros | Dia 5: Braços | Dia 6: Core/Cardio'
+      }
+      
+      const prompt = `Você é um personal trainer EXPERT. Crie um programa de treino PROFISSIONAL:
 
-PERFIL:
+🎯 PERFIL DO CLIENTE:
 - Objetivos: ${goalLabels}
 - Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-- Tempo: ${formData.timeAvailable}min/dia
+- Tempo disponível: ${formData.timeAvailable} minutos por sessão
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
 - Limitações: ${formData.limitations || 'Nenhuma'}
 
-REGRAS OBRIGATÓRIAS:
-• ${formData.daysPerWeek} dias de treino (day: 1, 2, 3...)
-• CADA dia deve ter ${exerciseCount} exercícios DIFERENTES
-• Total de ${parseInt(formData.daysPerWeek) * exerciseCount} exercícios no programa
-• Varie grupos musculares por dia
-• Adapte séries/reps para ${experiences.find(e => e.id === formData.experience)?.label}
+📝 PLANO DE TREINO OBRIGATÓRIO:
+${getDayPlan()}
 
-FORMATO JSON OBRIGATÓRIO:
+⚠️ REGRAS INEGOCIÁVEIS:
+1. EXATAMENTE ${formData.daysPerWeek} dias diferentes (day: 1, 2, 3, 4...)
+2. CADA dia deve ter EXATAMENTE ${exerciseCount} exercícios DIFERENTES
+3. NUNCA repetir o mesmo grupo muscular em dias consecutivos
+4. SEMPRE incluir PERNAS em pelo menos 1 dia
+5. Varie os exercícios - NUNCA repetir o mesmo exercício
+6. Use categories: chest, back, legs, shoulders, biceps, triceps, core, glutes, cardio
+
+📊 EXEMPLO PERFEITO (${exerciseCount} exercícios por dia):
 {
   "workoutPlan": {
-    "name": "Treino ${goalLabels}",
-    "description": "${exerciseCount} exercícios por dia, ${formData.daysPerWeek} dias",
-    "duration": "6-8 semanas"
+    "name": "Programa ${goalLabels}",
+    "description": "Treino profissional ${formData.daysPerWeek}x por semana",
+    "duration": "8-12 semanas"
   },
   "exercises": [
-    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle"},
-    {"name": "Crucifixo", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Foco"},
-    {"name": "Desenvolvimento", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Controlado"},
-    {"name": "Tríceps Testa", "day": 1, "series": "3x12", "type": "weight", "category": "triceps", "notes": "Fixo"},
-    {"name": "Abdominal", "day": 1, "series": "3x15", "type": "bodyweight", "category": "core", "notes": "Total"},
-    {"name": "Prancha", "day": 1, "series": "3x30s", "type": "bodyweight", "category": "core", "notes": "Alinhado"},
-    {"name": "Agachamento", "day": 2, "series": "3x15", "type": "bodyweight", "category": "legs", "notes": "Profundo"},
-    {"name": "Afundo", "day": 2, "series": "3x12", "type": "bodyweight", "category": "legs", "notes": "Alternado"}
+    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle total"},
+    {"name": "Desenvolvimento Ombros", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Movimento controlado"},
+    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Cotovelos fixos"},
+    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Retrair escapulas"},
+    {"name": "Rosca Direta", "day": 2, "series": "3x12", "type": "weight", "category": "biceps", "notes": "Contração máxima"},
+    {"name": "Agachamento Livre", "day": 3, "series": "3x15", "type": "weight", "category": "legs", "notes": "Profundidade total"},
+    {"name": "Leg Press", "day": 3, "series": "3x12", "type": "weight", "category": "legs", "notes": "Amplitude completa"}
   ]
 }
 
-CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Responda SÓ o JSON:`
+🎯 CRIE AGORA ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAIS seguindo o plano acima.
+RESPONDA APENAS O JSON COMPLETO:`
 
       // Logs removidos para produção
       
@@ -204,59 +217,64 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
     const exerciseCount = getExerciseCount()
     const daysCount = parseInt(formData.daysPerWeek)
     
-    const exerciseBank = {
-      gym: [
-        { name: 'Supino Reto', category: 'chest', series: '3x12' },
-        { name: 'Leg Press', category: 'legs', series: '3x15' },
-        { name: 'Remada Sentada', category: 'back', series: '3x12' },
-        { name: 'Desenvolvimento Ombros', category: 'shoulders', series: '3x12' },
-        { name: 'Rosca Bíceps', category: 'biceps', series: '3x12' },
-        { name: 'Tríceps Pulley', category: 'triceps', series: '3x12' },
-        { name: 'Abdominal Supra', category: 'core', series: '3x15' },
-        { name: 'Panturrilha Sentado', category: 'legs', series: '3x20' }
+    // Planos de treino por número de dias
+    const workoutPlans = {
+      2: [
+        { day: 1, focus: ['chest', 'shoulders', 'triceps', 'core'] },
+        { day: 2, focus: ['back', 'legs', 'biceps', 'glutes'] }
       ],
-      bodyweight: [
-        { name: 'Flexão de Braço', category: 'chest', series: '3x12' },
-        { name: 'Agachamento Livre', category: 'legs', series: '3x15' },
-        { name: 'Burpee', category: 'cardio', series: '3x10' },
-        { name: 'Prancha', category: 'core', series: '3x30s' },
-        { name: 'Afundo', category: 'legs', series: '3x12' },
-        { name: 'Mountain Climber', category: 'core', series: '3x20' },
-        { name: 'Polichinelo', category: 'cardio', series: '3x30s' },
-        { name: 'Abdominal', category: 'core', series: '3x15' }
+      3: [
+        { day: 1, focus: ['chest', 'triceps', 'shoulders'] },
+        { day: 2, focus: ['back', 'biceps', 'core'] },
+        { day: 3, focus: ['legs', 'glutes', 'core'] }
       ],
-      home_basic: [
-        { name: 'Rosca com Garrafa', category: 'biceps', series: '3x12' },
-        { name: 'Agachamento', category: 'legs', series: '3x15' },
-        { name: 'Flexão Inclinada', category: 'chest', series: '3x10' },
-        { name: 'Prancha', category: 'core', series: '3x30s' },
-        { name: 'Elevação Lateral', category: 'shoulders', series: '3x12' },
-        { name: 'Tríceps Cadeira', category: 'triceps', series: '3x12' },
-        { name: 'Ponte Glúteo', category: 'glutes', series: '3x15' },
-        { name: 'Abdominal Bicicleta', category: 'core', series: '3x20' }
+      4: [
+        { day: 1, focus: ['chest', 'triceps'] },
+        { day: 2, focus: ['back', 'biceps'] },
+        { day: 3, focus: ['legs', 'glutes'] },
+        { day: 4, focus: ['shoulders', 'core'] }
       ]
     }
     
-    const equipment = formData.equipment === 'custom' ? 'bodyweight' : formData.equipment
-    const availableExercises = exerciseBank[equipment] || exerciseBank.bodyweight
-    
-    const exercises = []
-    let exerciseIndex = 0
-    
-    for (let day = 1; day <= daysCount; day++) {
-      for (let i = 0; i < exerciseCount; i++) {
-        const exercise = availableExercises[exerciseIndex % availableExercises.length]
-        exercises.push({
-          name: exercise.name,
-          day: day,
-          series: exercise.series,
-          type: equipment === 'gym' ? 'weight' : 'bodyweight',
-          category: exercise.category,
-          notes: `Exercício ${i + 1} do dia ${day}`
-        })
-        exerciseIndex++
-      }
+    const exerciseBank = {
+      chest: ['Supino Reto', 'Flexão de Braço', 'Crucifixo', 'Supino Inclinado'],
+      back: ['Remada Curvada', 'Puxada Frontal', 'Remada Unilateral', 'Pull-up'],
+      legs: ['Agachamento', 'Leg Press', 'Afundo', 'Stiff'],
+      shoulders: ['Desenvolvimento', 'Elevação Lateral', 'Elevação Frontal', 'Remada Alta'],
+      biceps: ['Rosca Direta', 'Rosca Martelo', 'Rosca Concentrada', 'Rosca 21'],
+      triceps: ['Tríceps Pulley', 'Tríceps Testa', 'Mergulho', 'Tríceps Coice'],
+      glutes: ['Ponte Glúteo', 'Hip Thrust', 'Agachamento Sumo', 'Elevação Pélvica'],
+      core: ['Prancha', 'Abdominal', 'Russian Twist', 'Mountain Climber']
     }
+    
+    const plan = workoutPlans[daysCount] || workoutPlans[3]
+    const exercises = []
+    
+    plan.forEach(dayPlan => {
+      const focusGroups = dayPlan.focus
+      let exercisesAdded = 0
+      
+      // Distribuir exercícios pelos grupos focais
+      focusGroups.forEach((group, index) => {
+        if (exercisesAdded < exerciseCount) {
+          const exercisesPerGroup = Math.ceil((exerciseCount - exercisesAdded) / (focusGroups.length - index))
+          const groupExercises = exerciseBank[group] || ['Exercício Genérico']
+          
+          for (let i = 0; i < exercisesPerGroup && exercisesAdded < exerciseCount; i++) {
+            const exerciseName = groupExercises[i % groupExercises.length]
+            exercises.push({
+              name: exerciseName,
+              day: dayPlan.day,
+              series: group === 'core' ? '3x30s' : '3x12',
+              type: formData.equipment === 'gym' ? 'weight' : 'bodyweight',
+              category: group,
+              notes: `Foco em ${group}`
+            })
+            exercisesAdded++
+          }
+        }
+      })
+    })
     
     return exercises
   }
@@ -481,9 +499,21 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
                 <div className="preview-days">
                   {Array.from({length: parseInt(formData.daysPerWeek)}, (_, i) => i + 1).map(day => {
                     const dayExercises = previewWorkout.exercises?.filter(ex => ex.day === day) || []
+                    
+                    // Detectar grupo muscular principal
+                    const getMainMuscleGroup = (exercises) => {
+                      const categories = exercises.map(ex => ex.category)
+                      if (categories.includes('chest')) return 'Peito'
+                      if (categories.includes('back')) return 'Costas'
+                      if (categories.includes('legs')) return 'Pernas'
+                      if (categories.includes('shoulders')) return 'Ombros'
+                      if (categories.includes('biceps') && categories.includes('triceps')) return 'Braços'
+                      return 'Completo'
+                    }
+                    
                     return (
                       <div key={day} className="preview-day">
-                        <h5>Dia {day}</h5>
+                        <h5>Dia {day} - {getMainMuscleGroup(dayExercises)}</h5>
                         <div className="day-exercises">
                           {dayExercises.map((ex, idx) => (
                             <div key={idx} className="preview-exercise">

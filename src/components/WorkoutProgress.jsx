@@ -38,8 +38,8 @@ export default function WorkoutProgress({
       }
     })
     
-    // Estimar tempo apenas para exercícios restantes (3 min por exercício)
-    estimatedTime = (total - completed) * 3
+    // Estimar tempo mais realista: 5-6 min por exercício (inclui descanso)
+    estimatedTime = (total - completed) * 5
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
 
