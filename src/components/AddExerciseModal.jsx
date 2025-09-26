@@ -78,14 +78,13 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
   }
 
   const handleAddAllSuggestions = () => {
-    console.log('=== DEBUG ADICIONAR TODOS ===')
-    console.log('Suggestions:', suggestions)
-    console.log('onAddExercise function:', onAddExercise)
-    
     if (!suggestions || suggestions.length === 0) {
       alert('⚠️ Nenhuma sugestão para adicionar!')
       return
     }
+    
+    // Sinalizar que estamos adicionando múltiplos
+    window.addingMultiple = true
     
     suggestions.forEach((suggestion, index) => {
       const exerciseData = {
@@ -96,24 +95,16 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
         category: suggestion.category || 'normal',
         notes: suggestion.notes || ''
       }
-      console.log(`Adicionando exercício ${index + 1}:`, exerciseData)
-      
-      try {
-        onAddExercise(exerciseData)
-        console.log(`Exercício ${index + 1} adicionado com sucesso`)
-      } catch (error) {
-        console.error(`Erro ao adicionar exercício ${index + 1}:`, error)
-      }
+      onAddExercise(exerciseData)
     })
+    
+    // Finalizar adição múltipla
+    window.addingMultiple = false
     
     alert(`✅ ${suggestions.length} exercícios adicionados ao treino!`)
     setSuggestions([])
     setShowSuggestions(false)
-    
-    // Forçar fechamento do modal para atualizar a tela
-    setTimeout(() => {
-      onClose()
-    }, 500)
+    onClose()
   }
 
   if (!show) return null
