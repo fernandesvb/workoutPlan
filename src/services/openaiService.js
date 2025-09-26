@@ -147,6 +147,11 @@ Responda em formato JSON:
     const result = await response.json()
     console.log('✅ Resposta recebida:', result)
     
+    // Incrementar contador de uso da IA
+    if (window.incrementAIUsage) {
+      window.incrementAIUsage()
+    }
+    
     // Se tiver explicação, mostrar para o usuário
     if (result.explanation && typeof result.explanation === 'string') {
       console.log('💬 Explicação:', result.explanation)
