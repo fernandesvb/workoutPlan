@@ -169,6 +169,17 @@ function generateMockSuggestions(prompt, customExercises) {
     }
   }
   
+  if (lowerPrompt.includes('perna') || lowerPrompt.includes('coxa') || lowerPrompt.includes('glúteo')) {
+    return {
+      exercises: [
+        { name: 'Afundo Alternado', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Descer até 90°, manter tronco ereto' },
+        { name: 'Stiff', series: '3x12', type: 'weight', category: 'normal', day: 3, notes: 'Descer halteres mantendo pernas semi-flexionadas' },
+        { name: 'Agachamento Livre', series: '3x15', type: 'weight', category: 'normal', day: 3, notes: 'Descer até coxas paralelas ao chão' }
+      ],
+      explanation: 'Exercícios de pernas adicionais para o Dia 3, focando em quadríceps, posterior e glúteos.'
+    }
+  }
+  
   return {
     exercises: [
       { name: 'Desenvolvimento Halteres', series: '3x12', type: 'weight', category: 'normal', day: 1, notes: 'Movimento completo até linha do peito' },
