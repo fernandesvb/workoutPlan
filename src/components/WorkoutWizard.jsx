@@ -84,26 +84,6 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
     try {
       const goalLabels = formData.goals.map(g => goals.find(goal => goal.id === g)?.label).join(' + ')
       
-      // Calcular quantidade de exercícios baseado no tempo e experiência
-      const getExerciseCount = () => {
-        const timeMinutes = parseInt(formData.timeAvailable)
-        const experience = formData.experience
-        
-        let baseCount = 4 // Mínimo
-        
-        // Ajustar por tempo disponível
-        if (timeMinutes >= 60) baseCount = 8
-        else if (timeMinutes >= 45) baseCount = 7
-        else if (timeMinutes >= 30) baseCount = 6
-        else if (timeMinutes >= 20) baseCount = 5
-        
-        // Ajustar por experiência
-        if (experience === 'beginner') baseCount = Math.max(4, baseCount - 1)
-        else if (experience === 'advanced') baseCount = Math.min(8, baseCount + 1)
-        
-        return baseCount
-      }
-      
       const exerciseCount = getExerciseCount()
       
       const prompt = `Você é um personal trainer expert. Crie um treino COMPLETO de ${formData.daysPerWeek} dias:
@@ -143,6 +123,10 @@ FORMATO JSON OBRIGATÓRIO:
 
 CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Responda SÓ o JSON:`
 
+      console.log('=== ENVIANDO PROMPT PARA IA ===')
+      console.log('Exercícios esperados por dia:', exerciseCount)
+      console.log('Total esperado:', parseInt(formData.daysPerWeek) * exerciseCount)
+      
       const response = await fetch('/api/claude', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -152,6 +136,26 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
       if (!response.ok) throw new Error('Erro na API')
 
       const result = await response.json()
+      
+      console.log('=== RESPOSTA DA IA ===')
+      console.log('Resultado bruto:', result)
+      console.log('Exercícios recebidos:', result.exercises?.length || 0)
+      
+      if (result.exercises) {
+        const byDay = {}
+        result.exercises.forEach(ex => {
+          if (!byDay[ex.day]) byDay[ex.day] = 0
+          byDay[ex.day]++
+        })
+        console.log('Exercícios por dia na resposta:', byDay)
+      }
+      
+      // Se a IA não retornou exercícios suficientes, gerar manualmente
+      if (!result.exercises || result.exercises.length < parseInt(formData.daysPerWeek) * exerciseCount) {
+        console.log('=== IA RETORNOU POUCOS EXERCÍCIOS, GERANDO MANUALMENTE ===')
+        result.exercises = generateFallbackExercises()
+      }
+      
       setPreviewWorkout(result)
       
     } catch (error) {
@@ -210,6 +214,85 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
       setEquipmentPhoto(file)
       analyzeEquipmentPhoto(file)
     }
+  }
+  
+  const generateFallbackExercises = () => {
+    const exerciseCount = getExerciseCount()
+    const daysCount = parseInt(formData.daysPerWeek)
+    
+    const exerciseBank = {
+      gym: [
+        { name: 'Supino Reto', category: 'chest', series: '3x12' },
+        { name: 'Leg Press', category: 'legs', series: '3x15' },
+        { name: 'Remada Sentada', category: 'back', series: '3x12' },
+        { name: 'Desenvolvimento Ombros', category: 'shoulders', series: '3x12' },
+        { name: 'Rosca Bíceps', category: 'biceps', series: '3x12' },
+        { name: 'Tríceps Pulley', category: 'triceps', series: '3x12' },
+        { name: 'Abdominal Supra', category: 'core', series: '3x15' },
+        { name: 'Panturrilha Sentado', category: 'legs', series: '3x20' }
+      ],
+      bodyweight: [
+        { name: 'Flexão de Braço', category: 'chest', series: '3x12' },
+        { name: 'Agachamento Livre', category: 'legs', series: '3x15' },
+        { name: 'Burpee', category: 'cardio', series: '3x10' },
+        { name: 'Prancha', category: 'core', series: '3x30s' },
+        { name: 'Afundo', category: 'legs', series: '3x12' },
+        { name: 'Mountain Climber', category: 'core', series: '3x20' },
+        { name: 'Polichinelo', category: 'cardio', series: '3x30s' },
+        { name: 'Abdominal', category: 'core', series: '3x15' }
+      ],
+      home_basic: [
+        { name: 'Rosca com Garrafa', category: 'biceps', series: '3x12' },
+        { name: 'Agachamento', category: 'legs', series: '3x15' },
+        { name: 'Flexão Inclinada', category: 'chest', series: '3x10' },
+        { name: 'Prancha', category: 'core', series: '3x30s' },
+        { name: 'Elevação Lateral', category: 'shoulders', series: '3x12' },
+        { name: 'Tríceps Cadeira', category: 'triceps', series: '3x12' },
+        { name: 'Ponte Glúteo', category: 'glutes', series: '3x15' },
+        { name: 'Abdominal Bicicleta', category: 'core', series: '3x20' }
+      ]
+    }
+    
+    const equipment = formData.equipment === 'custom' ? 'bodyweight' : formData.equipment
+    const availableExercises = exerciseBank[equipment] || exerciseBank.bodyweight
+    
+    const exercises = []
+    let exerciseIndex = 0
+    
+    for (let day = 1; day <= daysCount; day++) {
+      for (let i = 0; i < exerciseCount; i++) {
+        const exercise = availableExercises[exerciseIndex % availableExercises.length]
+        exercises.push({
+          name: exercise.name,
+          day: day,
+          series: exercise.series,
+          type: equipment === 'gym' ? 'weight' : 'bodyweight',
+          category: exercise.category,
+          notes: `Exercício ${i + 1} do dia ${day}`
+        })
+        exerciseIndex++
+      }
+    }
+    
+    console.log('Exercícios de fallback gerados:', exercises.length)
+    return exercises
+  }
+  
+  const getExerciseCount = () => {
+    const timeMinutes = parseInt(formData.timeAvailable)
+    const experience = formData.experience
+    
+    let baseCount = 4
+    
+    if (timeMinutes >= 60) baseCount = 8
+    else if (timeMinutes >= 45) baseCount = 7
+    else if (timeMinutes >= 30) baseCount = 6
+    else if (timeMinutes >= 20) baseCount = 5
+    
+    if (experience === 'beginner') baseCount = Math.max(4, baseCount - 1)
+    else if (experience === 'advanced') baseCount = Math.min(8, baseCount + 1)
+    
+    return baseCount
   }
 
   const canProceed = () => {
