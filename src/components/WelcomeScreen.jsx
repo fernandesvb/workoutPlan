@@ -83,7 +83,13 @@ export default function WelcomeScreen({
         </div>
 
         <div className="welcome-actions">
-          <button className="btn-primary large" onClick={onCreateNew}>
+          <button 
+            className="btn-primary large" 
+            onClick={() => {
+              console.log('Botão Criar Treino clicado!')
+              onCreateNew()
+            }}
+          >
             <Plus size={20} />
             Criar Meu Treino
           </button>
@@ -134,14 +140,23 @@ export default function WelcomeScreen({
       </div>
 
       <div className="welcome-actions">
-        <button className="btn-primary" onClick={onContinueExisting}>
+        <button 
+          className="btn-primary" 
+          onClick={() => {
+            console.log('Botão Continuar clicado!')
+            onContinueExisting()
+          }}
+        >
           <TrendingUp size={16} />
           Continuar Treino
         </button>
         
         <button 
           className={`btn-secondary ${shouldSuggestRenewal ? 'highlighted' : ''}`}
-          onClick={onRenewWorkout}
+          onClick={() => {
+            console.log('Botão Renovar clicado!')
+            onRenewWorkout()
+          }}
         >
           <RefreshCw size={16} />
           {shouldSuggestRenewal ? 'Renovar Treino' : 'Criar Novo Treino'}
