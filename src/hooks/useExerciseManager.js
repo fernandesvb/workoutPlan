@@ -25,7 +25,7 @@ export function useExerciseManager() {
   }
 
   const addExercise = (exercise) => {
-    const id = 'custom_' + Date.now()
+    const id = 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
     const newExercise = {
       id,
       name: exercise.name,
@@ -37,9 +37,11 @@ export function useExerciseManager() {
       created: new Date().toISOString()
     }
     
-    const updated = [...customExercises, newExercise]
-    setCustomExercises(updated)
-    saveCustomExercises(updated)
+    setCustomExercises(prev => {
+      const updated = [...prev, newExercise]
+      saveCustomExercises(updated)
+      return updated
+    })
     
     return newExercise
   }
