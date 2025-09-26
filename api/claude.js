@@ -31,12 +31,15 @@ export default async function handler(req, res) {
           role: 'user',
           content: `Você é um personal trainer experiente.
 
-TREINO ATUAL:
-Dia 1: Peito/Tríceps - 6 exercícios
-Dia 2: Costas/Bíceps - 6 exercícios  
-Dia 3: Pernas - 6 exercícios
+TREINO ATUAL COMPLETO:
+Dia 1 - Peito/Tríceps: Supino Smith, Crucifixo Halteres, Tríceps Polia, Tríceps Testa, Prancha, Superman
+Dia 2 - Costas/Bíceps: Remada Máquina, Puxada Frontal, Rosca Direta, Rosca Martelo, Prancha Lateral, Ponte
+Dia 3 - Pernas: Leg Press, Extensora, Flexora, Panturrilha, Bicicleta, Gato-Vaca
 
-EXERCÍCIOS EXTRAS: ${customExercises.length} já adicionados
+EXERCÍCIOS EXTRAS ADICIONADOS:
+${customExercises.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex.day})`).join('\n') : 'Nenhum'}
+
+IMPORTANTE: NÃO sugira exercícios que já existem no treino atual
 
 SOLICITAÇÃO: "${prompt}"
 
