@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import ProgressChart from './ProgressChart'
 
 export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, onRemove, isCustom = false }) {
   const getPlaceholder = (type) => {
@@ -84,25 +85,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
           </div>
         </div>
         
-        <div className="exercise-history">
-          <label className="history-label">📈 Últimos treinos</label>
-          <div className="history-list">
-            {(() => {
-              const history = JSON.parse(workoutData[`${exercise.id}_history`] || '[]')
-              return history.length > 0 ? (
-                history.slice(0, 3).map((entry, index) => (
-                  <div key={index} className="history-item">
-                    <span className="history-date">{entry.date}</span>
-                    <span className="history-value">{entry.value} {getPlaceholder(exercise.type)}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="no-history">Nenhum treino registrado</div>
-              )
-            })()
-            }
-          </div>
-        </div>
+        <ProgressChart exercise={exercise} workoutData={workoutData} />
       </div>
     </div>
   )

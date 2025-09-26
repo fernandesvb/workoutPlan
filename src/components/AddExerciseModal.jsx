@@ -205,21 +205,6 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
             </div>
           )}
         </div>
-        
-        <div className="manual-add-section" style={{ display: showSuggestions ? 'none' : 'block' }}>
-          <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', margin: '20px 0' }}>
-            🤖 Use a IA acima para sugestões inteligentes ou
-          </p>
-          <button 
-            className="manual-add-btn"
-            onClick={() => {
-              // Mostrar formulário manual se necessário
-              alert('🛠️ Formulário manual será implementado se necessário')
-            }}
-          >
-            ➕ Adicionar Exercício Manualmente
-          </button>
-        </div>
         </div>
         
         <div className="modal-buttons">
