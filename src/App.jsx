@@ -64,8 +64,6 @@ function App() {
         onEnableOffline={enableOffline}
       />
       
-      <AIUsageCounter />
-      
       <TimerSection />
       
       <WorkoutTabs activeDay={activeDay} onDayChange={setActiveDay} />
