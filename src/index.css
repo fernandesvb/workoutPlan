@@ -81,10 +81,12 @@ body {
 .container {
   max-width: 480px;
   margin: 0 auto;
-  background: var(--bg-primary);
+  background: #ffffff;
   min-height: 100vh;
   padding: 0;
   box-shadow: var(--shadow-xl);
+  color-scheme: light;
+  color: #0f172a;
 }
 
 .header {
@@ -410,7 +412,7 @@ body {
 }
 
 .exercise-card {
-  background: #ffffff;
+  background: #ffffff !important;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
@@ -418,6 +420,7 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   transition: all 0.2s ease;
   position: relative;
+  color: #0f172a !important;
 }
 
 .exercise-card::before {
@@ -469,7 +472,7 @@ body {
 
 .exercise-name {
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0f172a !important;
   font-size: 18px;
   margin-bottom: 6px;
   line-height: 1.2;
@@ -477,7 +480,7 @@ body {
 
 .exercise-explanation {
   font-size: 13px;
-  color: var(--text-primary);
+  color: #475569 !important;
   margin-bottom: 8px;
   line-height: 1.4;
   font-weight: 500;
@@ -485,7 +488,7 @@ body {
 
 .exercise-notes {
   font-size: 13px;
-  color: var(--text-tertiary);
+  color: #64748b !important;
   font-style: italic;
   margin-bottom: 12px;
   line-height: 1.4;
@@ -1155,13 +1158,20 @@ button:active {
   100% { transform: rotate(360deg); }
 }
 
+.series-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .remove-btn {
   background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
-  width: 28px;
-  height: 28px;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1169,10 +1179,7 @@ button:active {
   font-size: 12px;
   font-weight: 600;
   transition: all 0.2s ease;
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .remove-btn svg {
