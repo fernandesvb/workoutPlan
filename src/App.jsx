@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Download, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 
 import TimerSection from './components/TimerSection'
 import WorkoutTabs from './components/WorkoutTabs'
@@ -57,9 +57,7 @@ function App() {
     removeExercise(exerciseId)
   }
 
-  const handleExport = () => {
-    exportData(customExercises)
-  }
+
 
   const handleClear = async () => {
     if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
@@ -200,9 +198,6 @@ function App() {
       <NotesSection notes={notes} onNotesChange={updateNotes} />
       
       <div className="action-buttons">
-        <button className="btn-export" onClick={handleExport}>
-          <Download size={16} /> Exportar
-        </button>
         <button className="btn-add" onClick={() => setShowModal(true)}>
           <Plus size={16} /> Novo Exercício com IA
         </button>
