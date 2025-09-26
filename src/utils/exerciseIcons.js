@@ -2,17 +2,17 @@
 export const getExerciseIcon = (category, type) => {
   const iconMap = {
     // Grupos musculares
-    'chest': { icon: '💪', color: '#ef4444', name: 'Peito' },
-    'back': { icon: '🏋️', color: '#3b82f6', name: 'Costas' },
-    'shoulders': { icon: '🤸', color: '#f59e0b', name: 'Ombros' },
-    'arms': { icon: '💪', color: '#10b981', name: 'Braços' },
-    'biceps': { icon: '💪', color: '#10b981', name: 'Bíceps' },
-    'triceps': { icon: '🔥', color: '#ef4444', name: 'Tríceps' },
-    'legs': { icon: '🦵', color: '#8b5cf6', name: 'Pernas' },
-    'glutes': { icon: '🍑', color: '#ec4899', name: 'Glúteos' },
-    'core': { icon: '⚡', color: '#f59e0b', name: 'Core' },
-    'abs': { icon: '⚡', color: '#f59e0b', name: 'Abdomen' },
-    'cardio': { icon: '❤️', color: '#ef4444', name: 'Cardio' },
+    'chest': { icon: '💪', color: '#ef4444', name: 'PEITO' },
+    'back': { icon: '🏋️', color: '#3b82f6', name: 'COSTAS' },
+    'shoulders': { icon: '🤸', color: '#f59e0b', name: 'OMBROS' },
+    'arms': { icon: '💪', color: '#10b981', name: 'BRAÇOS' },
+    'biceps': { icon: '💪', color: '#10b981', name: 'BÍCEPS' },
+    'triceps': { icon: '🔥', color: '#ef4444', name: 'TRÍCEPS' },
+    'legs': { icon: '🦵', color: '#8b5cf6', name: 'PERNAS' },
+    'glutes': { icon: '🍑', color: '#ec4899', name: 'GLÚTEOS' },
+    'core': { icon: '⚡', color: '#f59e0b', name: 'CORE' },
+    'abs': { icon: '⚡', color: '#f59e0b', name: 'ABDOMEN' },
+    'cardio': { icon: '❤️', color: '#ef4444', name: 'CARDIO' },
     
     // Tipos de exercício
     'weight': { icon: '🏋️', color: '#6b7280', name: 'Peso' },
@@ -21,8 +21,8 @@ export const getExerciseIcon = (category, type) => {
     'flexibility': { icon: '🧘', color: '#06b6d4', name: 'Flexibilidade' },
     
     // Default
-    'normal': { icon: '💪', color: '#6b7280', name: 'Exercício' },
-    'default': { icon: '💪', color: '#6b7280', name: 'Exercício' }
+    'normal': { icon: '💪', color: '#6b7280', name: 'EXERCÍCIO' },
+    'default': { icon: '💪', color: '#6b7280', name: 'EXERCÍCIO' }
   }
 
   // Tentar encontrar por categoria primeiro
@@ -45,50 +45,61 @@ export const detectExerciseCategory = (exerciseName) => {
   
   // Peito
   if (name.includes('supino') || name.includes('crucifixo') || name.includes('flexão') || 
-      name.includes('chest') || name.includes('peito')) {
+      name.includes('chest') || name.includes('peito') || name.includes('press')) {
     return 'chest'
   }
   
   // Costas
   if (name.includes('remada') || name.includes('pulldown') || name.includes('barra fixa') ||
-      name.includes('back') || name.includes('costas') || name.includes('pull')) {
+      name.includes('back') || name.includes('costas') || name.includes('pull') ||
+      name.includes('puxada')) {
     return 'back'
   }
   
   // Ombros
   if (name.includes('elevação') || name.includes('desenvolvimento') || name.includes('ombro') ||
-      name.includes('shoulder') || name.includes('lateral')) {
+      name.includes('shoulder') || name.includes('lateral') || name.includes('frontal') ||
+      name.includes('militar') || name.includes('arnold')) {
     return 'shoulders'
   }
   
   // Bíceps
   if (name.includes('rosca') || name.includes('bíceps') || name.includes('bicep') ||
-      name.includes('curl')) {
+      name.includes('curl') || name.includes('martelo')) {
     return 'biceps'
   }
   
   // Tríceps
   if (name.includes('tríceps') || name.includes('tricep') || name.includes('mergulho') ||
-      name.includes('extensão') && name.includes('braço')) {
+      name.includes('extensão') || name.includes('testa') || name.includes('pulley') ||
+      name.includes('coice')) {
     return 'triceps'
   }
   
   // Pernas
   if (name.includes('agachamento') || name.includes('squat') || name.includes('afundo') ||
       name.includes('lunge') || name.includes('perna') || name.includes('coxa') ||
-      name.includes('leg')) {
+      name.includes('leg') || name.includes('stiff') || name.includes('extensora') ||
+      name.includes('flexora')) {
     return 'legs'
+  }
+  
+  // Glúteos
+  if (name.includes('glúteo') || name.includes('ponte') || name.includes('hip thrust') ||
+      name.includes('elevação pélvica') || name.includes('sumo')) {
+    return 'glutes'
   }
   
   // Core/Abs
   if (name.includes('abdominal') || name.includes('prancha') || name.includes('plank') ||
-      name.includes('core') || name.includes('abs') || name.includes('crunch')) {
+      name.includes('core') || name.includes('abs') || name.includes('crunch') ||
+      name.includes('mountain') || name.includes('russian')) {
     return 'core'
   }
   
   // Cardio
   if (name.includes('corrida') || name.includes('esteira') || name.includes('bike') ||
-      name.includes('cardio') || name.includes('burpee')) {
+      name.includes('cardio') || name.includes('burpee') || name.includes('polichinelo')) {
     return 'cardio'
   }
   

@@ -15,10 +15,6 @@ export default function WorkoutDay({ day, workoutData, customExercises, onWorkou
     )
   }
   
-  // Separar exercícios por categoria
-  const normalExercises = exercisesForDay.filter(ex => ex.category !== 'core')
-  const coreExercises = exercisesForDay.filter(ex => ex.category === 'core')
-  
   // Gerar título dinâmico baseado nas categorias
   const getDayTitle = () => {
     const categories = [...new Set(exercisesForDay.map(ex => ex.category))]
@@ -30,6 +26,7 @@ export default function WorkoutDay({ day, workoutData, customExercises, onWorkou
     if (categories.includes('chest')) return 'PEITO'
     if (categories.includes('back')) return 'COSTAS'
     if (categories.includes('cardio')) return 'CARDIO'
+    if (categories.includes('core')) return 'CORE'
     
     return `DIA ${day} - TREINO COMPLETO`
   }
@@ -38,8 +35,8 @@ export default function WorkoutDay({ day, workoutData, customExercises, onWorkou
     <div className="day-section active">
       <h2 className="section-title">{getDayTitle()}</h2>
       
-      {/* Exercícios principais */}
-      {normalExercises.map(exercise => (
+      {/* Todos os exercícios juntos */}
+      {exercisesForDay.map(exercise => (
         <ExerciseCard
           key={exercise.id}
           exercise={exercise}
@@ -49,23 +46,6 @@ export default function WorkoutDay({ day, workoutData, customExercises, onWorkou
           isCustom={true}
         />
       ))}
-      
-      {/* Exercícios de core (se houver) */}
-      {coreExercises.length > 0 && (
-        <>
-          <div className="section-title">🎯 CORE</div>
-          {coreExercises.map(exercise => (
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              workoutData={workoutData}
-              onWorkoutChange={onWorkoutChange}
-              onRemove={onRemoveExercise}
-              isCustom={true}
-            />
-          ))}
-        </>
-      )}
     </div>
   )
 }

@@ -123,13 +123,13 @@ ${getDayPlan()}
     "duration": "8-12 semanas"
   },
   "exercises": [
-    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle total"},
-    {"name": "Desenvolvimento Ombros", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Movimento controlado"},
-    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Cotovelos fixos"},
-    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Retrair escapulas"},
-    {"name": "Rosca Direta", "day": 2, "series": "3x12", "type": "weight", "category": "biceps", "notes": "Contração máxima"},
-    {"name": "Agachamento Livre", "day": 3, "series": "3x15", "type": "weight", "category": "legs", "notes": "Profundidade total"},
-    {"name": "Leg Press", "day": 3, "series": "3x12", "type": "weight", "category": "legs", "notes": "Amplitude completa"}
+    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Deitar no banco, empurrar barra do peito para cima"},
+    {"name": "Desenvolvimento Ombros", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Empurrar peso acima da cabeça, ombros ativos"},
+    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Empurrar cabo para baixo, cotovelos fixos"},
+    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Puxar barra em direção ao abdome, costas retas"},
+    {"name": "Rosca Direta", "day": 2, "series": "3x12", "type": "weight", "category": "biceps", "notes": "Flexionar braços, contrair bíceps no topo"},
+    {"name": "Agachamento Livre", "day": 3, "series": "3x15", "type": "weight", "category": "legs", "notes": "Descer flexionando joelhos, subir empurrando calcanhar"},
+    {"name": "Leg Press", "day": 3, "series": "3x12", "type": "weight", "category": "legs", "notes": "Empurrar plataforma com pernas, amplitude completa"}
   ]
 }
 

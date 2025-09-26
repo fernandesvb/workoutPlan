@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Save, Download, Trash2 } from 'lucide-react'
-import AuthSection from './components/AuthSection'
+
 import TimerSection from './components/TimerSection'
 import WorkoutTabs from './components/WorkoutTabs'
 import WorkoutDay from './components/WorkoutDay'
@@ -41,8 +41,7 @@ function App() {
   }
   
   const handleBadgeEarned = (badges) => {
-    console.log('Novas conquistas:', badges)
-    // Aqui você pode adicionar notificações ou celebrações
+    // Badges processados
   }
 
   // Função para remover exercício (para usar no modal)
