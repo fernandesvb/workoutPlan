@@ -77,6 +77,11 @@ export function useWorkoutState() {
       }
       localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
       
+      // Salvar no Firebase se logado
+      if (typeof window !== 'undefined' && window.saveToFirebase) {
+        window.saveToFirebase()
+      }
+      
       setWorkoutState({
         hasWorkout: true,
         workoutCreatedAt: now,

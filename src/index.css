@@ -227,10 +227,7 @@ body {
   color: white;
 }
 
-.auth-btn.offline {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: white;
-}
+
 
 .auth-btn:hover {
   transform: translateY(-1px);
@@ -463,10 +460,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: 4px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 10px;
   border-radius: 12px;
   display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .exercise-name {
@@ -715,10 +713,7 @@ button:active {
   transform: translateY(-1px) scale(0.98);
 }
 
-.btn-save {
-  background: #1e293b;
-  color: white;
-}
+
 
 .btn-export {
   background: #059669;
@@ -1165,18 +1160,19 @@ button:active {
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   transition: all 0.2s ease;
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
 }
 
 .remove-btn svg {
@@ -2506,6 +2502,55 @@ button:disabled {
 .generating-preview p {
   margin-top: 16px;
   color: var(--text-secondary);
+}
+
+.ai-explanation {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #0ea5e9;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.ai-explanation h5 {
+  color: #0c4a6e;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ai-explanation p {
+  color: #0c4a6e;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-tips {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.ai-tips h5 {
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ai-tips ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.ai-tips li {
+  color: #92400e;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 4px;
 }
 
 @media (max-width: 640px) {

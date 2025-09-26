@@ -134,6 +134,23 @@ ${getDayPlan()}
 }
 
 🎯 CRIE AGORA ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAIS seguindo o plano acima.
+
+📋 ADICIONE TAMBÉM:
+- "explanation": Uma explicação de 2-3 linhas sobre a estratégia do treino criado
+- "tips": 2-3 dicas importantes para o usuário
+
+FORMATO FINAL:
+{
+  "workoutPlan": {
+    "name": "Programa ${goalLabels}",
+    "description": "Treino profissional ${formData.daysPerWeek}x por semana",
+    "duration": "8-12 semanas",
+    "explanation": "Este treino foi estruturado para...",
+    "tips": ["Mantenha 48h de descanso entre treinos", "Hidrate-se bem"]
+  },
+  "exercises": [...]
+}
+
 RESPONDA APENAS O JSON COMPLETO:`
 
       // Logs removidos para produção
@@ -509,6 +526,24 @@ RESPONDA APENAS O JSON COMPLETO:`
                 <div className="preview-header">
                   <h4>{previewWorkout.workoutPlan?.name || 'Seu Treino'}</h4>
                   <p>{previewWorkout.workoutPlan?.description}</p>
+                  
+                  {previewWorkout.workoutPlan?.explanation && (
+                    <div className="ai-explanation">
+                      <h5>🤖 Explicação do Personal Trainer IA:</h5>
+                      <p>{previewWorkout.workoutPlan.explanation}</p>
+                    </div>
+                  )}
+                  
+                  {previewWorkout.workoutPlan?.tips && (
+                    <div className="ai-tips">
+                      <h5>💡 Dicas importantes:</h5>
+                      <ul>
+                        {previewWorkout.workoutPlan.tips.map((tip, idx) => (
+                          <li key={idx}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div className="preview-days">
                   {Array.from({length: parseInt(formData.daysPerWeek)}, (_, i) => i + 1).map(day => {

@@ -9,6 +9,35 @@ export function useWorkoutData(user) {
   useEffect(() => {
     loadData()
   }, [user])
+  
+  // Salvamento automático quando dados mudam
+  useEffect(() => {
+    const autoSave = async () => {
+      if (Object.keys(workoutData).length > 0 || notes.trim()) {
+        try {
+          const customExercises = JSON.parse(localStorage.getItem('customExercises') || '[]')
+          const workoutMeta = JSON.parse(localStorage.getItem('workoutMeta') || '{}')
+          
+          const data = { workoutData, notes, customExercises, workoutMeta }
+          localStorage.setItem('treino', JSON.stringify(data))
+          
+          if (user && db) {
+            const docRef = doc(db, 'workouts', user.uid)
+            await setDoc(docRef, {
+              ...data,
+              lastUpdated: serverTimestamp(),
+              version: Date.now()
+            })
+          }
+        } catch (error) {
+          console.error('Erro no auto-save:', error)
+        }
+      }
+    }
+    
+    const timeoutId = setTimeout(autoSave, 2000)
+    return () => clearTimeout(timeoutId)
+  }, [workoutData, notes, user])
 
   const loadData = async () => {
     try {
@@ -20,6 +49,17 @@ export function useWorkoutData(user) {
           const data = docSnap.data()
           setWorkoutData(data.workoutData || {})
           setNotes(data.notes || '')
+          
+          // Restaurar exercícios personalizados
+          if (data.customExercises) {
+            localStorage.setItem('customExercises', JSON.stringify(data.customExercises))
+          }
+          
+          // Restaurar metadados do treino
+          if (data.workoutMeta) {
+            localStorage.setItem('workoutMeta', JSON.stringify(data.workoutMeta))
+          }
+          
           localStorage.setItem('treino', JSON.stringify(data))
           return
         }
@@ -38,9 +78,18 @@ export function useWorkoutData(user) {
   }
 
   const saveData = async () => {
-    const data = { workoutData, notes }
-    
     try {
+      // Coletar todos os dados
+      const customExercises = JSON.parse(localStorage.getItem('customExercises') || '[]')
+      const workoutMeta = JSON.parse(localStorage.getItem('workoutMeta') || '{}')
+      
+      const data = { 
+        workoutData, 
+        notes,
+        customExercises,
+        workoutMeta
+      }
+      
       // Sempre salva no localStorage
       localStorage.setItem('treino', JSON.stringify(data))
       
@@ -52,6 +101,7 @@ export function useWorkoutData(user) {
           lastUpdated: serverTimestamp(),
           version: Date.now()
         })
+
       }
       
       return true

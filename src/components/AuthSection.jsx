@@ -1,4 +1,4 @@
-import { LogIn, LogOut, HardDrive } from 'lucide-react'
+import { LogIn, LogOut } from 'lucide-react'
 
 export default function AuthSection({ user, onSignIn, onSignOut, onEnableOffline }) {
   return (
@@ -18,9 +18,7 @@ export default function AuthSection({ user, onSignIn, onSignOut, onEnableOffline
               <LogOut size={14} /> Sair
             </button>
           )}
-          <button className="auth-btn offline" onClick={onEnableOffline}>
-            <HardDrive size={14} /> Offline
-          </button>
+
         </div>
       </div>
     </div>

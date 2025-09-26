@@ -60,29 +60,7 @@ export default function WelcomeScreen({
           </div>
         </div>
 
-        <div className="welcome-features">
-          <div className="feature-item">
-            <div className="feature-icon">🤖</div>
-            <div className="feature-text">
-              <strong>IA Personalizada</strong>
-              <span>Treino adaptado ao seu perfil</span>
-            </div>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon">📊</div>
-            <div className="feature-text">
-              <strong>Acompanhamento</strong>
-              <span>Progresso visual e detalhado</span>
-            </div>
-          </div>
-          <div className="feature-item">
-            <div className="feature-icon">⏱️</div>
-            <div className="feature-text">
-              <strong>Flexível</strong>
-              <span>Adapta ao seu tempo disponível</span>
-            </div>
-          </div>
-        </div>
+
 
         <div className="welcome-actions">
           <button 

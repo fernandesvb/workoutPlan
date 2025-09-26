@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Plus, Save, Download, Trash2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, Download, Trash2 } from 'lucide-react'
 
 import TimerSection from './components/TimerSection'
 import WorkoutTabs from './components/WorkoutTabs'
@@ -27,6 +27,14 @@ function App() {
   const { workoutState, createNewWorkout, renewWorkout, continueExistingWorkout, getWorkoutAge } = useWorkoutState()
   const { completeWorkout } = useGamification()
   
+  // Expor função de salvamento para hooks
+  useEffect(() => {
+    window.saveToFirebase = saveData
+    return () => {
+      delete window.saveToFirebase
+    }
+  }, [saveData])
+  
   const handleWorkoutComplete = (completed, total) => {
     const result = completeWorkout(completed, total)
     
@@ -47,13 +55,6 @@ function App() {
   // Função para remover exercício (para usar no modal)
   const handleRemoveExercise = (exerciseId) => {
     removeExercise(exerciseId)
-  }
-
-  const handleSave = async () => {
-    const success = await saveData()
-    if (success) {
-      // Feedback visual será implementado no hook
-    }
   }
 
   const handleExport = () => {
@@ -199,9 +200,6 @@ function App() {
       <NotesSection notes={notes} onNotesChange={updateNotes} />
       
       <div className="action-buttons">
-        <button className="btn-save" onClick={handleSave}>
-          <Save size={16} /> Salvar
-        </button>
         <button className="btn-export" onClick={handleExport}>
           <Download size={16} /> Exportar
         </button>
