@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import ProgressChart from './ProgressChart'
+import { getExerciseIconInfo } from '../utils/exerciseIcons'
 
 export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, onRemove, isCustom = false }) {
   const getPlaceholder = (type) => {
@@ -33,11 +34,19 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
   return (
     <div className={`exercise-card ${exercise.category === 'core' ? 'core' : ''}`}>
       <div className="exercise-header">
-        <div className="exercise-info">
-          <div className="exercise-name">{exercise.name}</div>
-          {exercise.notes && (
-            <div className="exercise-notes">{exercise.notes}</div>
-          )}
+        <div className="exercise-icon-info">
+          <div 
+            className="exercise-icon" 
+            style={{ backgroundColor: getExerciseIconInfo(exercise).color }}
+          >
+            {getExerciseIconInfo(exercise).icon}
+          </div>
+          <div className="exercise-info">
+            <div className="exercise-name">{exercise.name}</div>
+            {exercise.notes && (
+              <div className="exercise-notes">{exercise.notes}</div>
+            )}
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <span className="series-info">{exercise.series}</span>
