@@ -106,41 +106,42 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
       
       const exerciseCount = getExerciseCount()
       
-      const prompt = `Crie um treino completo de ${formData.daysPerWeek} dias baseado no perfil:
+      const prompt = `Você é um personal trainer expert. Crie um treino COMPLETO de ${formData.daysPerWeek} dias:
 
-PERFIL DO USUÁRIO:
+PERFIL:
 - Objetivos: ${goalLabels}
 - Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-- Tempo disponível: ${formData.timeAvailable} minutos por dia
+- Tempo: ${formData.timeAvailable}min/dia
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
 - Limitações: ${formData.limitations || 'Nenhuma'}
 
-INSTRUÇÕES OBRIGATÓRIAS:
-1. Crie EXATAMENTE ${formData.daysPerWeek} dias de treino
-2. CADA DIA deve ter EXATAMENTE ${exerciseCount} exercícios diferentes
-3. Adapte a intensidade para ${experiences.find(e => e.id === formData.experience)?.label}
-4. Considere o tempo de ${formData.timeAvailable}min por treino
-5. Use day: 1, day: 2, day: 3, etc. (números)
-6. Distribua os grupos musculares equilibradamente
+REGRAS OBRIGATÓRIAS:
+• ${formData.daysPerWeek} dias de treino (day: 1, 2, 3...)
+• CADA dia deve ter ${exerciseCount} exercícios DIFERENTES
+• Total de ${parseInt(formData.daysPerWeek) * exerciseCount} exercícios no programa
+• Varie grupos musculares por dia
+• Adapte séries/reps para ${experiences.find(e => e.id === formData.experience)?.label}
 
-EXEMPLO do formato esperado:
+FORMATO JSON OBRIGATÓRIO:
 {
   "workoutPlan": {
     "name": "Treino ${goalLabels}",
-    "description": "Programa de ${formData.daysPerWeek} dias",
+    "description": "${exerciseCount} exercícios por dia, ${formData.daysPerWeek} dias",
     "duration": "6-8 semanas"
   },
   "exercises": [
-    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle a descida"},
-    {"name": "Crucifixo", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Foco na contração"},
-    {"name": "Desenvolvimento", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Movimento controlado"},
-    {"name": "Tríceps Testa", "day": 1, "series": "3x12", "type": "weight", "category": "triceps", "notes": "Cotovelos fixos"},
-    {"name": "Abdominal", "day": 1, "series": "3x15", "type": "bodyweight", "category": "core", "notes": "Contração total"},
-    {"name": "Prancha", "day": 1, "series": "3x30s", "type": "bodyweight", "category": "core", "notes": "Corpo alinhado"}
+    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Controle"},
+    {"name": "Crucifixo", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Foco"},
+    {"name": "Desenvolvimento", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Controlado"},
+    {"name": "Tríceps Testa", "day": 1, "series": "3x12", "type": "weight", "category": "triceps", "notes": "Fixo"},
+    {"name": "Abdominal", "day": 1, "series": "3x15", "type": "bodyweight", "category": "core", "notes": "Total"},
+    {"name": "Prancha", "day": 1, "series": "3x30s", "type": "bodyweight", "category": "core", "notes": "Alinhado"},
+    {"name": "Agachamento", "day": 2, "series": "3x15", "type": "bodyweight", "category": "legs", "notes": "Profundo"},
+    {"name": "Afundo", "day": 2, "series": "3x12", "type": "bodyweight", "category": "legs", "notes": "Alternado"}
   ]
 }
 
-Responda APENAS com o JSON válido:`
+CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Responda SÓ o JSON:`
 
       const response = await fetch('/api/claude', {
         method: 'POST',

@@ -106,6 +106,35 @@ export default function WelcomeScreen({
           >
             Já tenho treino - Pular
           </button>
+          
+          <button 
+            className="btn-danger" 
+            onClick={() => {
+              if (confirm('ATENÇÃO: Isso vai apagar TODOS os dados de treino. Continuar?')) {
+                console.log('=== LIMPEZA TOTAL ===')
+                const allKeys = Object.keys(localStorage)
+                const keysToRemove = allKeys.filter(key => 
+                  key.includes('custom_') || 
+                  key === 'customExercises' || 
+                  key === 'treino' || 
+                  key === 'workoutMeta' ||
+                  key.includes('_current') ||
+                  key.includes('_w1') ||
+                  key.includes('_w2') ||
+                  key.includes('_w3') ||
+                  key.includes('_w4') ||
+                  key.includes('_history')
+                )
+                console.log('Removendo:', keysToRemove)
+                keysToRemove.forEach(key => localStorage.removeItem(key))
+                alert('Dados limpos! Recarregando...')
+                window.location.reload()
+              }
+            }}
+            style={{ marginTop: '8px', fontSize: '12px' }}
+          >
+            🗑️ Limpar Tudo (Debug)
+          </button>
         </div>
       </div>
     )
