@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Timer, Plus, Save, Download, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Save, Download, Trash2 } from 'lucide-react'
 import AuthSection from './components/AuthSection'
 import TimerSection from './components/TimerSection'
 import WorkoutTabs from './components/WorkoutTabs'
@@ -18,7 +18,7 @@ function App() {
   const [showModal, setShowModal] = useState(false)
   const [showWizard, setShowWizard] = useState(false)
   
-  const { firebaseStatus, user, signIn, signOut, enableOffline } = useFirebase()
+  const { user, signIn, signOut, enableOffline } = useFirebase()
   const { workoutData, notes, updateWorkout, updateNotes, saveData, exportData, clearData } = useWorkoutData(user)
   const { customExercises, addExercise, removeExercise } = useExerciseManager()
   const { workoutState, createNewWorkout, renewWorkout, continueExistingWorkout, getWorkoutAge } = useWorkoutState()
@@ -54,20 +54,26 @@ function App() {
 
   const handleWorkoutGenerated = (result, profile) => {
     if (result.exercises) {
-      // Limpar exercícios existentes
+      console.log('Criando novo treino:', result)
+      
+      // Limpar TODOS os dados antigos
       localStorage.removeItem('customExercises')
+      localStorage.removeItem('treino')
+      localStorage.removeItem('workoutMeta')
       
       // Adicionar novos exercícios
-      const exercises = result.exercises.map(ex => ({
-        id: 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      const exercises = result.exercises.map((ex, index) => ({
+        id: 'custom_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 5),
         name: ex.name,
         day: parseInt(ex.day),
-        type: ex.type,
+        type: ex.type || 'weight',
         series: ex.series,
         category: ex.category || 'normal',
         notes: ex.notes || '',
         created: new Date().toISOString()
       }))
+      
+      console.log('Exercícios criados:', exercises)
       
       localStorage.setItem('customExercises', JSON.stringify(exercises))
       
@@ -78,7 +84,9 @@ function App() {
       setShowWizard(false)
       
       // Recarregar página para atualizar estado
-      window.location.reload()
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     }
   }
 
