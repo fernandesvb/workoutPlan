@@ -83,7 +83,9 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
       return
     }
     
-    suggestions.forEach(suggestion => {
+    console.log('Adicionando todas as sugestões:', suggestions)
+    
+    suggestions.forEach((suggestion, index) => {
       const exerciseData = {
         name: suggestion.name,
         day: suggestion.day,
@@ -92,6 +94,7 @@ export default function AddExerciseModal({ show, onClose, onAddExercise, onRemov
         category: suggestion.category || 'normal',
         notes: suggestion.notes || ''
       }
+      console.log(`Exercício ${index + 1}:`, exerciseData)
       onAddExercise(exerciseData)
     })
     
