@@ -12,6 +12,9 @@ import { useFirebase } from './hooks/useFirebase'
 import { useWorkoutData } from './hooks/useWorkoutData'
 import { useExerciseManager } from './hooks/useExerciseManager'
 import { useWorkoutState } from './hooks/useWorkoutState'
+import { useGamification } from './hooks/useGamification'
+import UserStatus from './components/UserStatus'
+import WorkoutProgress from './components/WorkoutProgress'
 
 function App() {
   const [activeDay, setActiveDay] = useState(1)
@@ -22,6 +25,26 @@ function App() {
   const { workoutData, notes, updateWorkout, updateNotes, saveData, exportData, clearData } = useWorkoutData(user)
   const { customExercises, addExercise, removeExercise } = useExerciseManager()
   const { workoutState, createNewWorkout, renewWorkout, continueExistingWorkout, getWorkoutAge } = useWorkoutState()
+  const { completeWorkout } = useGamification()
+  
+  const handleWorkoutComplete = (completed, total) => {
+    const result = completeWorkout(completed, total)
+    
+    if (result.leveledUp) {
+      // Disparar evento de level up
+      window.dispatchEvent(new CustomEvent('levelUp', {
+        detail: { newLevel: result.newLevel }
+      }))
+    }
+    
+    // Mostrar notificação de XP ganho
+    console.log(`+${result.xpGained} XP - ${result.reason}`)
+  }
+  
+  const handleBadgeEarned = (badges) => {
+    console.log('Novas conquistas:', badges)
+    // Aqui você pode adicionar notificações ou celebrações
+  }
 
   // Função para remover exercício (para usar no modal)
   const handleRemoveExercise = (exerciseId) => {
@@ -156,6 +179,15 @@ function App() {
           ← Voltar ao Início
         </button>
       </div>
+      
+      <UserStatus onBadgeEarned={handleBadgeEarned} />
+      
+      <WorkoutProgress 
+        day={activeDay}
+        workoutData={workoutData}
+        customExercises={customExercises}
+        onWorkoutComplete={handleWorkoutComplete}
+      />
       
       <TimerSection />
       
