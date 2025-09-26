@@ -5,7 +5,33 @@ export function useExerciseManager() {
 
   useEffect(() => {
     loadCustomExercises()
-  }, [])
+    
+    // Escutar mudanças no localStorage
+    const handleStorageChange = (e) => {
+      if (e.key === 'customExercises') {
+        console.log('Detectada mudança em customExercises, recarregando...')
+        loadCustomExercises()
+      }
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Polling para detectar mudanças na mesma aba
+    const interval = setInterval(() => {
+      const current = localStorage.getItem('customExercises')
+      const currentParsed = current ? JSON.parse(current) : []
+      
+      if (JSON.stringify(currentParsed) !== JSON.stringify(customExercises)) {
+        console.log('Detectada mudança local em customExercises, recarregando...')
+        setCustomExercises(currentParsed)
+      }
+    }, 1000)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      clearInterval(interval)
+    }
+  }, [customExercises])
 
   const loadCustomExercises = () => {
     try {

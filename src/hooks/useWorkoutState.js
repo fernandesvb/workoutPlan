@@ -61,9 +61,30 @@ export function useWorkoutState() {
 
   const createNewWorkout = (exercises, profile) => {
     try {
+      console.log('=== CRIANDO NOVO TREINO NO HOOK ===')
+      console.log('Exercícios recebidos:', exercises.length)
+      
       const now = new Date().toISOString()
       
-      // Salvar exercícios
+      // LIMPEZA TOTAL PRIMEIRO
+      const allKeys = Object.keys(localStorage)
+      const keysToRemove = allKeys.filter(key => 
+        key.includes('custom_') || 
+        key === 'customExercises' || 
+        key === 'treino' || 
+        key === 'workoutMeta' ||
+        key.includes('_current') ||
+        key.includes('_w1') ||
+        key.includes('_w2') ||
+        key.includes('_w3') ||
+        key.includes('_w4') ||
+        key.includes('_history')
+      )
+      
+      console.log('Limpando chaves no hook:', keysToRemove)
+      keysToRemove.forEach(key => localStorage.removeItem(key))
+      
+      // Salvar novos exercícios
       localStorage.setItem('customExercises', JSON.stringify(exercises))
       
       // Salvar metadados
@@ -71,12 +92,12 @@ export function useWorkoutState() {
         createdAt: now,
         profile,
         welcomeCompleted: true,
-        version: '2.0'
+        version: '3.0',
+        exerciseCount: exercises.length
       }
       localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
       
-      // Limpar dados antigos de treino
-      localStorage.removeItem('treino')
+      console.log('Treino salvo com sucesso!')
       
       setWorkoutState({
         hasWorkout: true,
