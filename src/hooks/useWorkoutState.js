@@ -21,12 +21,23 @@ export function useWorkoutState() {
       const workoutCreatedAt = workoutMeta.createdAt
       const workoutProfile = workoutMeta.profile
       
-      console.log('Debug loadWorkoutState:', {
-        customExercises: customExercises.length,
-        hasWorkout,
-        workoutMeta,
-        showWelcome: !hasWorkout || !workoutMeta.welcomeCompleted
-      })
+      console.log('=== CARREGANDO ESTADO DO TREINO ===')
+      console.log('Exercícios encontrados:', customExercises.length)
+      console.log('Tem treino:', hasWorkout)
+      console.log('Meta:', workoutMeta)
+      console.log('Mostrar welcome:', !hasWorkout || !workoutMeta.welcomeCompleted)
+      
+      if (customExercises.length > 0) {
+        console.log('Exercícios por dia:')
+        const byDay = {}
+        customExercises.forEach(ex => {
+          if (!byDay[ex.day]) byDay[ex.day] = []
+          byDay[ex.day].push(ex.name)
+        })
+        Object.keys(byDay).forEach(day => {
+          console.log(`Dia ${day}: ${byDay[day].length} exercícios - ${byDay[day].join(', ')}`)
+        })
+      }
 
       setWorkoutState({
         hasWorkout,
@@ -36,6 +47,15 @@ export function useWorkoutState() {
       })
     } catch (error) {
       console.error('Erro ao carregar estado do treino:', error)
+      // Em caso de erro, limpar dados corrompidos
+      localStorage.removeItem('customExercises')
+      localStorage.removeItem('workoutMeta')
+      setWorkoutState({
+        hasWorkout: false,
+        workoutCreatedAt: null,
+        workoutProfile: null,
+        showWelcome: true
+      })
     }
   }
 
