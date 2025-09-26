@@ -123,9 +123,7 @@ FORMATO JSON OBRIGATÓRIO:
 
 CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Responda SÓ o JSON:`
 
-      console.log('=== ENVIANDO PROMPT PARA IA ===')
-      console.log('Exercícios esperados por dia:', exerciseCount)
-      console.log('Total esperado:', parseInt(formData.daysPerWeek) * exerciseCount)
+      // Logs removidos para produção
       
       const response = await fetch('/api/claude', {
         method: 'POST',
@@ -137,22 +135,8 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
 
       const result = await response.json()
       
-      console.log('=== RESPOSTA DA IA ===')
-      console.log('Resultado bruto:', result)
-      console.log('Exercícios recebidos:', result.exercises?.length || 0)
-      
-      if (result.exercises) {
-        const byDay = {}
-        result.exercises.forEach(ex => {
-          if (!byDay[ex.day]) byDay[ex.day] = 0
-          byDay[ex.day]++
-        })
-        console.log('Exercícios por dia na resposta:', byDay)
-      }
-      
       // Se a IA não retornou exercícios suficientes, gerar manualmente
       if (!result.exercises || result.exercises.length < parseInt(formData.daysPerWeek) * exerciseCount) {
-        console.log('=== IA RETORNOU POUCOS EXERCÍCIOS, GERANDO MANUALMENTE ===')
         result.exercises = generateFallbackExercises()
       }
       
@@ -274,7 +258,6 @@ CRIE ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAL. Respon
       }
     }
     
-    console.log('Exercícios de fallback gerados:', exercises.length)
     return exercises
   }
   

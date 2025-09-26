@@ -87,10 +87,7 @@ export default function WelcomeScreen({
         <div className="welcome-actions">
           <button 
             className="btn-primary large" 
-            onClick={() => {
-              console.log('Botão Criar Treino clicado!')
-              onCreateNew()
-            }}
+            onClick={onCreateNew}
           >
             <Plus size={20} />
             Criar Meu Treino
@@ -98,10 +95,7 @@ export default function WelcomeScreen({
           
           <button 
             className="btn-secondary" 
-            onClick={() => {
-              console.log('Forçando modo existente')
-              onContinueExisting()
-            }}
+            onClick={onContinueExisting}
             style={{ marginTop: '12px' }}
           >
             Já tenho treino - Pular
@@ -111,7 +105,6 @@ export default function WelcomeScreen({
             className="btn-danger" 
             onClick={() => {
               if (confirm('ATENÇÃO: Isso vai apagar TODOS os dados de treino. Continuar?')) {
-                console.log('=== LIMPEZA TOTAL ===')
                 const allKeys = Object.keys(localStorage)
                 const keysToRemove = allKeys.filter(key => 
                   key.includes('custom_') || 
@@ -125,7 +118,6 @@ export default function WelcomeScreen({
                   key.includes('_w4') ||
                   key.includes('_history')
                 )
-                console.log('Removendo:', keysToRemove)
                 keysToRemove.forEach(key => localStorage.removeItem(key))
                 alert('Dados limpos! Recarregando...')
                 window.location.reload()
@@ -187,10 +179,7 @@ export default function WelcomeScreen({
       <div className="welcome-actions">
         <button 
           className="btn-primary" 
-          onClick={() => {
-            console.log('Botão Continuar clicado!')
-            onContinueExisting()
-          }}
+          onClick={onContinueExisting}
         >
           <TrendingUp size={16} />
           Continuar Treino
@@ -198,10 +187,7 @@ export default function WelcomeScreen({
         
         <button 
           className={`btn-secondary ${shouldSuggestRenewal ? 'highlighted' : ''}`}
-          onClick={() => {
-            console.log('Botão Renovar clicado!')
-            onRenewWorkout()
-          }}
+          onClick={onRenewWorkout}
         >
           <RefreshCw size={16} />
           {shouldSuggestRenewal ? 'Renovar Treino' : 'Criar Novo Treino'}
