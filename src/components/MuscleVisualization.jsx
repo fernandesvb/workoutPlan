@@ -5,54 +5,67 @@ export default function MuscleVisualization({ exerciseName }) {
   const muscleData = useMemo(() => {
     const name = exerciseName.toLowerCase().trim()
 
-    // Mapear exercícios para grupos musculares
+    // Mapear exercícios para grupos musculares específicos
     const muscleMap = {
       // Peito
-      'supino': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
-      'crucifixo': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
-      'flexão': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'supino': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'crucifixo': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'flexão': { targetMuscles: ['chest', 'triceps'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
 
       // Costas
-      'remada': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
-      'puxada': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
-      'barra fixa': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'remada': { targetMuscles: ['back'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'puxada': { targetMuscles: ['back'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'barra fixa': { targetMuscles: ['back', 'biceps'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
 
       // Pernas
-      'agachamento': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'leg press': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'stiff': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'afundo': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'agachamento': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'leg press': { targetMuscles: ['legs'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'stiff': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'afundo': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
 
       // Ombros
-      'desenvolvimento': { primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
-      'elevação': { primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
+      'desenvolvimento': { targetMuscles: ['shoulders', 'triceps'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
+      'elevação': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
 
       // Bíceps
-      'rosca': { primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
-      'curl': { primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
+      'rosca': { targetMuscles: ['biceps'], primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
+      'curl': { targetMuscles: ['biceps'], primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
 
       // Tríceps
-      'tríceps': { primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
-      'mergulho': { primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
+      'tríceps': { targetMuscles: ['triceps'], primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
+      'mergulho': { targetMuscles: ['triceps', 'chest'], primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
 
       // Core
-      'abdominal': { primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
-      'prancha': { primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' },
+      'abdominal': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
+      'prancha': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' },
 
       // Glúteos
-      'ponte': { primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
-      'hip thrust': { primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' }
+      'ponte': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'hip thrust': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' }
     }
 
     // Buscar por palavra-chave
-    for (const [key, colors] of Object.entries(muscleMap)) {
+    for (const [key, config] of Object.entries(muscleMap)) {
       if (name.includes(key)) {
-        return colors
+        return config
       }
     }
 
-    return { primary: '#888888', secondary: '#BBBBBB', label: 'GERAL' }
+    return { targetMuscles: [], primary: '#888888', secondary: '#BBBBBB', label: 'GERAL' }
   }, [exerciseName])
+
+  // Função helper para verificar se um músculo está ativo
+  const getMuscleColor = (muscleName, isPrimary = true) => {
+    if (!muscleData.targetMuscles || muscleData.targetMuscles.length === 0) {
+      return '#E5E7EB' // cor neutra
+    }
+
+    if (muscleData.targetMuscles.includes(muscleName)) {
+      return isPrimary ? muscleData.primary : muscleData.secondary
+    }
+
+    return '#E5E7EB' // cor neutra para músculos não trabalhados
+  }
 
   return (
     <div className="muscle-visualization">
@@ -65,34 +78,41 @@ export default function MuscleVisualization({ exerciseName }) {
         {/* Pescoço */}
         <rect x="95" y="45" width="10" height="15" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1"/>
 
-        {/* Tronco (peito + abdomen) */}
-        <ellipse cx="100" cy="100" rx="35" ry="45" fill={muscleData.primary} stroke="#9CA3AF" strokeWidth="2" opacity="0.85"/>
+        {/* Peito/Tronco Superior */}
+        <ellipse cx="100" cy="90" rx="32" ry="25" fill={getMuscleColor('chest')} stroke="#9CA3AF" strokeWidth="2" opacity="0.85"/>
 
-        {/* Cintura/Core */}
-        <rect x="80" y="135" width="40" height="25" rx="5" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
+        {/* Core/Abdomen */}
+        <rect x="80" y="110" width="40" height="30" rx="5" fill={getMuscleColor('core')} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
+
+        {/* Costas (atrás - representado com elipse mais escura) */}
+        <ellipse cx="100" cy="95" rx="28" ry="35" fill={getMuscleColor('back', false)} stroke="#9CA3AF" strokeWidth="1" opacity="0.5"/>
 
         {/* Ombros */}
-        <circle cx="65" cy="75" r="15" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="2" opacity="0.8"/>
-        <circle cx="135" cy="75" r="15" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="2" opacity="0.8"/>
+        <circle cx="65" cy="75" r="15" fill={getMuscleColor('shoulders')} stroke="#9CA3AF" strokeWidth="2" opacity="0.8"/>
+        <circle cx="135" cy="75" r="15" fill={getMuscleColor('shoulders')} stroke="#9CA3AF" strokeWidth="2" opacity="0.8"/>
 
-        {/* Braços superiores */}
-        <rect x="45" y="85" width="15" height="50" rx="7" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="2" opacity="0.7"/>
-        <rect x="140" y="85" width="15" height="50" rx="7" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="2" opacity="0.7"/>
+        {/* Tríceps (parte traseira do braço) */}
+        <rect x="45" y="85" width="15" height="50" rx="7" fill={getMuscleColor('triceps', false)} stroke="#9CA3AF" strokeWidth="2" opacity="0.7"/>
+        <rect x="140" y="85" width="15" height="50" rx="7" fill={getMuscleColor('triceps', false)} stroke="#9CA3AF" strokeWidth="2" opacity="0.7"/>
+
+        {/* Bíceps (parte frontal do braço) */}
+        <ellipse cx="52" cy="110" rx="8" ry="25" fill={getMuscleColor('biceps')} stroke="#9CA3AF" strokeWidth="1" opacity="0.8"/>
+        <ellipse cx="148" cy="110" rx="8" ry="25" fill={getMuscleColor('biceps')} stroke="#9CA3AF" strokeWidth="1" opacity="0.8"/>
 
         {/* Antebraços */}
         <rect x="47" y="130" width="11" height="40" rx="5" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1"/>
         <rect x="142" y="130" width="11" height="40" rx="5" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1"/>
 
-        {/* Coxas */}
-        <rect x="75" y="160" width="18" height="70" rx="9" fill={muscleData.primary} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
-        <rect x="107" y="160" width="18" height="70" rx="9" fill={muscleData.primary} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
+        {/* Glúteos */}
+        <ellipse cx="100" cy="150" rx="28" ry="12" fill={getMuscleColor('glutes')} stroke="#9CA3AF" strokeWidth="1" opacity="0.75"/>
+
+        {/* Coxas/Pernas */}
+        <rect x="75" y="155" width="18" height="75" rx="9" fill={getMuscleColor('legs')} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
+        <rect x="107" y="155" width="18" height="75" rx="9" fill={getMuscleColor('legs')} stroke="#9CA3AF" strokeWidth="2" opacity="0.75"/>
 
         {/* Panturrilhas */}
-        <rect x="78" y="230" width="12" height="50" rx="6" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="1" opacity="0.6"/>
-        <rect x="110" y="230" width="12" height="50" rx="6" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="1" opacity="0.6"/>
-
-        {/* Glúteos (indicativo) */}
-        <ellipse cx="100" cy="162" rx="25" ry="15" fill={muscleData.secondary} stroke="#9CA3AF" strokeWidth="1" opacity="0.6"/>
+        <rect x="78" y="230" width="12" height="50" rx="6" fill={getMuscleColor('calves', false)} stroke="#9CA3AF" strokeWidth="1" opacity="0.6"/>
+        <rect x="110" y="230" width="12" height="50" rx="6" fill={getMuscleColor('calves', false)} stroke="#9CA3AF" strokeWidth="1" opacity="0.6"/>
       </svg>
 
       <div className="muscle-label">
