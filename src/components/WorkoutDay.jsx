@@ -1,4 +1,4 @@
-import ExerciseCard from './ExerciseCardNew'
+import ExerciseCard from './ExerciseCard'
 
 export default function WorkoutDay({ day, workoutData, customExercises, onWorkoutChange, onRemoveExercise }) {
   const exercisesForDay = customExercises.filter(ex => ex.day === day)

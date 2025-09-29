@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { Button } from "@/components/ui/button"
 
 import TimerSection from './components/TimerSection'
-import WorkoutTabs from './components/WorkoutTabsNew'
+import WorkoutTabs from './components/WorkoutTabs'
 import WorkoutDay from './components/WorkoutDay'
 import NotesSection from './components/NotesSection'
 import AddExerciseModal from './components/AddExerciseModal'
@@ -15,11 +14,11 @@ import { useExerciseManager } from './hooks/useExerciseManager'
 import { useWorkoutState } from './hooks/useWorkoutState'
 import { useGamification } from './hooks/useGamification'
 import UserStatus from './components/UserStatus'
-import WorkoutProgress from './components/WorkoutProgressNew'
+import WorkoutProgress from './components/WorkoutProgress'
 import OnboardingTutorial from './components/OnboardingTutorial'
 import PremiumUpgrade from './components/PremiumUpgrade'
 import ConnectionStatus from './components/ConnectionStatus'
-import WorkoutSummary from './components/WorkoutSummaryNew'
+import WorkoutSummary from './components/WorkoutSummary'
 
 function App() {
   const [activeDay, setActiveDay] = useState(1)
@@ -287,30 +286,27 @@ function App() {
 
   // App principal
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">🏋️ FitTracker Pro</h1>
-              <p className="text-sm text-muted-foreground">Seu treino personalizado com IA</p>
-            </div>
-            <ConnectionStatus user={user} />
+    <div className="container">
+      <div className="header">
+        <div className="header-top">
+          <div className="header-title">
+            <h1>🏋️ FitTracker Pro</h1>
+            <p className="subtitle">Seu treino personalizado com IA</p>
           </div>
+          <ConnectionStatus user={user} />
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* Back Button */}
-        <Button
-          variant="outline"
-          onClick={() => renewWorkout()}
-          className="mb-4"
-        >
-          ← Voltar ao Início
-        </Button>
+      </div>
+      <div className="content">
+        <div className="back-to-home">
+          <button
+            className="btn-back"
+            onClick={() => {
+              renewWorkout()
+            }}
+          >
+            ← Voltar ao Início
+          </button>
+        </div>
 
         <UserStatus onBadgeEarned={handleBadgeEarned} />
 
@@ -339,18 +335,15 @@ function App() {
 
         <NotesSection notes={notes} onNotesChange={updateNotes} />
 
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button onClick={() => setShowModal(true)} className="flex-1">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Exercício com IA
-          </Button>
-          <Button variant="destructive" onClick={handleClear}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Limpar
-          </Button>
+        <div className="action-buttons">
+          <button className="btn-add" onClick={() => setShowModal(true)}>
+            <Plus size={16} /> Novo Exercício com IA
+          </button>
+          <button className="btn-clear" onClick={handleClear}>
+            <Trash2 size={16} /> Limpar
+          </button>
         </div>
-      </main>
+      </div>
 
       <AddExerciseModal 
         show={showModal}
