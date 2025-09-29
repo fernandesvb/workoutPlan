@@ -527,18 +527,23 @@ body {
 }
 
 .series-info {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
-  padding: 6px 12px;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   white-space: nowrap;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  min-width: 40px;
+  text-align: center;
 }
 
 .exercise-card.core .series-info {
-  background: linear-gradient(135deg, var(--success) 0%, var(--secondary-dark) 100%);
+  background: #ffffff;
+  color: #059669;
+  border: 2px solid rgba(5, 150, 105, 0.3);
 }
 
 .exercise-tracking {
@@ -1417,112 +1422,163 @@ button:disabled {
 }
 
 /* Progress Chart */
+/* Modern Progress Chart */
+.progress-chart-modern {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.chart-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stat-label.trend-up {
+  color: #10b981;
+}
+
+.stat-label.trend-down {
+  color: #ef4444;
+}
+
+.stat-label.trend-stable {
+  color: #64748b;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+
+.stat-value.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-value.trend-up {
+  color: #10b981;
+}
+
+.stat-value.trend-down {
+  color: #ef4444;
+}
+
+.stat-value.trend-stable {
+  color: #94a3b8;
+}
+
+.stat-unit {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.chart-visual {
+  margin-top: 16px;
+}
+
+.chart-line-container {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chart-svg {
+  width: 100%;
+  height: 80px;
+  overflow: visible;
+}
+
+.chart-point-hover {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-point-hover:hover {
+  r: 12;
+  fill: rgba(102, 126, 234, 0.2);
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.chart-label-item {
+  flex: 1;
+  text-align: center;
+}
+
+.label-date {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #64748b;
+  gap: 12px;
+}
+
+.chart-empty span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Legacy styles (keeping for backwards compatibility) */
 .progress-chart {
   background: var(--bg-card);
   border-radius: 12px;
   padding: 16px;
   margin-top: 12px;
   border: 1px solid var(--border-light);
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.chart-title {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.trend-indicator {
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-.trend-indicator.up {
-  background: #dcfce7;
-  color: #059669;
-}
-
-.trend-indicator.down {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.trend-indicator.stable {
-  background: #f1f5f9;
-  color: #64748b;
-}
-
-.chart-container {
-  height: 80px;
-  margin-bottom: 12px;
-}
-
-.chart-bars {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  height: 100%;
-  gap: 8px;
-}
-
-.chart-bar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  height: 100%;
-}
-
-.chart-bar {
-  background: linear-gradient(to top, #667eea, #764ba2);
-  border-radius: 4px 4px 0 0;
-  width: 100%;
-  min-height: 5%;
-  position: relative;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  padding-bottom: 4px;
-}
-
-.chart-bar:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
-}
-
-.bar-value {
-  font-size: 10px;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.bar-date {
-  font-size: 10px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.chart-summary {
-  text-align: center;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-light);
-}
-
-.summary-text {
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
 .no-data {
@@ -2647,11 +2703,12 @@ button:disabled {
 
 /* Check de exercício concluído */
 .completion-check {
-  font-size: 16px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 @keyframes bounceIn {
@@ -4075,8 +4132,8 @@ button:disabled {
 /* New Muscle Visualization Styles */
 .exercise-image-container {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 140px;
   border-radius: 16px;
   overflow: visible;
   flex-shrink: 0;
@@ -4094,7 +4151,7 @@ button:disabled {
   justify-content: center;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-radius: 12px;
-  padding: 8px;
+  padding: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -4102,7 +4159,7 @@ button:disabled {
 .muscle-diagram {
   width: 100%;
   height: auto;
-  max-height: 120px;
+  max-height: none;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -4111,14 +4168,7 @@ button:disabled {
 }
 
 .muscle-info {
-  margin-top: 4px;
-  font-size: 8px;
-  color: #94a3b8;
-  text-align: center;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
+  display: none;
 }
 
 .label-indicator {

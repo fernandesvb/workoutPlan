@@ -8,40 +8,40 @@ export default function MuscleVisualization({ exerciseName }) {
     // Mapear exercícios para grupos musculares
     const muscleMap = {
       // Peito
-      'supino': { primary: '#FF4444', secondary: '#FF8888', label: 'Peitorais, Tríceps, Ombros' },
-      'crucifixo': { primary: '#FF4444', secondary: '#FF8888', label: 'Peitorais' },
-      'flexão': { primary: '#FF4444', secondary: '#FF8888', label: 'Peitorais, Tríceps' },
+      'supino': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'crucifixo': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'flexão': { primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
 
       // Costas
-      'remada': { primary: '#4444FF', secondary: '#8888FF', label: 'Dorsais, Bíceps, Trapézio' },
-      'puxada': { primary: '#4444FF', secondary: '#8888FF', label: 'Dorsais, Bíceps' },
-      'barra fixa': { primary: '#4444FF', secondary: '#8888FF', label: 'Dorsais, Bíceps' },
+      'remada': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'puxada': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'barra fixa': { primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
 
       // Pernas
-      'agachamento': { primary: '#AA44FF', secondary: '#CC88FF', label: 'Quadríceps, Glúteos, Posterior' },
-      'leg press': { primary: '#AA44FF', secondary: '#CC88FF', label: 'Quadríceps, Glúteos' },
-      'stiff': { primary: '#AA44FF', secondary: '#CC88FF', label: 'Posterior, Glúteos' },
-      'afundo': { primary: '#AA44FF', secondary: '#CC88FF', label: 'Quadríceps, Glúteos' },
+      'agachamento': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'leg press': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'stiff': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'afundo': { primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
 
       // Ombros
-      'desenvolvimento': { primary: '#FF8800', secondary: '#FFBB44', label: 'Deltoides, Tríceps' },
-      'elevação': { primary: '#FF8800', secondary: '#FFBB44', label: 'Deltoides' },
+      'desenvolvimento': { primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
+      'elevação': { primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
 
       // Bíceps
-      'rosca': { primary: '#00CC88', secondary: '#44FFBB', label: 'Bíceps, Antebraços' },
-      'curl': { primary: '#00CC88', secondary: '#44FFBB', label: 'Bíceps' },
+      'rosca': { primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
+      'curl': { primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
 
       // Tríceps
-      'tríceps': { primary: '#FF4444', secondary: '#FF8888', label: 'Tríceps' },
-      'mergulho': { primary: '#FF4444', secondary: '#FF8888', label: 'Tríceps, Peitorais' },
+      'tríceps': { primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
+      'mergulho': { primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
 
       // Core
-      'abdominal': { primary: '#FFAA00', secondary: '#FFDD44', label: 'Abdominais' },
-      'prancha': { primary: '#FFAA00', secondary: '#FFDD44', label: 'Core Completo' },
+      'abdominal': { primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
+      'prancha': { primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' },
 
       // Glúteos
-      'ponte': { primary: '#FF1493', secondary: '#FF69B4', label: 'Glúteos, Posterior' },
-      'hip thrust': { primary: '#FF1493', secondary: '#FF69B4', label: 'Glúteos' }
+      'ponte': { primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'hip thrust': { primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' }
     }
 
     // Buscar por palavra-chave
@@ -51,7 +51,7 @@ export default function MuscleVisualization({ exerciseName }) {
       }
     }
 
-    return { primary: '#888888', secondary: '#BBBBBB', label: 'Corpo Completo' }
+    return { primary: '#888888', secondary: '#BBBBBB', label: 'GERAL' }
   }, [exerciseName])
 
   return (
