@@ -260,7 +260,7 @@ function App() {
           <p className="subtitle">Seu treino personalizado com IA</p>
         </div>
         <div className="content">
-          <WelcomeScreen 
+          <WelcomeScreen
             hasExistingWorkout={workoutState.hasWorkout}
             workoutAge={getWorkoutAge}
             onCreateNew={handleCreateNew}
@@ -270,6 +270,7 @@ function App() {
             onSignIn={signIn}
             onSignOut={signOut}
             onEnableOffline={enableOffline}
+            onBadgeEarned={handleBadgeEarned}
           />
         </div>
         
@@ -317,8 +318,6 @@ function App() {
             ← Voltar ao Início
           </button>
         </div>
-
-        <UserStatus onBadgeEarned={handleBadgeEarned} />
 
         <WorkoutProgress
           day={activeDay}

@@ -1,16 +1,18 @@
 import { Plus, RefreshCw, Calendar, TrendingUp } from 'lucide-react'
 import AuthSection from './AuthSection'
+import UserStatus from './UserStatus'
 
-export default function WelcomeScreen({ 
-  hasExistingWorkout, 
-  workoutAge, 
-  onCreateNew, 
-  onRenewWorkout, 
+export default function WelcomeScreen({
+  hasExistingWorkout,
+  workoutAge,
+  onCreateNew,
+  onRenewWorkout,
   onContinueExisting,
   user,
   onSignIn,
   onSignOut,
-  onEnableOffline 
+  onEnableOffline,
+  onBadgeEarned
 }) {
   const shouldSuggestRenewal = workoutAge && workoutAge > 42 // 6 semanas
 
@@ -105,17 +107,19 @@ export default function WelcomeScreen({
   // Usuário existente
   return (
     <div className="welcome-screen existing">
-      <AuthSection 
+      <AuthSection
         user={user}
         onSignIn={onSignIn}
         onSignOut={onSignOut}
         onEnableOffline={onEnableOffline}
       />
-      
+
       <div className="motivational-quote">
         <p>{getMotivationalQuote()}</p>
       </div>
-      
+
+      <UserStatus onBadgeEarned={onBadgeEarned} />
+
       <div className="current-workout-info">
         <div className="workout-day">
           <strong>Treino de hoje:</strong>
