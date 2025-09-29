@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Treino">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Aplicativo de controle de treino personalizado com cronômetro integrado e sincronização na nuvem">
+
+<title>Meu Treino - 30min</title>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    input, textarea {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        overflow-x: hidden;
+    }
+    
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: white;
+        min-height: 100vh;
+        padding: 15px;
+    }
+    
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 8px;
+        font-size: clamp(1.2em, 4vw, 1.5em);
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 15px;
+        font-size: clamp(0.8em, 3vw, 0.9em);
+    }
+    
+    .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+    
+    .info-box p {
+        color: #856404;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        margin: 3px 0;
+    }
+    
+    /* FIREBASE STATUS */
+    .firebase-status {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        color: #1565c0;
+        transition: all 0.3s ease;
+    }
+    
+    .firebase-status.connected {
+        background: #e8f5e8;
+        border-color: #4caf50;
+        color: #2e7d32;
+    }
+    
+    .firebase-status.offline {
+        background: #fff3e0;
+        border-color: #ff9800;
+        color: #e65100;
+    }
+    
+    /* SEÇÃO DE AUTENTICAÇÃO */
+    .auth-section {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .auth-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    
+    #user-info {
+        font-size: clamp(0.8em, 3.5vw, 0.9em);
+        color: #495057;
+        font-weight: 500;
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .auth-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+    }
+    
+    .auth-btn {
+        padding: 6px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: clamp(0.7em, 2.5vw, 0.8em);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    
+    .auth-btn.login {
+        background: #4285f4;
+        color: white;
+    }
+    
+    .auth-btn.logout {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .auth-btn.offline {
+        background: #6f42c1;
+        color: white;
+    }
+    
+    .auth-btn:active {
+        transform: scale(0.95);
+    }
+    
+    /* CRONÔMETRO */
+    .timer-section {
+        background: #f0f4ff;
+        border-radius: 12px;
+        padding: 12px;
+        margin: 15px 0;
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: clamp(2em, 8vw, 2.5em);
+        font-weight: bold;
+        color: #667eea;
+        margin: 8px 0;
+        font-family: monospace;
+    }
+    
+    .timer-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .timer-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 80px;
+        max-width: 120px;
+    }
+    
+    .btn-start {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-stop {
+        background: #f56565;
+        color: white;
+    }
+    
+    .btn-reset {
+        background: #718096;
+        color: white;
+    }
+    
+    .quick-timer {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+        padding: 4px 8px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 6px;
+        font-size: clamp(0.7em, 2.8vw, 0.75em);
+        cursor: pointer;
+        min-width: 40px;
+    }
+    
+    .quick-btn:active {
+        background: #cbd5e0;
+    }
+    
+    /* TABS */
+    .tabs {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #e0e0e0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab {
+        padding: 8px 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: clamp(0.75em, 3vw, 0.85em);
+        color: #666;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        text-align: center;
+        flex: 1;
+        min-width: 100px;
+        white-space: nowrap;
+    }
+    
+    .tab small {
+        display: block;
+        font-size: clamp(0.65em, 2.5vw, 0.7em);
+        color: #999;
+        margin-top: 2px;
+    }
+    
+    .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        font-weight: bold;
+    }
+    
+    .tab.active small {
+        color: #667eea;
+    }
+    
+    /* SEÇÕES DE DIA */
+    .day-section {
+        display: none;
+    }
+    
+    .day-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+        font-weight: bold;
+        color: #667eea;
+        margin: 15px 0 10px 0;
+        font-size: clamp(0.9em, 4vw, 1em);
+        padding: 5px 0;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    /* CARTÕES DE EXERCÍCIO */
+    .exercise-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .exercise-card.core {
+        border-left-color: #48bb78;
+        background: #f0fff4;
+    }
+    
+    .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .exercise-name {
+        font-weight: bold;
+        color: #333;
+        font-size: clamp(0.85em, 3.5vw, 0.95em);
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .series-info {
+        background: #667eea;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: clamp(0.75em, 3vw, 0.8em);
+        white-space: nowrap;
+    }
+    
+    .core .series-info {
+        background: #48bb78;
+    }
+    
+    /* GRID DE PESOS */
+    .weight-tracking {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+        gap: 6px;
+    }
+    
+    .week-input {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .week-label {
+        font-size: clamp(0.65em, 2.5vw, 0.7em);
+        color: #666;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    /* INPUTS */
+    input[type="number"], input[type="text"] {
+        padding: 8px 4px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: clamp(14px, 4vw, 16px);
+        text-align: center;
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        background: white;
+        color: #333;
+        font-weight: 600;
+        min-height: 36px;
+    }
+    
+    input::placeholder {
+        color: #999;
+        font-weight: 400;
+    }
+    
+    input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* NOTAS */
+    .notes-section {
+        margin-top: 15px;
+        padding: 12px;
+        background: #f0f4ff;
+        border-radius: 12px;
+    }
+    
+    .notes-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: clamp(0.85em, 3.5vw, 0.9em);
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: clamp(13px, 3.5vw, 14px);
+        color: #333;
+        font-weight: 500;
+        resize: vertical;
+        min-height: 70px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: white;
+    }
+    
+    textarea::placeholder {
+        color: #999;
+        font-weight: 400;
+    }
+    
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* BOTÕES DE AÇÃO */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    button {
+        padding: 12px 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: clamp(0.8em, 3.5vw, 0.85em);
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+        min-width: 100px;
+        min-height: 44px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    button:active {
+        transform: scale(0.98);
+    }
+    
+    .btn-save {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-export {
+        background: #48bb78;
+        color: white;
+    }
+    
+    .btn-clear {
+        background: #f56565;
+        color: white;
+    }
+    
+    .btn-add {
+        background: #9f7aea;
+        color: white;
+    }
+    
+    /* MELHORIAS PARA iOS */
+    @supports (-webkit-appearance: none) {
+        input[type="number"], input[type="text"], textarea {
+            -webkit-appearance: none;
+            border-radius: 8px;
+        }
+        
+        button {
+            -webkit-appearance: none;
+        }
+    }
+    
+    /* LANDSCAPE MODE */
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+        .container {
+            padding: 10px;
+        }
+        
+        h1 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .timer-display {
+            font-size: 1.8em;
+            margin: 5px 0;
+        }
+        
+        .exercise-card {
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+    }
+    
+    /* TELAS PEQUENAS */
+    @media (max-width: 360px) {
+        .container {
+            padding: 10px;
+        }
+        
+        .weight-tracking {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .auth-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .timer-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .timer-btn {
+            max-width: none;
+        }
+    }
+    
+    /* MODAL STYLES */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .modal-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+    }
+    
+    .close:hover {
+        color: #000;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9em;
+    }
+    
+    .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        background: white;
+    }
+    
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .ai-section {
+        background: #f0f4ff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .ai-title {
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .ai-input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .ai-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-right: 8px;
+    }
+    
+    .ai-btn:hover {
+        background: #5a67d8;
+    }
+    
+    .ai-btn:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+    }
+    
+    .ai-suggestions {
+        margin-top: 15px;
+        padding: 10px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        display: none;
+    }
+    
+    .suggestion-item {
+        padding: 8px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .suggestion-item:hover {
+        background: #e9ecef;
+        border-color: #667eea;
+    }
+    
+    .suggestion-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+    }
+    
+    .suggestion-desc {
+        font-size: 0.8em;
+        color: #666;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .modal-btn {
+        flex: 1;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9em;
+        font-weight: 600;
+        cursor: pointer;
+        min-width: 100px;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* DARK MODE SUPPORT */
+    @media (prefers-color-scheme: dark) {
+        .container {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .exercise-card {
+            background: #2d2d2d;
+        }
+        
+        .exercise-card.core {
+            background: #1e3a1e;
+        }
+        
+        input, textarea {
+            background: #2d2d2d;
+            color: #f0f0f0;
+            border-color: #404040;
+            font-weight: 600;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: #999;
+        }
+        
+        .section-title {
+            color: #8ab4f8;
+        }
+        
+        .exercise-name {
+            color: #e0e0e0;
+        }
+        
+        .modal-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+        
+        .form-input, .form-select, .form-textarea, .ai-input {
+            background: #404040;
+            color: #f0f0f0;
+            border-color: #555;
+        }
+        
+        .ai-section {
+            background: #1e2a4a;
+        }
+        
+        .suggestion-item {
+            background: #404040;
+            color: #e0e0e0;
+        }
+        
+        .suggestion-item:hover {
+            background: #4a5568;
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>💪 Meu Treino + Core</h1>
+        <p class="subtitle">30-35 min/dia com fortalecimento</p>
+
+    <!-- Status de Conexão Firebase -->
+    <div id="firebase-status" class="firebase-status" style="display: none;">
+        <span id="status-icon">🔄</span>
+        <span id="status-text">Conectando...</span>
+    </div>
+    
+    <!-- Seção de Autenticação -->
+    <div id="auth-section" class="auth-section" style="display: none;">
+        <div class="auth-info">
+            <span id="user-info">👤 Visitante</span>
+            <div class="auth-buttons">
+                <button id="login-btn" class="auth-btn login" onclick="AuthManager.signInWithGoogle()" style="display: none;">
+                    🔐 Login Google
+                </button>
+                <button id="logout-btn" class="auth-btn logout" onclick="AuthManager.signOut()" style="display: none;">
+                    🚪 Sair
+                </button>
+                <button id="offline-mode-btn" class="auth-btn offline" onclick="AuthManager.enableOfflineMode()">
+                    💾 Offline
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-box">
+        <p>💡 <strong>Dica:</strong> Core forte = costas sem dor!</p>
+        <p>⚠️ <strong>Ombro:</strong> Se doer, reduza o peso.</p>
+    </div>
+    
+    <!-- CRONÔMETRO -->
+    <div class="timer-section">
+        <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">⏱️ CRONÔMETRO</div>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="timer-buttons">
+            <button class="timer-btn btn-start" onclick="startTimer()">▶️ Start</button>
+            <button class="timer-btn btn-stop" onclick="stopTimer()">⏸️ Pause</button>
+            <button class="timer-btn btn-reset" onclick="resetTimer()">🔄 Reset</button>
+        </div>
+        <div class="quick-timer">
+            <button class="quick-btn" onclick="setTimer(30)">30s</button>
+            <button class="quick-btn" onclick="setTimer(45)">45s</button>
+            <button class="quick-btn" onclick="setTimer(60)">1min</button>
+            <button class="quick-btn" onclick="setTimer(90)">1:30</button>
+            <button class="quick-btn" onclick="setTimer(120)">2min</button>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showDay(1)">Dia 1<br><small>Peito/Tri</small></button>
+        <button class="tab" onclick="showDay(2)">Dia 2<br><small>Costas/Bi</small></button>
+        <button class="tab" onclick="showDay(3)">Dia 3<br><small>Pernas</small></button>
+    </div>
+    
+    <!-- DIA 1 -->
+    <section id="day1" class="day-section active">
+        <h2 class="section-title">PEITO E TRÍCEPS</h2>
+    
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Supino Máquina Smith</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="supino" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Crucifixo Halteres</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="1" placeholder="kg" data-exercise="crucifixo" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Tríceps Polia</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-polia" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Tríceps Testa</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="triceps-testa" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Prancha Frontal</span>
+                <span class="series-info">3x30-45s</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha1" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Superman (Lombar)</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="superman" data-week="4">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIA 2 -->
+    <section id="day2" class="day-section">
+        <h2 class="section-title">COSTAS E BÍCEPS</h2>
+    
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Remada Máquina</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="remada" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Puxada Frontal</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="puxada" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Rosca Direta</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-direta" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Rosca Martelo</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="rosca-martelo" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Prancha Lateral</span>
+                <span class="series-info">3x20-30s cada</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="text" placeholder="seg" data-exercise="prancha-lateral" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Ponte (Glúteo/Lombar)</span>
+                <span class="series-info">3x15</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="ponte" data-week="4">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIA 3 -->
+    <section id="day3" class="day-section">
+        <h2 class="section-title">PERNAS</h2>
+    
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Leg Press</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="5" placeholder="kg" data-exercise="leg-press" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Cadeira Extensora</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="extensora" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Cadeira Flexora</span>
+                <span class="series-info">3x12</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="flexora" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <span class="exercise-name">Panturrilha</span>
+                <span class="series-info">3x20</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" step="2.5" placeholder="kg" data-exercise="panturrilha" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">🎯 CORE</div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Abdominal Bicicleta</span>
+                <span class="series-info">3x20 (10 cada)</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="bicicleta" data-week="4">
+                </div>
+            </div>
+        </div>
+        
+        <div class="exercise-card core">
+            <div class="exercise-header">
+                <span class="exercise-name">Gato-Vaca (Mobilidade)</span>
+                <span class="series-info">3x10 lento</span>
+            </div>
+            <div class="weight-tracking">
+                <div class="week-input">
+                    <label class="week-label">Sem 1</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="1">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 2</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="2">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 3</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="3">
+                </div>
+                <div class="week-input">
+                    <label class="week-label">Sem 4</label>
+                    <input type="number" placeholder="reps" data-exercise="gato-vaca" data-week="4">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="notes-section">
+        <div class="notes-title">📝 Observações</div>
+        <textarea id="notes" placeholder="Como se sentiu, dores, progressos..."></textarea>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="btn-save" onclick="saveData()">💾 Salvar</button>
+        <button class="btn-export" onclick="exportData()">📥 Exportar</button>
+        <button class="btn-add" onclick="openAddExerciseModal()">➕ Novo Exercício</button>
+        <button class="btn-clear" onclick="clearData()">🗑️ Limpar</button>
+    </div>
+</div>
+
+<!-- Modal para Adicionar Exercício -->
+<div id="addExerciseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">➕ Novo Exercício</h2>
+            <span class="close" onclick="closeAddExerciseModal()">&times;</span>
+        </div>
+        
+        <!-- Seção de IA -->
+        <div class="ai-section">
+            <div class="ai-title">
+                🤖 Sugestão com IA
+            </div>
+            <input type="text" class="ai-input" id="aiPrompt" placeholder="Ex: exercício para fortalecer ombros, exercício de core para iniciantes...">
+            <button class="ai-btn" onclick="getAISuggestions()" id="aiBtn">
+                ✨ Gerar Sugestões
+            </button>
+            <button class="ai-btn" onclick="clearAISuggestions()">
+                🗑️ Limpar
+            </button>
+            
+            <div id="aiSuggestions" class="ai-suggestions">
+                <!-- Sugestões aparecerão aqui -->
+            </div>
+        </div>
+        
+        <form id="exerciseForm">
+            <div class="form-group">
+                <label class="form-label">Nome do Exercício *</label>
+                <input type="text" class="form-input" id="exerciseName" required placeholder="Ex: Supino Inclinado">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Dia do Treino *</label>
+                <select class="form-select" id="exerciseDay" required>
+                    <option value="">Selecione o dia</option>
+                    <option value="1">Dia 1 - Peito/Tríceps</option>
+                    <option value="2">Dia 2 - Costas/Bíceps</option>
+                    <option value="3">Dia 3 - Pernas</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tipo de Exercício *</label>
+                <select class="form-select" id="exerciseType" required>
+                    <option value="">Selecione o tipo</option>
+                    <option value="weight">Com Peso (kg)</option>
+                    <option value="reps">Repetições</option>
+                    <option value="time">Tempo (segundos)</option>
+                    <option value="text">Texto Livre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Séries e Repetições *</label>
+                <input type="text" class="form-input" id="exerciseSeries" required placeholder="Ex: 3x12, 3x30s, 4x8-10">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" id="exerciseCategory">
+                    <option value="normal">Exercício Normal</option>
+                    <option value="core">Core/Funcional</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Observações</label>
+                <textarea class="form-textarea" id="exerciseNotes" placeholder="Dicas de execução, cuidados especiais..."></textarea>
+            </div>
+        </form>
+        
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn btn-secondary" onclick="closeAddExerciseModal()">Cancelar</button>
+            <button type="button" class="modal-btn btn-primary" onclick="addNewExercise()">➕ Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // =====================================================================
+    // CRONÔMETRO
+    // =====================================================================
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isCountdown = false;
+    
+    function updateTimerDisplay() {
+        const minutes = Math.floor(Math.abs(timerSeconds) / 60);
+        const seconds = Math.abs(timerSeconds) % 60;
+        const display = document.getElementById('timerDisplay');
+        display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (isCountdown) {
+            if (timerSeconds <= 0) {
+                display.style.color = '#f56565';
+                if (timerSeconds === 0) {
+                    if (navigator.vibrate) navigator.vibrate(500);
+                    stopTimer();
+                }
+            } else if (timerSeconds <= 10) {
+                display.style.color = '#ffc107';
+            } else {
+                display.style.color = '#48bb78';
+            }
+        } else {
+            display.style.color = '#667eea';
+        }
+    }
+    
+    function startTimer() {
+        if (!timerInterval) {
+            timerInterval = setInterval(() => {
+                if (isCountdown) {
+                    timerSeconds--;
+                    if (timerSeconds <= 0) {
+                        updateTimerDisplay();
+                        if (timerSeconds < 0) {
+                            isCountdown = false;
+                            timerSeconds = 0;
+                        }
+                    }
+                } else {
+                    timerSeconds++;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    
+    function resetTimer() {
+        stopTimer();
+        timerSeconds = 0;
+        isCountdown = false;
+        updateTimerDisplay();
+    }
+    
+    function setTimer(seconds) {
+        stopTimer();
+        timerSeconds = seconds;
+        isCountdown = true;
+        updateTimerDisplay();
+        startTimer();
+    }
+    
+    function showDay(day) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.day-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.tab')[day-1].classList.add('active');
+        document.getElementById('day' + day).classList.add('active');
+    }
+    
+    // =====================================================================
+    // FIREBASE CONFIGURAÇÃO LIMPA
+    // =====================================================================
+    
+    const FirebaseConfig = {
+        config: {
+            apiKey: "AIzaSyBLZwcbCRqahZj1SXP7Zr9tlqhsoTYg7qg",
+            authDomain: "meu-treino-app-668e5.firebaseapp.com",
+            projectId: "meu-treino-app-668e5",
+            storageBucket: "meu-treino-app-668e5.firebasestorage.app",
+            messagingSenderId: "441652448957",
+            appId: "1:441652448957:web:e72cc230975f229faeb1d4"
+        },
+        
+        isInitialized: false,
+        isConnected: false,
+        
+        async init() {
+            try {
+                if (typeof firebase === 'undefined') {
+                    this.updateStatus('offline', '💾 Modo Local');
+                    return false;
+                }
+                
+                firebase.initializeApp(this.config);
+                this.db = firebase.firestore();
+                this.auth = firebase.auth();
+                
+                this.isInitialized = true;
+                this.updateStatus('connected', '☁️ Firebase Conectado');
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao inicializar Firebase:', error);
+                this.updateStatus('offline', '💾 Modo Local');
+                return false;
+            }
+        },
+        
+        updateStatus(status, message) {
+            const statusElement = document.getElementById('firebase-status');
+            const iconElement = document.getElementById('status-icon');
+            const textElement = document.getElementById('status-text');
+            
+            if (!statusElement) return;
+            
+            statusElement.className = 'firebase-status';
+            
+            switch (status) {
+                case 'connected':
+                    statusElement.classList.add('connected');
+                    iconElement.textContent = '☁️';
+                    this.isConnected = true;
+                    break;
+                case 'offline':
+                    statusElement.classList.add('offline');
+                    iconElement.textContent = '💾';
+                    this.isConnected = false;
+                    break;
+                default:
+                    iconElement.textContent = '🔄';
+                    this.isConnected = false;
+            }
+            
+            textElement.textContent = message;
+            statusElement.style.display = 'block';
+            
+            if (status === 'connected') {
+                setTimeout(() => {
+                    statusElement.style.opacity = '0.7';
+                }, 3000);
+            }
+        }
+    };
+    
+    // =====================================================================
+    // DATABASE UNIFICADO
+    // =====================================================================
+    
+    const UnifiedDatabase = {
+        async save(data) {
+            const results = { localStorage: false, firebase: false };
+            
+            // Sempre salva no localStorage
+            try {
+                localStorage.setItem('treino', JSON.stringify(data));
+                results.localStorage = true;
+            } catch (error) {
+                console.error('Erro ao salvar no localStorage:', error);
+            }
+            
+            // Salva no Firebase se disponível
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).set({
+                        ...data,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                        version: Date.now()
+                    });
+                    results.firebase = true;
+                } catch (error) {
+                    console.error('Erro ao salvar no Firebase:', error);
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        },
+        
+        async load() {
+            try {
+                if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                    const firebaseData = await this.loadFromFirebase();
+                    if (firebaseData) {
+                        localStorage.setItem('treino', JSON.stringify(firebaseData));
+                        return firebaseData;
+                    }
+                }
+                
+                return this.loadFromLocalStorage();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                return this.loadFromLocalStorage();
+            }
+        },
+        
+        loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('treino');
+                return saved ? JSON.parse(saved) : null;
+            } catch (error) {
+                console.error('Erro ao carregar do localStorage:', error);
+                return null;
+            }
+        },
+        
+        async loadFromFirebase() {
+            if (!FirebaseConfig.isInitialized) return null;
+            
+            try {
+                const userId = AuthManager.getUserId();
+                const doc = await FirebaseConfig.db.collection('workouts').doc(userId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    delete data.lastUpdated;
+                    delete data.version;
+                    return data;
+                }
+                return null;
+                
+            } catch (error) {
+                console.error('Erro ao carregar do Firebase:', error);
+                return null;
+            }
+        },
+        
+        async clear() {
+            const results = { localStorage: false, firebase: false };
+            
+            try {
+                localStorage.removeItem('treino');
+                results.localStorage = true;
+            } catch (error) {
+                console.error('Erro ao limpar localStorage:', error);
+            }
+            
+            if (FirebaseConfig.isInitialized && FirebaseConfig.isConnected && AuthManager.currentUser) {
+                try {
+                    const userId = AuthManager.getUserId();
+                    await FirebaseConfig.db.collection('workouts').doc(userId).delete();
+                    results.firebase = true;
+                } catch (error) {
+                    console.error('Erro ao limpar Firebase:', error);
+                }
+            }
+            
+            return results.localStorage || results.firebase;
+        }
+    };
+    
+    // =====================================================================
+    // AUTENTICAÇÃO LIMPA
+    // =====================================================================
+    
+    const AuthManager = {
+        currentUser: null,
+        
+        init() {
+            if (!FirebaseConfig.isInitialized) {
+                this.updateUI(null);
+                return;
+            }
+            
+            FirebaseConfig.auth.onAuthStateChanged(async (user) => {
+                this.currentUser = user;
+                this.updateUI(user);
+                
+                if (user) {
+                    FirebaseConfig.updateStatus('connected', '✅ Conectado: ' + (user.displayName || user.email));
+                    await this.loadUserData();
+                    RealtimeSync.start();
+                } else {
+                    RealtimeSync.stop();
+                }
+            });
+        },
+        
+        async signInWithGoogle() {
+            if (!FirebaseConfig.isInitialized) {
+                this.enableOfflineMode();
+                return;
+            }
+            
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                // Usar popup para todos os dispositivos (resolve problema iOS)
+                const result = await FirebaseConfig.auth.signInWithPopup(provider);
+                await this.migrateLocalData();
+                return result;
+                
+            } catch (error) {
+                console.error('Erro no login:', error);
+                
+                if (error.code === 'auth/popup-blocked') {
+                    alert('Popup bloqueado! Permita popups para este site.');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    // Login cancelado - não mostrar erro
+                    return;
+                } else {
+                    // Para outros erros, usar modo offline
+                    this.enableOfflineMode();
+                }
+            }
+        },
+        
+        async signOut() {
+            if (!FirebaseConfig.isInitialized) return;
+            
+            try {
+                await FirebaseConfig.auth.signOut();
+            } catch (error) {
+                console.error('Erro no logout:', error);
+            }
+        },
+        
+        enableOfflineMode() {
+            FirebaseConfig.isConnected = false;
+            FirebaseConfig.updateStatus('offline', '💾 Modo Offline Ativo');
+            this.updateUI(null);
+        },
+        
+        updateUI(user) {
+            const authSection = document.getElementById('auth-section');
+            const userInfo = document.getElementById('user-info');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (!authSection) return;
+            
+            authSection.style.display = 'block';
+            
+            if (user) {
+                userInfo.textContent = `👤 ${user.displayName || user.email}`;
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'inline-block';
+            } else {
+                userInfo.textContent = '👤 Modo Local';
+                if (loginBtn) loginBtn.style.display = FirebaseConfig.isInitialized ? 'inline-block' : 'none';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+            }
+        },
+        
+        async loadUserData() {
+            try {
+                const data = await UnifiedDatabase.load();
+                if (data) {
+                    document.querySelectorAll('input').forEach(input => {
+                        if (input.dataset.exercise && input.dataset.week) {
+                            const key = input.dataset.exercise + '_w' + input.dataset.week;
+                            if (data[key]) {
+                                input.value = data[key];
+                            }
+                        }
+                    });
+                    
+                    if (data.notes) {
+                        document.getElementById('notes').value = data.notes;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do usuário:', error);
+            }
+        },
+        
+        async migrateLocalData() {
+            try {
+                const localData = UnifiedDatabase.loadFromLocalStorage();
+                if (localData && Object.keys(localData).length > 0) {
+                    const migrate = confirm('Encontramos dados locais. Migrar para sua conta?');
+                    if (migrate) {
+                        await UnifiedDatabase.save(localData);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro na migração:', error);
+            }
+        },
+        
+        getUserId() {
+            return this.currentUser ? this.currentUser.uid : 'default_user';
+        }
+    };
+    
+    // =====================================================================
+    // SINCRONIZAÇÃO EM TEMPO REAL
+    // =====================================================================
+    
+    const RealtimeSync = {
+        unsubscribe: null,
+        
+        start() {
+            if (!FirebaseConfig.isInitialized || !AuthManager.currentUser) return;
+            
+            const userId = AuthManager.getUserId();
+            
+            this.unsubscribe = FirebaseConfig.db
+                .collection('workouts')
+                .doc(userId)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        delete data.lastUpdated;
+                        delete data.version;
+                        
+                        this.updateInterfaceIfChanged(data);
+                    }
+                });
+        },
+        
+        stop() {
+            if (this.unsubscribe) {
+                this.unsubscribe();
+                this.unsubscribe = null;
+            }
+        },
+        
+        updateInterfaceIfChanged(newData) {
+            let hasChanges = false;
+            
+            document.querySelectorAll('input[data-exercise][data-week]').forEach(input => {
+                const key = `${input.dataset.exercise}_w${input.dataset.week}`;
+                const newValue = newData[key] || '';
+                
+                if (input.value !== newValue) {
+                    input.value = newValue;
+                    hasChanges = true;
+                }
+            });
+            
+            const notesElement = document.getElementById('notes');
+            const newNotes = newData.notes || '';
+            if (notesElement.value !== newNotes) {
+                notesElement.value = newNotes;
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                this.showSyncNotification();
+            }
+        },
+        
+        showSyncNotification() {
+            const statusElement = document.getElementById('firebase-status');
+            if (statusElement) {
+                const originalText = statusElement.querySelector('#status-text').textContent;
+                statusElement.querySelector('#status-text').textContent = '🔄 Dados sincronizados';
+                
+                setTimeout(() => {
+                    statusElement.querySelector('#status-text').textContent = originalText;
+                }, 2000);
+            }
+        }
+    };
+    
+    // =====================================================================
+    // FUNÇÕES PRINCIPAIS
+    // =====================================================================
+    
+    async function saveData() {
+        const data = {};
+        
+        document.querySelectorAll('input').forEach(input => {
+            if (input.dataset.exercise && input.dataset.week) {
+                const key = input.dataset.exercise + '_w' + input.dataset.week;
+                data[key] = input.value;
+            }
+        });
+        
+        data.notes = document.getElementById('notes').value;
+        
+        try {
+            const success = await UnifiedDatabase.save(data);
+            if (success) {
+                // Feedback visual sutil
+                const saveBtn = document.querySelector('.btn-save');
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = '✅ Salvo!';
+                saveBtn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    saveBtn.textContent = originalText;
+                    saveBtn.style.background = '#667eea';
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Erro ao salvar:', error);
+        }
+    }
+    
+    async function loadData() {
+        try {
+            const data = await UnifiedDatabase.load();
+            if (data) {
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.dataset.exercise && input.dataset.week) {
+                        const key = input.dataset.exercise + '_w' + input.dataset.week;
+                        if (data[key]) {
+                            input.value = data[key];
+                        }
+                    }
+                });
+                
+                if (data.notes) {
+                    document.getElementById('notes').value = data.notes;
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    }
+    
+    function exportData() {
+        let csv = 'Exercício,Sem 1,Sem 2,Sem 3,Sem 4\n';
+        
+        // Exercícios padrão
+        const exercises = [
+            'Supino Smith,supino',
+            'Crucifixo,crucifixo',
+            'Tríceps Polia,triceps-polia',
+            'Tríceps Testa,triceps-testa',
+            'Prancha Frontal,prancha1',
+            'Superman,superman',
+            'Remada,remada',
+            'Puxada,puxada',
+            'Rosca Direta,rosca-direta',
+            'Rosca Martelo,rosca-martelo',
+            'Prancha Lateral,prancha-lateral',
+            'Ponte,ponte',
+            'Leg Press,leg-press',
+            'Extensora,extensora',
+            'Flexora,flexora',
+            'Panturrilha,panturrilha',
+            'Abdominal Bicicleta,bicicleta',
+            'Gato-Vaca,gato-vaca'
+        ];
+        
+        // Adicionar exercícios padrão
+        exercises.forEach(ex => {
+            const [name, id] = ex.split(',');
+            let row = name;
+            for (let w = 1; w <= 4; w++) {
+                const input = document.querySelector(`input[data-exercise="${id}"][data-week="${w}"]`);
+                row += ',' + (input?.value || '');
+            }
+            csv += row + '\n';
+        });
+        
+        // Adicionar exercícios personalizados
+        ExerciseManager.customExercises.forEach(exercise => {
+            let row = exercise.name;
+            for (let w = 1; w <= 4; w++) {
+                const input = document.querySelector(`input[data-exercise="${exercise.id}"][data-week="${w}"]`);
+                row += ',' + (input?.value || '');
+            }
+            csv += row + '\n';
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'treino.csv';
+        link.click();
+        
+        // Feedback visual
+        const exportBtn = document.querySelector('.btn-export');
+        const originalText = exportBtn.textContent;
+        exportBtn.textContent = '📥 Exportado!';
+        exportBtn.style.background = '#28a745';
+        
+        setTimeout(() => {
+            exportBtn.textContent = originalText;
+            exportBtn.style.background = '#48bb78';
+        }, 1500);
+    }
+    
+    async function clearData() {
+        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+            try {
+                const success = await UnifiedDatabase.clear();
+                
+                document.querySelectorAll('input').forEach(input => {
+                    input.value = '';
+                });
+                document.getElementById('notes').value = '';
+                
+                if (success) {
+                    // Feedback visual
+                    const clearBtn = document.querySelector('.btn-clear');
+                    const originalText = clearBtn.textContent;
+                    clearBtn.textContent = '🗑️ Limpo!';
+                    clearBtn.style.background = '#28a745';
+                    
+                    setTimeout(() => {
+                        clearBtn.textContent = originalText;
+                        clearBtn.style.background = '#f56565';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+            }
+        }
+    }
+    
+    // Auto-salvar otimizado
+    document.addEventListener('input', (event) => {
+        if (event.target.matches('input[data-exercise], #notes')) {
+            clearTimeout(window.saveTimer);
+            window.saveTimer = setTimeout(async () => {
+                const data = {};
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.dataset.exercise && input.dataset.week) {
+                        const key = input.dataset.exercise + '_w' + input.dataset.week;
+                        data[key] = input.value;
+                    }
+                });
+                data.notes = document.getElementById('notes').value;
+                
+                try {
+                    await UnifiedDatabase.save(data);
+                } catch (error) {
+                    console.error('Erro no auto-save:', error);
+                }
+            }, 2000);
+        }
+    });
+    
+    // Inicialização da aplicação
+    async function initApp() {
+        try {
+            const firebaseInitialized = await FirebaseConfig.init();
+            
+            if (firebaseInitialized) {
+                AuthManager.init();
+                
+                setTimeout(() => {
+                    if (AuthManager.currentUser) {
+                        RealtimeSync.start();
+                    }
+                }, 1000);
+            } else {
+                AuthManager.updateUI(null);
+            }
+            
+            // Inicializar gerenciador de exercícios
+            ExerciseManager.init();
+            
+            await loadData();
+            
+        } catch (error) {
+            console.error('Erro na inicialização:', error);
+        }
+    }
+    
+    // Carregar ao iniciar
+    window.addEventListener('load', initApp);
+    
+    // =====================================================================
+    // GERENCIAMENTO DE EXERCÍCIOS
+    // =====================================================================
+    
+    const ExerciseManager = {
+        customExercises: [],
+        
+        init() {
+            this.loadCustomExercises();
+        },
+        
+        loadCustomExercises() {
+            try {
+                const saved = localStorage.getItem('customExercises');
+                this.customExercises = saved ? JSON.parse(saved) : [];
+                this.renderCustomExercises();
+            } catch (error) {
+                console.error('Erro ao carregar exercícios personalizados:', error);
+            }
+        },
+        
+        saveCustomExercises() {
+            try {
+                localStorage.setItem('customExercises', JSON.stringify(this.customExercises));
+            } catch (error) {
+                console.error('Erro ao salvar exercícios personalizados:', error);
+            }
+        },
+        
+        addExercise(exercise) {
+            const id = 'custom_' + Date.now();
+            const newExercise = {
+                id,
+                name: exercise.name,
+                day: parseInt(exercise.day),
+                type: exercise.type,
+                series: exercise.series,
+                category: exercise.category || 'normal',
+                notes: exercise.notes || '',
+                created: new Date().toISOString()
+            };
+            
+            this.customExercises.push(newExercise);
+            this.saveCustomExercises();
+            this.renderCustomExercises();
+            
+            return newExercise;
+        },
+        
+        removeExercise(id) {
+            this.customExercises = this.customExercises.filter(ex => ex.id !== id);
+            this.saveCustomExercises();
+            this.renderCustomExercises();
+            
+            // Remove dados salvos do exercício
+            for (let week = 1; week <= 4; week++) {
+                const key = `${id}_w${week}`;
+                const data = UnifiedDatabase.loadFromLocalStorage() || {};
+                delete data[key];
+                localStorage.setItem('treino', JSON.stringify(data));
+            }
+        },
+        
+        renderCustomExercises() {
+            this.customExercises.forEach(exercise => {
+                const daySection = document.getElementById(`day${exercise.day}`);
+                if (daySection && !document.getElementById(`exercise_${exercise.id}`)) {
+                    this.createExerciseCard(exercise, daySection);
+                }
+            });
+        },
+        
+        createExerciseCard(exercise, container) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `exercise-card ${exercise.category === 'core' ? 'core' : ''}`;
+            cardDiv.id = `exercise_${exercise.id}`;
+            
+            const placeholder = this.getPlaceholder(exercise.type);
+            const step = this.getStep(exercise.type);
+            
+            cardDiv.innerHTML = `
+                <div class="exercise-header">
+                    <span class="exercise-name">${exercise.name}</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="series-info">${exercise.series}</span>
+                        <button onclick="ExerciseManager.removeExercise('${exercise.id}')" 
+                                style="background: #f56565; color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 0.7em; cursor: pointer;"
+                                title="Remover exercício">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                ${exercise.notes ? `<div style="font-size: 0.8em; color: #666; margin-bottom: 8px; font-style: italic;">${exercise.notes}</div>` : ''}
+                <div class="weight-tracking">
+                    <div class="week-input">
+                        <label class="week-label">Sem 1</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="1">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 2</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="2">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 3</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="3">
+                    </div>
+                    <div class="week-input">
+                        <label class="week-label">Sem 4</label>
+                        <input type="${exercise.type === 'weight' ? 'number' : 'text'}" 
+                               ${step ? `step="${step}"` : ''}
+                               placeholder="${placeholder}" 
+                               data-exercise="${exercise.id}" 
+                               data-week="4">
+                    </div>
+                </div>
+            `;
+            
+            // Adiciona no final da seção, antes das notas
+            const notesSection = document.querySelector('.notes-section');
+            container.insertBefore(cardDiv, notesSection);
+        },
+        
+        getPlaceholder(type) {
+            switch (type) {
+                case 'weight': return 'kg';
+                case 'reps': return 'reps';
+                case 'time': return 'seg';
+                default: return 'valor';
+            }
+        },
+        
+        getStep(type) {
+            return type === 'weight' ? '2.5' : null;
+        }
+    };
+    
+    // =====================================================================
+    // INTEGRAÇÃO COM IA
+    // =====================================================================
+    
+    const AIAssistant = {
+        async getSuggestions(prompt) {
+            // Simulação de IA - em produção, conectaria com OpenAI, Gemini, etc.
+            const suggestions = this.generateSuggestions(prompt.toLowerCase());
+            
+            // Simula delay de API
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            return suggestions;
+        },
+        
+        generateSuggestions(prompt) {
+            const suggestions = [];
+            
+            // Sugestões baseadas em palavras-chave
+            if (prompt.includes('ombro') || prompt.includes('deltoid')) {
+                suggestions.push(
+                    { name: 'Elevação Lateral', series: '3x12', type: 'weight', category: 'normal', notes: 'Manter cotovelos ligeiramente flexionados' },
+                    { name: 'Desenvolvimento Arnold', series: '3x10', type: 'weight', category: 'normal', notes: 'Movimento completo de rotação' },
+                    { name: 'Elevação Frontal', series: '3x12', type: 'weight', category: 'normal', notes: 'Controlar a descida' }
+                );
+            }
+            
+            if (prompt.includes('core') || prompt.includes('abdom') || prompt.includes('prancha')) {
+                suggestions.push(
+                    { name: 'Prancha com Elevação', series: '3x30s', type: 'time', category: 'core', notes: 'Alternar elevação de braços e pernas' },
+                    { name: 'Dead Bug', series: '3x10 cada', type: 'reps', category: 'core', notes: 'Manter lombar no chão' },
+                    { name: 'Mountain Climber', series: '3x20', type: 'reps', category: 'core', notes: 'Ritmo controlado' }
+                );
+            }
+            
+            if (prompt.includes('perna') || prompt.includes('quadr') || prompt.includes('glut')) {
+                suggestions.push(
+                    { name: 'Agachamento Búlgaro', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Pé traseiro elevado' },
+                    { name: 'Stiff', series: '3x12', type: 'weight', category: 'normal', notes: 'Manter joelhos levemente flexionados' },
+                    { name: 'Afundo', series: '3x10 cada', type: 'weight', category: 'normal', notes: 'Descer até 90 graus' }
+                );
+            }
+            
+            if (prompt.includes('costas') || prompt.includes('dorsal') || prompt.includes('lat')) {
+                suggestions.push(
+                    { name: 'Pulldown Neutro', series: '3x12', type: 'weight', category: 'normal', notes: 'Pegada neutra, puxar até o peito' },
+                    { name: 'Remada Unilateral', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Apoiar joelho e mão no banco' },
+                    { name: 'Face Pull', series: '3x15', type: 'weight', category: 'normal', notes: 'Puxar até a face, cotovelos altos' }
+                );
+            }
+            
+            if (prompt.includes('peito') || prompt.includes('peitoral')) {
+                suggestions.push(
+                    { name: 'Supino Inclinado', series: '3x10', type: 'weight', category: 'normal', notes: 'Inclinação de 30-45 graus' },
+                    { name: 'Flexão Diamante', series: '3x8-12', type: 'reps', category: 'normal', notes: 'Mãos formando diamante' },
+                    { name: 'Crossover', series: '3x12', type: 'weight', category: 'normal', notes: 'Movimento de abraço' }
+                );
+            }
+            
+            if (prompt.includes('braço') || prompt.includes('bícep') || prompt.includes('trícep')) {
+                suggestions.push(
+                    { name: 'Rosca 21', series: '3x21', type: 'weight', category: 'normal', notes: '7 reps parciais baixo + 7 alto + 7 completas' },
+                    { name: 'Tríceps Francês', series: '3x12', type: 'weight', category: 'normal', notes: 'Cotovelos fixos' },
+                    { name: 'Rosca Concentrada', series: '3x12 cada', type: 'weight', category: 'normal', notes: 'Apoiar cotovelo na coxa' }
+                );
+            }
+            
+            if (prompt.includes('iniciante') || prompt.includes('começar')) {
+                suggestions.push(
+                    { name: 'Agachamento Livre', series: '3x15', type: 'reps', category: 'normal', notes: 'Começar sem peso' },
+                    { name: 'Flexão de Joelhos', series: '3x8-12', type: 'reps', category: 'normal', notes: 'Flexão modificada' },
+                    { name: 'Prancha Básica', series: '3x20-30s', type: 'time', category: 'core', notes: 'Manter alinhamento' }
+                );
+            }
+            
+            // Se não encontrou sugestões específicas, adiciona algumas genéricas
+            if (suggestions.length === 0) {
+                suggestions.push(
+                    { name: 'Exercício Funcional', series: '3x12', type: 'reps', category: 'normal', notes: 'Adapte conforme necessário' },
+                    { name: 'Mobilidade Articular', series: '3x10', type: 'reps', category: 'core', notes: 'Movimento lento e controlado' }
+                );
+            }
+            
+            return suggestions.slice(0, 4); // Máximo 4 sugestões
+        }
+    };
+    
+    // =====================================================================
+    // FUNÇÕES DO MODAL
+    // =====================================================================
+    
+    function openAddExerciseModal() {
+        document.getElementById('addExerciseModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddExerciseModal() {
+        document.getElementById('addExerciseModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Limpar formulário
+        document.getElementById('exerciseForm').reset();
+        clearAISuggestions();
+    }
+    
+    async function getAISuggestions() {
+        const prompt = document.getElementById('aiPrompt').value.trim();
+        if (!prompt) {
+            alert('Digite uma descrição do exercício que você precisa!');
+            return;
+        }
+        
+        const btn = document.getElementById('aiBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading"></span> Gerando...';
+        btn.disabled = true;
+        
+        try {
+            const suggestions = await AIAssistant.getSuggestions(prompt);
+            displayAISuggestions(suggestions);
+        } catch (error) {
+            console.error('Erro ao obter sugestões:', error);
+            alert('Erro ao gerar sugestões. Tente novamente.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+    
+    function displayAISuggestions(suggestions) {
+        const container = document.getElementById('aiSuggestions');
+        container.innerHTML = '';
+        
+        if (suggestions.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">Nenhuma sugestão encontrada. Tente uma descrição diferente.</p>';
+        } else {
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <div class="suggestion-name">${suggestion.name}</div>
+                    <div class="suggestion-desc">${suggestion.series} - ${suggestion.notes}</div>
+                `;
+                
+                item.onclick = () => applySuggestion(suggestion);
+                container.appendChild(item);
+            });
+        }
+        
+        container.style.display = 'block';
+    }
+    
+    function applySuggestion(suggestion) {
+        document.getElementById('exerciseName').value = suggestion.name;
+        document.getElementById('exerciseType').value = suggestion.type;
+        document.getElementById('exerciseSeries').value = suggestion.series;
+        document.getElementById('exerciseCategory').value = suggestion.category;
+        document.getElementById('exerciseNotes').value = suggestion.notes;
+        
+        // Feedback visual
+        const container = document.getElementById('aiSuggestions');
+        container.style.background = '#e8f5e8';
+        setTimeout(() => {
+            container.style.background = 'white';
+        }, 1000);
+    }
+    
+    function clearAISuggestions() {
+        document.getElementById('aiPrompt').value = '';
+        document.getElementById('aiSuggestions').style.display = 'none';
+    }
+    
+    function addNewExercise() {
+        const form = document.getElementById('exerciseForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        const exercise = {
+            name: document.getElementById('exerciseName').value.trim(),
+            day: document.getElementById('exerciseDay').value,
+            type: document.getElementById('exerciseType').value,
+            series: document.getElementById('exerciseSeries').value.trim(),
+            category: document.getElementById('exerciseCategory').value,
+            notes: document.getElementById('exerciseNotes').value.trim()
+        };
+        
+        try {
+            ExerciseManager.addExercise(exercise);
+            closeAddExerciseModal();
+            
+            // Feedback de sucesso
+            const btn = document.querySelector('.btn-add');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Adicionado!';
+            btn.style.background = '#48bb78';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#9f7aea';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Erro ao adicionar exercício:', error);
+            alert('Erro ao adicionar exercício. Tente novamente.');
+        }
+    }
+    
+    // Fechar modal clicando fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('addExerciseModal');
+        if (event.target === modal) {
+            closeAddExerciseModal();
+        }
+    }
+    
+    // Prevenção de zoom em inputs no iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOSDevice) {
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        });
+        
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === REGRAS PARA COLEÇÃO DE TREINOS ===
+    match /workouts/{userId} {
+      // Permitir leitura/escrita apenas para o próprio usuário autenticado
+      allow read, write: if request.auth != null
+                        && request.auth.uid == userId;
+    }
+
+    // === REGRAS PARA DADOS DE USUÁRIO (FUTURO) ===
+    match /users/{userId} {
+      // Permitir leitura/escrita apenas para o próprio usuário
+      allow read, write: if request.auth != null
+                        && request.auth.uid == userId;
+    }
+
+    // === REGRAS PARA DADOS PÚBLICOS (FUTURO) ===
+    match /public/{document} {
+      // Permitir leitura para todos usuários autenticados
+      allow read: if request.auth != null;
+      // Escrita apenas para admins (opcional)
+      allow write: if false; // Bloquear por enquanto
+    }
+
+    // === REGRAS PARA ANALYTICS/LOGS (FUTURO) ===
+    match /analytics/{document} {
+      // Apenas leitura para usuários autenticados
+      allow read: if request.auth != null;
+      // Escrita apenas pelo backend
+      allow write: if false;
+    }
+
+    // === REGRA PADRÃO: NEGAR TUDO ===
+    // Qualquer documento não coberto pelas regras acima será negado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

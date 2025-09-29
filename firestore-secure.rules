@@ -1,0 +1,114 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === FUNÇÕES AUXILIARES ===
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isValidWorkoutData() {
+      return request.resource.data.keys().hasAll(['workoutData', 'notes', 'customExercises', 'workoutMeta'])
+             && request.resource.data.workoutData is map
+             && request.resource.data.notes is string
+             && request.resource.data.customExercises is list
+             && request.resource.data.workoutMeta is map;
+    }
+
+    function hasValidSize() {
+      // Limitar tamanho dos dados para evitar abuso
+      return request.resource.data.notes.size() < 10000
+             && request.resource.data.customExercises.size() < 100;
+    }
+
+    // === REGRAS PARA COLEÇÃO DE TREINOS ===
+    match /workouts/{userId} {
+      // Leitura: apenas o próprio usuário
+      allow read: if isOwner(userId);
+
+      // Criação: usuário autenticado com dados válidos
+      allow create: if isOwner(userId)
+                    && isValidWorkoutData()
+                    && hasValidSize()
+                    && request.resource.data.lastUpdated == request.time;
+
+      // Atualização: usuário autenticado com dados válidos
+      allow update: if isOwner(userId)
+                    && isValidWorkoutData()
+                    && hasValidSize()
+                    && request.resource.data.lastUpdated == request.time
+                    && request.resource.data.version > resource.data.version;
+
+      // Exclusão: apenas o próprio usuário
+      allow delete: if isOwner(userId);
+    }
+
+    // === REGRAS PARA PERFIS DE USUÁRIO (FUTURO) ===
+    match /users/{userId} {
+      allow read, write: if isOwner(userId)
+                         && request.resource.data.keys().hasAll(['displayName', 'email'])
+                         && request.resource.data.displayName is string
+                         && request.resource.data.email is string;
+    }
+
+    // === REGRAS PARA DADOS COMPARTILHADOS (FUTURO) ===
+    match /shared_workouts/{workoutId} {
+      // Leitura pública para workouts compartilhados
+      allow read: if request.auth != null;
+
+      // Criação apenas pelo dono do workout
+      allow create: if request.auth != null
+                    && request.resource.data.createdBy == request.auth.uid
+                    && request.resource.data.isPublic == true;
+
+      // Atualização/exclusão apenas pelo criador
+      allow update, delete: if request.auth != null
+                            && resource.data.createdBy == request.auth.uid;
+    }
+
+    // === REGRAS PARA FEEDBACK/SUPORTE (FUTURO) ===
+    match /feedback/{feedbackId} {
+      // Criação de feedback para usuários autenticados
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() < 5000;
+
+      // Leitura apenas do próprio feedback
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+    }
+
+    // === REGRA DE SEGURANÇA FINAL ===
+    // Negar acesso a qualquer documento não especificamente permitido
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// === COMENTÁRIOS PARA IMPLEMENTAÇÃO ===
+/*
+
+COMO APLICAR ESTAS REGRAS NO FIREBASE:
+
+1. Abra o Firebase Console: https://console.firebase.google.com/
+2. Selecione seu projeto: meu-treino-app-668e5
+3. Vá para "Firestore Database"
+4. Clique na aba "Regras"
+5. Substitua as regras atuais por uma das versões:
+   - firestore.rules (versão simples)
+   - firestore-secure.rules (versão com validações)
+6. Clique em "Publicar"
+
+VERSÕES DISPONÍVEIS:
+- firestore.rules: Regras simples, apenas autenticação
+- firestore-secure.rules: Regras avançadas com validação
+
+RECOMENDAÇÃO:
+- Use firestore.rules para desenvolvimento
+- Use firestore-secure.rules para produção
+
+*/
