@@ -5,28 +5,35 @@ export function useExerciseManager() {
 
   useEffect(() => {
     loadCustomExercises()
-    
+
     // Escutar mudanças no localStorage
     const handleStorageChange = (e) => {
       if (e.key === 'customExercises') {
         loadCustomExercises()
       }
     }
-    
+
+    // Escutar evento de dados carregados do Firebase
+    const handleDataLoaded = (e) => {
+      loadCustomExercises()
+    }
+
     window.addEventListener('storage', handleStorageChange)
-    
+    window.addEventListener('dataLoaded', handleDataLoaded)
+
     // Polling para detectar mudanças na mesma aba
     const interval = setInterval(() => {
       const current = localStorage.getItem('customExercises')
       const currentParsed = current ? JSON.parse(current) : []
-      
+
       if (JSON.stringify(currentParsed) !== JSON.stringify(customExercises)) {
         setCustomExercises(currentParsed)
       }
-    }, 1000)
-    
+    }, 2000) // Aumentei para 2 segundos para reduzir overhead
+
     return () => {
       window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('dataLoaded', handleDataLoaded)
       clearInterval(interval)
     }
   }, [customExercises])

@@ -76,13 +76,19 @@ export function useWorkoutData(user) {
           if (data.customExercises) {
             localStorage.setItem('customExercises', JSON.stringify(data.customExercises))
           }
-          
+
           // Restaurar metadados do treino
           if (data.workoutMeta) {
             localStorage.setItem('workoutMeta', JSON.stringify(data.workoutMeta))
           }
-          
+
           localStorage.setItem('treino', JSON.stringify(data))
+
+          // Disparar evento para forçar atualização dos outros hooks
+          window.dispatchEvent(new CustomEvent('dataLoaded', {
+            detail: { source: 'firebase', data }
+          }))
+
           return
         }
       }

@@ -10,6 +10,17 @@ export function useWorkoutState() {
 
   useEffect(() => {
     loadWorkoutState()
+
+    // Escutar evento de dados carregados do Firebase
+    const handleDataLoaded = () => {
+      loadWorkoutState()
+    }
+
+    window.addEventListener('dataLoaded', handleDataLoaded)
+
+    return () => {
+      window.removeEventListener('dataLoaded', handleDataLoaded)
+    }
   }, [])
 
   const loadWorkoutState = () => {
