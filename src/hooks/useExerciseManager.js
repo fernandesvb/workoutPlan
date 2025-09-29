@@ -21,7 +21,14 @@ export function useExerciseManager() {
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('dataLoaded', handleDataLoaded)
 
-    // Polling para detectar mudanças na mesma aba
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('dataLoaded', handleDataLoaded)
+    }
+  }, []) // Removido customExercises das dependências para evitar loop infinito
+
+  // Polling separado para detectar mudanças na mesma aba
+  useEffect(() => {
     const interval = setInterval(() => {
       const current = localStorage.getItem('customExercises')
       const currentParsed = current ? JSON.parse(current) : []
@@ -29,13 +36,9 @@ export function useExerciseManager() {
       if (JSON.stringify(currentParsed) !== JSON.stringify(customExercises)) {
         setCustomExercises(currentParsed)
       }
-    }, 2000) // Aumentei para 2 segundos para reduzir overhead
+    }, 3000) // Aumentei para 3 segundos para reduzir overhead ainda mais
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('dataLoaded', handleDataLoaded)
-      clearInterval(interval)
-    }
+    return () => clearInterval(interval)
   }, [customExercises])
 
   const loadCustomExercises = () => {

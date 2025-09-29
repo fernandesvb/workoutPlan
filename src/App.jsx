@@ -56,8 +56,10 @@ function App() {
   // Listener para exercícios concluídos individuais (sem gamificação imediata)
   useEffect(() => {
     const handleExerciseCompleted = (event) => {
-      // Apenas atualizar dados, sem gamificação
-      console.log('✅ Exercício concluído:', event.detail.exerciseName)
+      // Apenas atualizar dados, sem gamificação (log reduzido para debug)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Exercício concluído:', event.detail.exerciseName)
+      }
     }
 
     window.addEventListener('exerciseCompleted', handleExerciseCompleted)

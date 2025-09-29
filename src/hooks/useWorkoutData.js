@@ -10,54 +10,47 @@ export function useWorkoutData(user) {
     loadData()
   }, [user])
   
-  // Salvamento automático quando dados mudam
+  // Salvamento automático quando dados mudam (com debounce melhorado)
   useEffect(() => {
+    // Evitar salvamento desnecessário se não há dados
+    if (Object.keys(workoutData).length === 0 && !notes.trim()) {
+      return
+    }
+
     const autoSave = async () => {
-      if (Object.keys(workoutData).length > 0 || notes.trim()) {
-        try {
-          const customExercises = JSON.parse(localStorage.getItem('customExercises') || '[]')
-          const workoutMeta = JSON.parse(localStorage.getItem('workoutMeta') || '{}')
+      try {
+        const customExercises = JSON.parse(localStorage.getItem('customExercises') || '[]')
+        const workoutMeta = JSON.parse(localStorage.getItem('workoutMeta') || '{}')
 
-          const data = { workoutData, notes, customExercises, workoutMeta }
+        const data = { workoutData, notes, customExercises, workoutMeta }
 
-          // Sempre salvar localmente primeiro
-          localStorage.setItem('treino', JSON.stringify(data))
+        // Sempre salvar localmente primeiro
+        localStorage.setItem('treino', JSON.stringify(data))
 
-          // Tentar salvar na nuvem se logado
-          if (user && db) {
-            try {
-              const docRef = doc(db, 'workouts', user.uid)
-              await setDoc(docRef, {
-                ...data,
-                lastUpdated: serverTimestamp(),
-                version: Date.now()
-              })
-              // Disparar evento de sucesso para UI
-              window.dispatchEvent(new CustomEvent('dataSaved', {
-                detail: { location: 'cloud', success: true }
-              }))
-            } catch (error) {
-              // Falha na nuvem, mas salvo localmente
-              window.dispatchEvent(new CustomEvent('dataSaved', {
-                detail: { location: 'local', success: true, cloudError: true }
-              }))
-            }
-          } else {
-            // Não logado, apenas local
+        // Tentar salvar na nuvem se logado (com throttling)
+        if (user && db) {
+          try {
+            const docRef = doc(db, 'workouts', user.uid)
+            await setDoc(docRef, {
+              ...data,
+              lastUpdated: serverTimestamp(),
+              version: Date.now()
+            })
+            // Disparar evento de sucesso para UI (sem spam)
             window.dispatchEvent(new CustomEvent('dataSaved', {
-              detail: { location: 'local', success: true, notLoggedIn: true }
+              detail: { location: 'cloud', success: true }
             }))
+          } catch (error) {
+            // Falha na nuvem, mas salvo localmente
+            console.warn('Cloud save failed:', error.message)
           }
-        } catch (error) {
-          // Erro total
-          window.dispatchEvent(new CustomEvent('dataSaved', {
-            detail: { success: false, error: error.message }
-          }))
         }
+      } catch (error) {
+        console.error('Auto-save error:', error.message)
       }
     }
 
-    const timeoutId = setTimeout(autoSave, 2000)
+    const timeoutId = setTimeout(autoSave, 3000) // Aumentei para 3 segundos
     return () => clearTimeout(timeoutId)
   }, [workoutData, notes, user])
 
