@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Trophy, Zap, Target, Clock, CheckCircle } from 'lucide-react'
 
 export default function WorkoutProgress({
@@ -15,14 +15,23 @@ export default function WorkoutProgress({
     estimatedTime: 0
   })
 
+  const [autoFinished, setAutoFinished] = useState(false)
+  const previousPercentageRef = useRef(0)
+
   useEffect(() => {
     calculateProgress()
   }, [day, workoutData, customExercises])
 
+  // Resetar estado quando mudar de dia
+  useEffect(() => {
+    setAutoFinished(false)
+    previousPercentageRef.current = 0
+  }, [day])
+
   const calculateProgress = () => {
     const dayExercises = customExercises.filter(ex => ex.day === day)
     const total = dayExercises.length
-    
+
     if (total === 0) {
       setProgress({ completed: 0, total: 0, percentage: 0, estimatedTime: 0 })
       return
@@ -38,11 +47,14 @@ export default function WorkoutProgress({
         completed++
       }
     })
-    
+
     // Estimar tempo mais realista: 5-6 min por exercício (inclui descanso)
     estimatedTime = (total - completed) * 5
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+
+    // Detectar se acabou de completar 100% dos exercícios
+    const justCompleted = percentage === 100 && previousPercentageRef.current < 100
 
     setProgress({
       completed,
@@ -51,7 +63,22 @@ export default function WorkoutProgress({
       estimatedTime
     })
 
-    // Não dispara gamificação automática - apenas quando usuário finalizar manualmente
+    // Finalizar automaticamente quando completar todos os exercícios
+    if (justCompleted && !autoFinished && onFinishWorkout) {
+      setAutoFinished(true)
+      // Delay pequeno para garantir que o último exercício foi salvo
+      setTimeout(() => {
+        onFinishWorkout(completed, total)
+      }, 1000)
+    }
+
+    // Resetar flag se voltar a menos de 100%
+    if (percentage < 100) {
+      setAutoFinished(false)
+    }
+
+    // Atualizar referência da porcentagem anterior
+    previousPercentageRef.current = percentage
   }
 
   const getProgressColor = () => {
@@ -122,7 +149,7 @@ export default function WorkoutProgress({
       </div>
 
       <div className="workout-actions">
-        {progress.completed > 0 && (
+        {progress.completed > 0 && !autoFinished && (
           <button
             className="finish-workout-btn"
             onClick={() => onFinishWorkout && onFinishWorkout(progress.completed, progress.total)}
@@ -135,7 +162,11 @@ export default function WorkoutProgress({
         {progress.percentage === 100 && (
           <div className="completion-celebration">
             <Trophy size={24} />
-            <span>Todos exercícios completados!</span>
+            <span>
+              {autoFinished
+                ? '🎉 Treino finalizado automaticamente!'
+                : 'Todos exercícios completados!'}
+            </span>
           </div>
         )}
       </div>
