@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, Trash2, AlertTriangle } from 'lucide-react'
 import ProgressChart from './ProgressChart'
+import MuscleVisualization from './MuscleVisualization'
 import { getExerciseIconInfo, getExerciseImage } from '../utils/exerciseIcons'
 
 // Função para explicar exercícios
@@ -87,22 +88,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
       <div className="exercise-header">
         <div className="exercise-icon-info">
           <div className="exercise-image-container">
-            {!imageError ? (
-              <img
-                src={getExerciseImage(exercise.name)}
-                alt={exercise.name}
-                className="exercise-image"
-                onError={() => setImageError(true)}
-                loading="lazy"
-              />
-            ) : (
-              <div
-                className="exercise-icon-fallback"
-                style={{ backgroundColor: getExerciseIconInfo(exercise).color }}
-              >
-                {getExerciseIconInfo(exercise).icon}
-              </div>
-            )}
+            <MuscleVisualization exerciseName={exercise.name} />
             <div className="exercise-category-badge">
               {getExerciseIconInfo(exercise).name}
             </div>
