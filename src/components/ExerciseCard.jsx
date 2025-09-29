@@ -69,7 +69,11 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
   }
 
   return (
-    <div className={`exercise-card ${exercise.category === 'core' ? 'core' : ''} ${isCompleted ? 'completed' : ''}`}>
+    <div
+      className={`exercise-card ${exercise.category === 'core' ? 'core' : ''} ${isCompleted ? 'completed' : ''}`}
+      data-exercise-id={exercise.id}
+      style={{ transition: 'all 0.2s ease' }}
+    >
       <div className="exercise-header">
         <div className="exercise-icon-info">
           <div 
@@ -150,7 +154,47 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
                     }))
                   }, 100)
 
-                  alert('✅ Exercício concluído!')
+                  // Navegar automaticamente para o próximo exercício
+                  setTimeout(() => {
+                    const allExerciseCards = document.querySelectorAll('.exercise-card')
+                    const currentIndex = Array.from(allExerciseCards).findIndex(card =>
+                      card.querySelector('.exercise-name')?.textContent === exercise.name
+                    )
+
+                    // Procurar próximo exercício não completado
+                    for (let i = currentIndex + 1; i < allExerciseCards.length; i++) {
+                      const nextCard = allExerciseCards[i]
+                      const isNextCompleted = nextCard.classList.contains('completed')
+
+                      if (!isNextCompleted) {
+                        // Scroll suave para o próximo exercício
+                        nextCard.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'center'
+                        })
+
+                        // Foco no input do próximo exercício após scroll
+                        setTimeout(() => {
+                          const nextInput = nextCard.querySelector('.workout-input')
+                          if (nextInput) {
+                            nextInput.focus()
+                          }
+                        }, 500)
+                        break
+                      }
+                    }
+                  }, 600)
+
+                  // Mostrar feedback visual mais sutil (sem bloquear o fluxo)
+                  const exerciseElement = document.querySelector(`[data-exercise-id="${exercise.id}"]`)
+                  if (exerciseElement) {
+                    exerciseElement.style.transform = 'scale(0.98)'
+                    exerciseElement.style.opacity = '0.7'
+                    setTimeout(() => {
+                      exerciseElement.style.transform = 'scale(1)'
+                      exerciseElement.style.opacity = '1'
+                    }, 200)
+                  }
                 } catch (error) {
                   console.error('Erro ao salvar:', error)
                   alert('❌ Erro ao salvar. Tente novamente.')

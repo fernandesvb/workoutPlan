@@ -16,6 +16,7 @@ export default function WorkoutProgress({
   })
 
   const [autoFinished, setAutoFinished] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
   const previousPercentageRef = useRef(0)
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function WorkoutProgress({
   // Resetar estado quando mudar de dia
   useEffect(() => {
     setAutoFinished(false)
+    setIsInitialLoad(true) // Tratar mudança de dia como novo carregamento
     previousPercentageRef.current = 0
   }, [day])
 
@@ -53,8 +55,8 @@ export default function WorkoutProgress({
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
 
-    // Detectar se acabou de completar 100% dos exercícios
-    const justCompleted = percentage === 100 && previousPercentageRef.current < 100
+    // Detectar se acabou de completar 100% dos exercícios (não no carregamento inicial)
+    const justCompleted = !isInitialLoad && percentage === 100 && previousPercentageRef.current < 100
 
     setProgress({
       completed,
@@ -63,13 +65,18 @@ export default function WorkoutProgress({
       estimatedTime
     })
 
-    // Finalizar automaticamente quando completar todos os exercícios
+    // Finalizar automaticamente quando completar todos os exercícios (apenas durante uso ativo)
     if (justCompleted && !autoFinished && onFinishWorkout) {
       setAutoFinished(true)
       // Delay pequeno para garantir que o último exercício foi salvo
       setTimeout(() => {
         onFinishWorkout(completed, total)
       }, 1000)
+    }
+
+    // Marcar que o carregamento inicial terminou após primeiro cálculo
+    if (isInitialLoad) {
+      setTimeout(() => setIsInitialLoad(false), 1000)
     }
 
     // Resetar flag se voltar a menos de 100%
