@@ -1,4 +1,67 @@
-// Mapeamento de categorias para ícones e cores
+// Mapeamento de exercícios para imagens reais
+const exerciseImages = {
+  // Peito
+  'supino': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+  'supino reto': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+  'supino inclinado': 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=150&h=150&fit=crop&crop=center',
+  'flexão': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+  'crucifixo': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+
+  // Costas
+  'remada': 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=150&h=150&fit=crop&crop=center',
+  'puxada': 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=150&h=150&fit=crop&crop=center',
+  'barra fixa': 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=150&h=150&fit=crop&crop=center',
+  'pulldown': 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=150&h=150&fit=crop&crop=center',
+
+  // Pernas
+  'agachamento': 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=150&h=150&fit=crop&crop=center',
+  'leg press': 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=150&h=150&fit=crop&crop=center',
+  'afundo': 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=150&h=150&fit=crop&crop=center',
+  'stiff': 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=150&h=150&fit=crop&crop=center',
+  'extensora': 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=150&h=150&fit=crop&crop=center',
+
+  // Ombros
+  'desenvolvimento': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+  'elevação lateral': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+  'elevação frontal': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+
+  // Braços
+  'rosca': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+  'tríceps': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+  'martelo': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+
+  // Core
+  'abdominal': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center',
+  'prancha': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+
+  // Cardio
+  'burpee': 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=150&h=150&fit=crop&crop=center',
+  'corrida': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=150&h=150&fit=crop&crop=center',
+
+  // Default/Fallback
+  'default': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=150&h=150&fit=crop&crop=center'
+}
+
+// Função para obter imagem do exercício
+export const getExerciseImage = (exerciseName) => {
+  const name = exerciseName.toLowerCase()
+
+  // Buscar por nome exato primeiro
+  if (exerciseImages[name]) {
+    return exerciseImages[name]
+  }
+
+  // Buscar por palavras-chave
+  for (const [key, image] of Object.entries(exerciseImages)) {
+    if (name.includes(key) || key.includes(name)) {
+      return image
+    }
+  }
+
+  return exerciseImages.default
+}
+
+// Mapeamento de categorias para ícones e cores (mantido como fallback)
 export const getExerciseIcon = (category, type) => {
   const iconMap = {
     // Grupos musculares com ícones mais específicos

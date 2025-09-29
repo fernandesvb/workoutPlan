@@ -4044,41 +4044,112 @@ button:disabled {
   }
 }
 
-/* Enhanced Delete Button Styles */
-.modern-delete-btn {
-  background: rgba(239, 68, 68, 0.1);
+/* New Exercise Image Styles */
+.exercise-image-container {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.exercise-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.exercise-image:hover {
+  transform: scale(1.1);
+}
+
+.exercise-icon-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.exercise-category-badge {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Ultra Modern Delete Button Styles */
+.ultra-modern-delete-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
 }
 
-.modern-delete-btn:hover {
-  background: #dc2626;
+.ultra-modern-delete-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: white;
   border-color: #dc2626;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  transform: scale(1.05) rotate(-2deg);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
 }
 
-.modern-delete-btn:active {
-  transform: scale(0.95);
+.ultra-modern-delete-btn:active {
+  transform: scale(0.98) rotate(0deg);
 }
 
-.modern-delete-btn svg {
+.delete-icon-wrapper {
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.modern-delete-btn:hover svg {
+.ultra-modern-delete-btn:hover .delete-icon-wrapper {
+  animation: deleteShake 0.5s ease-in-out;
+}
+
+@keyframes deleteShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.warning-icon-container {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 /* Delete Confirmation Modal */

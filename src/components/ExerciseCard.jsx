@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { X, Trash2 } from 'lucide-react'
+import { X, Trash2, AlertTriangle } from 'lucide-react'
 import ProgressChart from './ProgressChart'
-import { getExerciseIconInfo } from '../utils/exerciseIcons'
+import { getExerciseIconInfo, getExerciseImage } from '../utils/exerciseIcons'
 
 // Função para explicar exercícios
 const getExerciseExplanation = (exerciseName) => {
@@ -40,6 +40,7 @@ const getExerciseExplanation = (exerciseName) => {
 export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, onRemove, isCustom = false }) {
   const isCompleted = workoutData[`${exercise.id}_completed`] === 'true'
   const [isSaving, setIsSaving] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const getPlaceholder = (type) => {
     switch (type) {
       case 'weight': return 'kg'
@@ -85,14 +86,28 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
     >
       <div className="exercise-header">
         <div className="exercise-icon-info">
-          <div 
-            className="exercise-icon" 
-            style={{ backgroundColor: getExerciseIconInfo(exercise).color }}
-          >
-            {getExerciseIconInfo(exercise).icon}
+          <div className="exercise-image-container">
+            {!imageError ? (
+              <img
+                src={getExerciseImage(exercise.name)}
+                alt={exercise.name}
+                className="exercise-image"
+                onError={() => setImageError(true)}
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className="exercise-icon-fallback"
+                style={{ backgroundColor: getExerciseIconInfo(exercise).color }}
+              >
+                {getExerciseIconInfo(exercise).icon}
+              </div>
+            )}
+            <div className="exercise-category-badge">
+              {getExerciseIconInfo(exercise).name}
+            </div>
           </div>
           <div className="exercise-info">
-            <div className="exercise-muscle-group">{getExerciseIconInfo(exercise).name}</div>
             <div className="exercise-name">{exercise.name}</div>
             <div className="exercise-explanation">{getExerciseExplanation(exercise.name)}</div>
             {exercise.notes && (
@@ -110,10 +125,12 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
           {isCustom && (
             <button
               onClick={handleRemove}
-              className="remove-btn modern-delete-btn"
+              className="remove-btn ultra-modern-delete-btn"
               title="Remover exercício"
             >
-              <Trash2 size={16} />
+              <div className="delete-icon-wrapper">
+                <Trash2 size={14} />
+              </div>
             </button>
           )}
         </div>
@@ -225,7 +242,9 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
         <div className="delete-confirm-overlay" onClick={cancelRemove}>
           <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="delete-confirm-header">
-              <Trash2 size={24} className="text-red-500" />
+              <div className="warning-icon-container">
+                <AlertTriangle size={24} />
+              </div>
               <h3>Remover Exercício</h3>
             </div>
             <div className="delete-confirm-content">
