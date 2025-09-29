@@ -396,7 +396,6 @@ function App() {
           day={workoutSummary.day}
         />
       )}
-      </div>
     </div>
   )
 }
