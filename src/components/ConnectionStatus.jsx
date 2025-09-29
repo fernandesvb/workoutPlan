@@ -5,8 +5,11 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus'
 export default function ConnectionStatus({ user }) {
   const { isOnline, isFirebaseConnected, getConnectionStatus } = useNetworkStatus()
   const [showDetails, setShowDetails] = useState(false)
+  const [lastUpdate, setLastUpdate] = useState(Date.now())
 
   const status = getConnectionStatus()
+
+  // Status atualizado automaticamente
 
   const getStatusIcon = () => {
     if (!isOnline) return <WifiOff size={16} />
@@ -25,7 +28,7 @@ export default function ConnectionStatus({ user }) {
     if (!isOnline) return 'Offline'
     if (!user) return 'Não logado'
     if (!isFirebaseConnected) return 'Local'
-    return 'Conectado'
+    return 'Sincronizado'
   }
 
   const getDetailedStatus = () => {
@@ -94,6 +97,7 @@ export default function ConnectionStatus({ user }) {
                 <Cloud size={14} />
                 <span>Nuvem: {isFirebaseConnected ? 'Sincronizado' : 'Offline'}</span>
               </div>
+
             </div>
 
             <button

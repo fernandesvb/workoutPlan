@@ -50,8 +50,8 @@ export default function WorkoutProgress({
       }
     })
 
-    // Estimar tempo mais realista: 5-6 min por exercício (inclui descanso)
-    estimatedTime = (total - completed) * 5
+    // Estimar tempo mais realista: 3-4 min por exercício (inclui descanso)
+    estimatedTime = (total - completed) * 3
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
 
@@ -93,6 +93,14 @@ export default function WorkoutProgress({
     if (progress.percentage >= 70) return '#f59e0b' // Amarelo
     if (progress.percentage >= 30) return '#3b82f6' // Azul
     return '#6b7280' // Cinza
+  }
+
+  const formatTimeRemaining = (minutes) => {
+    if (minutes === 0) return '🎉 Treino finalizado!'
+    if (minutes <= 5) return `⚡ ${minutes} min restantes`
+    if (minutes <= 15) return `⏱️ ${minutes} min restantes`
+    if (minutes <= 30) return `🕐 ${minutes} min restantes`
+    return `📊 ${minutes} min restantes`
   }
 
   const getMotivationalMessage = () => {
@@ -141,12 +149,7 @@ export default function WorkoutProgress({
       <div className="progress-info">
         <div className="info-item">
           <Clock size={16} />
-          <span>
-            {progress.estimatedTime > 0 
-              ? `~${progress.estimatedTime} min restantes`
-              : 'Treino finalizado!'
-            }
-          </span>
+          <span>{formatTimeRemaining(progress.estimatedTime)}</span>
         </div>
         
         <div className="info-item">

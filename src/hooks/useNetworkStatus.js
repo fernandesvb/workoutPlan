@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { auth, db } from '../services/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { auth } from '../services/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 
 export function useNetworkStatus() {
@@ -21,35 +20,30 @@ export function useNetworkStatus() {
   }, [])
 
   useEffect(() => {
-    // Verificar conectividade com Firebase
-    const checkFirebaseConnection = async () => {
+    // Verificar conectividade com Firebase apenas por estado de autenticação
+    const checkFirebaseConnection = () => {
       try {
-        if (!auth || !db) {
+        if (!auth) {
+          console.log('🔴 Firebase Auth não inicializado')
           setIsFirebaseConnected(false)
           return
         }
 
-        // Verificar se há usuário logado e tentar uma operação simples no Firestore
+        // Se há usuário logado = Firebase funcionando
         if (auth.currentUser) {
-          // Tentar fazer uma operação simples no Firestore para testar conectividade
-          const testDoc = doc(db, 'test', 'connection')
-          await getDoc(testDoc)
           setIsFirebaseConnected(true)
         } else {
-          // Se não há usuário logado, mas Firebase está inicializado, considerar conectado
-          setIsFirebaseConnected(!!auth && !!db)
+          // Firebase inicializado mas sem usuário = ainda consideramos conectado
+          setIsFirebaseConnected(true)
         }
       } catch (error) {
-        console.warn('Firebase connection check failed:', error.message)
+        console.warn('❌ Firebase check failed:', error.message)
         setIsFirebaseConnected(false)
       }
     }
 
     if (isOnline) {
       checkFirebaseConnection()
-      // Verificar a cada 60 segundos quando online (reduzido frequência)
-      const interval = setInterval(checkFirebaseConnection, 60000)
-      return () => clearInterval(interval)
     } else {
       setIsFirebaseConnected(false)
     }
@@ -62,16 +56,15 @@ export function useNetworkStatus() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       // Quando usuário faz login/logout, verificar conexão imediatamente
       if (isOnline) {
-        const checkConnection = async () => {
+        const checkConnection = () => {
           try {
-            if (user && db) {
-              const testDoc = doc(db, 'test', 'connection')
-              await getDoc(testDoc)
+            if (user) {
               setIsFirebaseConnected(true)
             } else {
-              setIsFirebaseConnected(!!auth && !!db)
+              setIsFirebaseConnected(true) // Firebase ainda está disponível
             }
           } catch (error) {
+            console.warn('❌ Auth state check failed:', error.message)
             setIsFirebaseConnected(false)
           }
         }

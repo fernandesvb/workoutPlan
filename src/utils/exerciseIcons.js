@@ -1,28 +1,40 @@
 // Mapeamento de categorias para ícones e cores
 export const getExerciseIcon = (category, type) => {
   const iconMap = {
-    // Grupos musculares
-    'chest': { icon: '💪', color: '#dc2626', name: 'PEITO' },
-    'back': { icon: '🤾', color: '#1d4ed8', name: 'COSTAS' },
-    'shoulders': { icon: '🎆', color: '#ea580c', name: 'OMBROS' },
+    // Grupos musculares com ícones mais específicos
+    'chest': { icon: '🦾', color: '#dc2626', name: 'PEITO' },
+    'back': { icon: '🏋️‍♂️', color: '#1d4ed8', name: 'COSTAS' },
+    'shoulders': { icon: '🤸‍♂️', color: '#ea580c', name: 'OMBROS' },
     'arms': { icon: '💪', color: '#059669', name: 'BRAÇOS' },
-    'biceps': { icon: '🤾', color: '#059669', name: 'BÍCEPS' },
+    'biceps': { icon: '💪', color: '#10b981', name: 'BÍCEPS' },
     'triceps': { icon: '🔥', color: '#dc2626', name: 'TRÍCEPS' },
     'legs': { icon: '🦵', color: '#7c3aed', name: 'PERNAS' },
     'glutes': { icon: '🍑', color: '#be185d', name: 'GLÚTEOS' },
     'core': { icon: '⚡', color: '#d97706', name: 'CORE' },
-    'abs': { icon: '⚡', color: '#d97706', name: 'ABDOMEN' },
-    'cardio': { icon: '❤️', color: '#dc2626', name: 'CARDIO' },
-    
+    'abs': { icon: '🎯', color: '#d97706', name: 'ABDOMEN' },
+    'cardio': { icon: '❤️‍🔥', color: '#dc2626', name: 'CARDIO' },
+
     // Tipos de exercício
-    'weight': { icon: '🏋️', color: '#6b7280', name: 'Peso' },
+    'weight': { icon: '🏋️', color: '#6366f1', name: 'Peso' },
     'bodyweight': { icon: '🤸', color: '#10b981', name: 'Peso Corporal' },
-    'resistance': { icon: '🔗', color: '#8b5cf6', name: 'Resistência' },
+    'resistance': { icon: '🎪', color: '#8b5cf6', name: 'Resistência' },
     'flexibility': { icon: '🧘', color: '#06b6d4', name: 'Flexibilidade' },
-    
+    'time': { icon: '⏱️', color: '#f59e0b', name: 'Tempo' },
+    'reps': { icon: '🔢', color: '#14b8a6', name: 'Repetições' },
+
+    // Exercícios específicos (nome exato)
+    'supino': { icon: '🦾', color: '#dc2626', name: 'SUPINO' },
+    'agachamento': { icon: '🦵', color: '#7c3aed', name: 'AGACHAMENTO' },
+    'deadlift': { icon: '🏋️‍♀️', color: '#1d4ed8', name: 'LEVANTAMENTO' },
+    'pullup': { icon: '🔝', color: '#1d4ed8', name: 'BARRA FIXA' },
+    'pushup': { icon: '⬆️', color: '#dc2626', name: 'FLEXÃO' },
+    'plank': { icon: '⚡', color: '#d97706', name: 'PRANCHA' },
+    'burpee': { icon: '💥', color: '#dc2626', name: 'BURPEE' },
+    'jump': { icon: '🤸‍♀️', color: '#f59e0b', name: 'SALTO' },
+
     // Default
     'normal': { icon: '💪', color: '#6b7280', name: 'EXERCÍCIO' },
-    'default': { icon: '💪', color: '#6b7280', name: 'EXERCÍCIO' }
+    'default': { icon: '🏃‍♂️', color: '#6366f1', name: 'EXERCÍCIO' }
   }
 
   // Tentar encontrar por categoria primeiro

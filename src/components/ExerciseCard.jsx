@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Trash2 } from 'lucide-react'
 import ProgressChart from './ProgressChart'
 import { getExerciseIconInfo } from '../utils/exerciseIcons'
 
@@ -62,10 +62,19 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
     onWorkoutChange(key, value)
   }
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
   const handleRemove = () => {
-    if (confirm(`Remover exercício "${exercise.name}"?`)) {
-      onRemove(exercise.id)
-    }
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmRemove = () => {
+    onRemove(exercise.id)
+    setShowDeleteConfirm(false)
+  }
+
+  const cancelRemove = () => {
+    setShowDeleteConfirm(false)
   }
 
   return (
@@ -101,10 +110,10 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
           {isCustom && (
             <button
               onClick={handleRemove}
-              className="remove-btn"
+              className="remove-btn modern-delete-btn"
               title="Remover exercício"
             >
-              <X size={14} />
+              <Trash2 size={16} />
             </button>
           )}
         </div>
@@ -210,6 +219,37 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
         
         <ProgressChart exercise={exercise} workoutData={workoutData} />
       </div>
+
+      {/* Modal de confirmação de exclusão */}
+      {showDeleteConfirm && (
+        <div className="delete-confirm-overlay" onClick={cancelRemove}>
+          <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="delete-confirm-header">
+              <Trash2 size={24} className="text-red-500" />
+              <h3>Remover Exercício</h3>
+            </div>
+            <div className="delete-confirm-content">
+              <p>Tem certeza que deseja remover o exercício <strong>"{exercise.name}"</strong>?</p>
+              <p className="text-sm text-gray-600">Esta ação não pode ser desfeita.</p>
+            </div>
+            <div className="delete-confirm-actions">
+              <button
+                onClick={cancelRemove}
+                className="btn-cancel"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmRemove}
+                className="btn-delete"
+              >
+                <Trash2 size={16} />
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

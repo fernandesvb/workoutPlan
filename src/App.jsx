@@ -136,9 +136,17 @@ function App() {
       
       if (success) {
         setShowWizard(false)
-        setTimeout(() => {
-          window.location.reload()
-        }, 500)
+
+        // Se não estiver logado, mostrar aviso sobre sincronização
+        if (!user) {
+          setSaveStatus({
+            type: 'warning',
+            message: '✅ Treino criado localmente! Faça login para sincronizar na nuvem e não perder seus dados.'
+          })
+          setTimeout(() => setSaveStatus(null), 8000) // 8 segundos para ler
+        }
+
+        // Não fazer reload - apenas continuar para o treino
       } else {
         alert('Erro ao criar treino. Tente novamente.')
       }
