@@ -7,35 +7,42 @@ import { getExerciseIconInfo, getExerciseImage } from '../utils/exerciseIcons'
 // Função para explicar exercícios
 const getExerciseExplanation = (exerciseName) => {
   const name = exerciseName.toLowerCase()
-  
+
   const explanations = {
-    'desenvolvimento': 'Exercício para ombros - empurrar peso acima da cabeça',
-    'supino': 'Exercício para peito - empurrar peso deitado no banco',
-    'agachamento': 'Exercício para pernas - descer e subir flexionando joelhos',
-    'remada': 'Exercício para costas - puxar peso em direção ao corpo',
-    'rosca': 'Exercício para bíceps - flexionar braços com peso',
-    'tríceps': 'Exercício para tríceps - estender braços contra resistência',
-    'prancha': 'Exercício para core - manter posição estática',
-    'afundo': 'Exercício para pernas - dar passo à frente e flexionar',
-    'crucifixo': 'Exercício para peito - abrir e fechar braços com peso',
-    'elevação': 'Exercício para ombros - levantar peso lateralmente',
-    'flexão': 'Exercício para peito - empurrar o próprio corpo do chão',
-    'abdominal': 'Exercício para core - contrair músculos do abdome',
-    'ponte': 'Exercício para glúteos - elevar quadril do chão',
-    'burpee': 'Exercício cardío - combinação de movimentos dinâmicos',
-    'leg press': 'Exercício para pernas - empurrar peso com as pernas',
-    'puxada': 'Exercício para costas - puxar barra em direção ao peito',
-    'stiff': 'Exercício para posterior de coxa - flexionar quadril',
-    'panturrilha': 'Exercício para panturrilha - elevar-se na ponta dos pés'
+    'supino reto': 'Empurrar peso no banco reto - força e definição',
+    'supino inclinado': 'Empurrar peso no banco inclinado - parte superior',
+    'supino declinado': 'Empurrar peso no banco declinado - parte inferior',
+    'desenvolvimento': 'Empurrar peso acima da cabeça - força nos deltoides',
+    'supino': 'Empurrar peso deitado no banco',
+    'agachamento': 'Descer e subir flexionando joelhos - força nas pernas',
+    'remada': 'Puxar peso em direção ao corpo - espessura das costas',
+    'rosca': 'Flexionar braços com peso - volume dos bíceps',
+    'tríceps testa': 'Estender braços acima da cabeça - cabeça lateral',
+    'tríceps pulley': 'Empurrar cabo para baixo - definição',
+    'tríceps': 'Estender braços contra resistência',
+    'prancha': 'Manter posição estática - resistência do core',
+    'afundo': 'Dar passo à frente e flexionar - equilíbrio e força',
+    'crucifixo': 'Abrir e fechar braços com peso - abertura do peitoral',
+    'elevação lateral': 'Levantar peso pelos lados - deltoides laterais',
+    'elevação frontal': 'Levantar peso à frente - deltoides anteriores',
+    'elevação': 'Levantar peso lateralmente',
+    'flexão': 'Empurrar o próprio corpo do chão - força funcional',
+    'abdominal': 'Contrair músculos do abdome - definição',
+    'ponte': 'Elevar quadril do chão - ativação dos glúteos',
+    'burpee': 'Exercício cardio completo - resistência',
+    'leg press': 'Empurrar peso com as pernas - força e volume',
+    'puxada': 'Puxar barra em direção ao peito - largura das costas',
+    'stiff': 'Flexionar quadril com pernas retas - posterior de coxa',
+    'panturrilha': 'Elevar-se na ponta dos pés - força nas panturrilhas'
   }
-  
+
   for (const [key, explanation] of Object.entries(explanations)) {
     if (name.includes(key)) {
       return explanation
     }
   }
-  
-  return 'Exercício de força e condicionamento físico'
+
+  return 'Movimento de força e condicionamento'
 }
 
 export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, onRemove, isCustom = false }) {
