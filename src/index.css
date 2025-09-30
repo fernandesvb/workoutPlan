@@ -3492,7 +3492,7 @@ button:disabled {
 .tutorial-close {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: #cbd5e1;
   cursor: pointer;
   padding: 8px;
   border-radius: var(--radius-sm);
@@ -3500,8 +3500,8 @@ button:disabled {
 }
 
 .tutorial-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .tutorial-progress {
@@ -3539,7 +3539,7 @@ button:disabled {
 
 .step-icon {
   margin: 0 auto 20px;
-  color: var(--primary);
+  color: #60a5fa;
   display: flex;
   justify-content: center;
   animation: pulse 2s infinite;
@@ -3551,15 +3551,17 @@ button:disabled {
 }
 
 .tutorial-step h2 {
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 16px;
   font-size: 24px;
+  font-weight: 700;
 }
 
 .tutorial-step p {
-  color: var(--text-secondary);
+  color: #e2e8f0;
   line-height: 1.6;
   margin-bottom: 24px;
+  font-size: 16px;
 }
 
 .tutorial-actions {
@@ -3576,15 +3578,16 @@ button:disabled {
 .skip-button {
   background: none;
   border: none;
-  color: var(--text-tertiary);
+  color: #94a3b8;
   font-size: 14px;
   cursor: pointer;
   text-decoration: underline;
   transition: color 0.2s;
+  font-weight: 500;
 }
 
 .skip-button:hover {
-  color: var(--text-secondary);
+  color: #cbd5e1;
 }
 
 /* ========== PREMIUM UPGRADE MODAL ========== */
