@@ -57,13 +57,17 @@ export function useWorkoutState() {
   const createNewWorkout = (exercises, profile) => {
     try {
       const now = new Date().toISOString()
-      
-      // LIMPEZA TOTAL PRIMEIRO
+
+      // PRESERVAR dados do usuário antes da limpeza
+      const userStats = localStorage.getItem('userStats')
+      const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
+
+      // LIMPEZA TOTAL PRIMEIRO (exceto dados do usuário)
       const allKeys = Object.keys(localStorage)
-      const keysToRemove = allKeys.filter(key => 
-        key.includes('custom_') || 
-        key === 'customExercises' || 
-        key === 'treino' || 
+      const keysToRemove = allKeys.filter(key =>
+        key.includes('custom_') ||
+        key === 'customExercises' ||
+        key === 'treino' ||
         key === 'workoutMeta' ||
         key.includes('_current') ||
         key.includes('_w1') ||
@@ -72,8 +76,12 @@ export function useWorkoutState() {
         key.includes('_w4') ||
         key.includes('_history')
       )
-      
+
       keysToRemove.forEach(key => localStorage.removeItem(key))
+
+      // RESTAURAR dados do usuário
+      if (userStats) localStorage.setItem('userStats', userStats)
+      if (hasSeenTutorial) localStorage.setItem('hasSeenTutorial', hasSeenTutorial)
       
       // Salvar novos exercícios
       localStorage.setItem('customExercises', JSON.stringify(exercises))
