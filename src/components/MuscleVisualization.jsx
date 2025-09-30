@@ -6,7 +6,14 @@ export default function MuscleVisualization({ exerciseName }) {
     const name = exerciseName.toLowerCase().trim()
 
     // Mapear exercícios para grupos musculares específicos
+    // ORDEM IMPORTA: termos mais específicos primeiro
     const muscleMap = {
+      // Glúteos (antes de outros para evitar conflitos)
+      'elevação pélvica': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'hip thrust': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'ponte': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'agachamento sumo': { targetMuscles: ['glutes', 'legs'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+
       // Peito
       'supino': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
       'crucifixo': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
@@ -23,7 +30,9 @@ export default function MuscleVisualization({ exerciseName }) {
       'stiff': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
       'afundo': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
 
-      // Ombros
+      // Ombros (depois de elevação pélvica)
+      'elevação lateral': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
+      'elevação frontal': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
       'desenvolvimento': { targetMuscles: ['shoulders', 'triceps'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
       'elevação': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
 
@@ -37,11 +46,7 @@ export default function MuscleVisualization({ exerciseName }) {
 
       // Core
       'abdominal': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
-      'prancha': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' },
-
-      // Glúteos
-      'ponte': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
-      'hip thrust': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' }
+      'prancha': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' }
     }
 
     // Buscar por palavra-chave

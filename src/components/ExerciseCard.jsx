@@ -9,6 +9,9 @@ const getExerciseExplanation = (exerciseName) => {
   const name = exerciseName.toLowerCase()
 
   const explanations = {
+    'elevação pélvica': 'Elevar quadril do chão - ativação e volume dos glúteos',
+    'hip thrust': 'Empurrar quadril para cima - força nos glúteos',
+    'ponte': 'Elevar quadril do chão - ativação dos glúteos',
     'supino reto': 'Empurrar peso no banco reto - força e definição',
     'supino inclinado': 'Empurrar peso no banco inclinado - parte superior',
     'supino declinado': 'Empurrar peso no banco declinado - parte inferior',
@@ -28,7 +31,6 @@ const getExerciseExplanation = (exerciseName) => {
     'elevação': 'Levantar peso lateralmente',
     'flexão': 'Empurrar o próprio corpo do chão - força funcional',
     'abdominal': 'Contrair músculos do abdome - definição',
-    'ponte': 'Elevar quadril do chão - ativação dos glúteos',
     'burpee': 'Exercício cardio completo - resistência',
     'leg press': 'Empurrar peso com as pernas - força e volume',
     'puxada': 'Puxar barra em direção ao peito - largura das costas',

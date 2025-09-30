@@ -203,67 +203,71 @@ export const getExerciseIcon = (category, type) => {
 // Função para detectar categoria por nome do exercício
 export const detectExerciseCategory = (exerciseName) => {
   const name = exerciseName.toLowerCase()
-  
+
+  // Glúteos (verificar PRIMEIRO antes de outros para evitar conflitos)
+  if (name.includes('elevação pélvica') || name.includes('hip thrust') ||
+      name.includes('ponte') || name.includes('glúteo') ||
+      (name.includes('agachamento') && name.includes('sumo'))) {
+    return 'glutes'
+  }
+
   // Peito
-  if (name.includes('supino') || name.includes('crucifixo') || name.includes('flexão') || 
-      name.includes('chest') || name.includes('peito') || name.includes('press')) {
+  if (name.includes('supino') || name.includes('crucifixo') || name.includes('flexão') ||
+      name.includes('chest') || name.includes('peito') ||
+      (name.includes('press') && !name.includes('leg'))) {
     return 'chest'
   }
-  
+
   // Costas
   if (name.includes('remada') || name.includes('pulldown') || name.includes('barra fixa') ||
       name.includes('back') || name.includes('costas') || name.includes('pull') ||
       name.includes('puxada')) {
     return 'back'
   }
-  
-  // Ombros
-  if (name.includes('elevação') || name.includes('desenvolvimento') || name.includes('ombro') ||
-      name.includes('shoulder') || name.includes('lateral') || name.includes('frontal') ||
-      name.includes('militar') || name.includes('arnold')) {
+
+  // Ombros (depois de elevação pélvica)
+  if (name.includes('elevação lateral') || name.includes('elevação frontal') ||
+      name.includes('desenvolvimento') || name.includes('ombro') ||
+      name.includes('shoulder') || name.includes('lateral raise') ||
+      name.includes('militar') || name.includes('arnold') ||
+      name.includes('elevação')) {
     return 'shoulders'
   }
-  
+
   // Bíceps
   if (name.includes('rosca') || name.includes('bíceps') || name.includes('bicep') ||
       name.includes('curl') || name.includes('martelo')) {
     return 'biceps'
   }
-  
+
   // Tríceps
   if (name.includes('tríceps') || name.includes('tricep') || name.includes('mergulho') ||
       name.includes('extensão') || name.includes('testa') || name.includes('pulley') ||
       name.includes('coice')) {
     return 'triceps'
   }
-  
+
   // Pernas
   if (name.includes('agachamento') || name.includes('squat') || name.includes('afundo') ||
       name.includes('lunge') || name.includes('perna') || name.includes('coxa') ||
-      name.includes('leg') || name.includes('stiff') || name.includes('extensora') ||
+      name.includes('leg press') || name.includes('stiff') || name.includes('extensora') ||
       name.includes('flexora')) {
     return 'legs'
   }
-  
-  // Glúteos
-  if (name.includes('glúteo') || name.includes('ponte') || name.includes('hip thrust') ||
-      name.includes('elevação pélvica') || name.includes('sumo')) {
-    return 'glutes'
-  }
-  
+
   // Core/Abs
   if (name.includes('abdominal') || name.includes('prancha') || name.includes('plank') ||
       name.includes('core') || name.includes('abs') || name.includes('crunch') ||
       name.includes('mountain') || name.includes('russian')) {
     return 'core'
   }
-  
+
   // Cardio
   if (name.includes('corrida') || name.includes('esteira') || name.includes('bike') ||
       name.includes('cardio') || name.includes('burpee') || name.includes('polichinelo')) {
     return 'cardio'
   }
-  
+
   return 'normal'
 }
 
