@@ -1316,6 +1316,43 @@ button:disabled {
     margin-bottom: 12px;
   }
 
+  .progress-chart-modern {
+    padding: 10px;
+    margin-top: 8px;
+  }
+
+  .chart-stats-grid {
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .stat-card {
+    padding: 6px 3px;
+    border-radius: 6px;
+    min-width: 0;
+  }
+
+  .stat-label {
+    font-size: 7px;
+    letter-spacing: 0.1px;
+    margin-bottom: 2px;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+
+  .stat-label svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .stat-unit {
+    font-size: 8px;
+  }
+
   .exercise-header {
     gap: 8px;
     margin-bottom: 12px;
@@ -1425,6 +1462,41 @@ button:disabled {
 
   .exercise-card {
     padding: 14px;
+  }
+
+  .progress-chart-modern {
+    padding: 12px;
+    margin-top: 10px;
+  }
+
+  .chart-stats-grid {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .stat-card {
+    padding: 8px 4px;
+    border-radius: 8px;
+  }
+
+  .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+    margin-bottom: 3px;
+    gap: 2px;
+  }
+
+  .stat-label svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  .stat-unit {
+    font-size: 9px;
   }
 
   .exercise-header {
