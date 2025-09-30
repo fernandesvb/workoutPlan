@@ -9,44 +9,44 @@ export default function MuscleVisualization({ exerciseName }) {
     // ORDEM IMPORTA: termos mais específicos primeiro
     const muscleMap = {
       // Glúteos (antes de outros para evitar conflitos)
-      'elevação pélvica': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
-      'hip thrust': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
-      'ponte': { targetMuscles: ['glutes'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
-      'agachamento sumo': { targetMuscles: ['glutes', 'legs'], primary: '#FF1493', secondary: '#FF69B4', label: 'GLÚTEOS' },
+      'elevação pélvica': { targetMuscles: ['glutes'], primary: '#DB2777', secondary: '#EC4899', label: 'GLÚTEOS' },
+      'hip thrust': { targetMuscles: ['glutes'], primary: '#DB2777', secondary: '#EC4899', label: 'GLÚTEOS' },
+      'ponte': { targetMuscles: ['glutes'], primary: '#DB2777', secondary: '#EC4899', label: 'GLÚTEOS' },
+      'agachamento sumo': { targetMuscles: ['glutes', 'legs'], primary: '#DB2777', secondary: '#EC4899', label: 'GLÚTEOS' },
 
       // Peito
-      'supino': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
-      'crucifixo': { targetMuscles: ['chest'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
-      'flexão': { targetMuscles: ['chest', 'triceps'], primary: '#FF4444', secondary: '#FF8888', label: 'PEITO' },
+      'supino': { targetMuscles: ['chest'], primary: '#DC2626', secondary: '#EF4444', label: 'PEITO' },
+      'crucifixo': { targetMuscles: ['chest'], primary: '#DC2626', secondary: '#EF4444', label: 'PEITO' },
+      'flexão': { targetMuscles: ['chest', 'triceps'], primary: '#DC2626', secondary: '#EF4444', label: 'PEITO' },
 
       // Costas
-      'remada': { targetMuscles: ['back'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
-      'puxada': { targetMuscles: ['back'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
-      'barra fixa': { targetMuscles: ['back', 'biceps'], primary: '#4444FF', secondary: '#8888FF', label: 'COSTAS' },
+      'remada': { targetMuscles: ['back'], primary: '#2563EB', secondary: '#3B82F6', label: 'COSTAS' },
+      'puxada': { targetMuscles: ['back'], primary: '#2563EB', secondary: '#3B82F6', label: 'COSTAS' },
+      'barra fixa': { targetMuscles: ['back', 'biceps'], primary: '#2563EB', secondary: '#3B82F6', label: 'COSTAS' },
 
       // Pernas
-      'agachamento': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'leg press': { targetMuscles: ['legs'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'stiff': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
-      'afundo': { targetMuscles: ['legs', 'glutes'], primary: '#AA44FF', secondary: '#CC88FF', label: 'PERNAS' },
+      'agachamento': { targetMuscles: ['legs', 'glutes'], primary: '#7C3AED', secondary: '#A78BFA', label: 'PERNAS' },
+      'leg press': { targetMuscles: ['legs'], primary: '#7C3AED', secondary: '#A78BFA', label: 'PERNAS' },
+      'stiff': { targetMuscles: ['legs', 'glutes'], primary: '#7C3AED', secondary: '#A78BFA', label: 'PERNAS' },
+      'afundo': { targetMuscles: ['legs', 'glutes'], primary: '#7C3AED', secondary: '#A78BFA', label: 'PERNAS' },
 
       // Ombros (depois de elevação pélvica)
-      'elevação lateral': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
-      'elevação frontal': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
-      'desenvolvimento': { targetMuscles: ['shoulders', 'triceps'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
-      'elevação': { targetMuscles: ['shoulders'], primary: '#FF8800', secondary: '#FFBB44', label: 'OMBROS' },
+      'elevação lateral': { targetMuscles: ['shoulders'], primary: '#EA580C', secondary: '#F97316', label: 'OMBROS' },
+      'elevação frontal': { targetMuscles: ['shoulders'], primary: '#EA580C', secondary: '#F97316', label: 'OMBROS' },
+      'desenvolvimento': { targetMuscles: ['shoulders', 'triceps'], primary: '#EA580C', secondary: '#F97316', label: 'OMBROS' },
+      'elevação': { targetMuscles: ['shoulders'], primary: '#EA580C', secondary: '#F97316', label: 'OMBROS' },
 
       // Bíceps
-      'rosca': { targetMuscles: ['biceps'], primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
-      'curl': { targetMuscles: ['biceps'], primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
+      'rosca': { targetMuscles: ['biceps'], primary: '#059669', secondary: '#10B981', label: 'BÍCEPS' },
+      'curl': { targetMuscles: ['biceps'], primary: '#059669', secondary: '#10B981', label: 'BÍCEPS' },
 
       // Tríceps
       'tríceps': { targetMuscles: ['triceps'], primary: '#DC2626', secondary: '#EF4444', label: 'TRÍCEPS' },
       'mergulho': { targetMuscles: ['triceps', 'chest'], primary: '#DC2626', secondary: '#EF4444', label: 'TRÍCEPS' },
 
       // Core
-      'abdominal': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
-      'prancha': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'CORE' }
+      'abdominal': { targetMuscles: ['core'], primary: '#D97706', secondary: '#F59E0B', label: 'ABDOMEN' },
+      'prancha': { targetMuscles: ['core'], primary: '#D97706', secondary: '#F59E0B', label: 'CORE' }
     }
 
     // Buscar por palavra-chave
