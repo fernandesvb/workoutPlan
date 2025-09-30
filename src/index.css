@@ -2853,76 +2853,106 @@ button:disabled {
 
 .workout-preview {
   text-align: left;
-  max-height: 400px;
+  max-height: 600px;
   overflow-y: auto;
+  padding: 8px;
 }
 
 .preview-header {
   text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--primary);
 }
 
 .preview-header h4 {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--primary);
   margin-bottom: 8px;
 }
 
 .preview-header p {
-  color: var(--text-secondary);
-  font-size: 14px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .preview-days {
   display: grid;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .preview-day {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  border: 2px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.preview-day:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
 }
 
 .preview-day h5 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--primary);
-  margin-bottom: 12px;
-  text-align: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-day h5::before {
+  content: '💪';
+  font-size: 20px;
 }
 
 .day-exercises {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .preview-exercise {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 12px 14px;
   background: var(--bg-tertiary);
   border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.preview-exercise:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
 }
 
 .ex-name {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 15px;
   color: var(--text-primary);
 }
 
 .ex-series {
-  font-size: 12px;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
 }
 
 .preview-actions {
@@ -2944,73 +2974,144 @@ button:disabled {
 }
 
 .ai-explanation {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #0ea5e9;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 2px solid #3b82f6;
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 18px;
   margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .ai-explanation h5 {
-  color: #0c4a6e;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  color: #1e3a8a;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .ai-explanation p {
-  color: #0c4a6e;
-  font-size: 13px;
-  line-height: 1.5;
+  color: #1e40af;
+  font-size: 14px;
+  line-height: 1.6;
   margin: 0;
+  font-weight: 500;
 }
 
 .ai-tips {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
+  border: 2px solid #f59e0b;
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 18px;
   margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
 }
 
 .ai-tips h5 {
-  color: #92400e;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  color: #78350f;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .ai-tips ul {
   margin: 0;
-  padding-left: 16px;
+  padding-left: 18px;
 }
 
 .ai-tips li {
   color: #92400e;
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {
   .options-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .wizard-footer {
     flex-direction: column;
   }
-  
+
   .wizard-footer button {
     max-width: none;
   }
-  
+
   .welcome-features {
     gap: 16px;
   }
-  
+
   .feature-item {
     padding: 16px;
+  }
+
+  /* Workout preview mobile adjustments */
+  .workout-preview {
+    max-height: 500px;
+    padding: 4px;
+  }
+
+  .preview-header {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .preview-header h4 {
+    font-size: 18px;
+  }
+
+  .preview-header p {
+    font-size: 14px;
+  }
+
+  .preview-day h5 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+
+  .preview-day h5::before {
+    font-size: 18px;
+  }
+
+  .preview-exercise {
+    padding: 10px 12px;
+  }
+
+  .ex-name {
+    font-size: 14px;
+  }
+
+  .ex-series {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  .ai-explanation,
+  .ai-tips {
+    padding: 14px;
+    margin: 12px 0;
+  }
+
+  .ai-explanation h5,
+  .ai-tips h5 {
+    font-size: 14px;
+  }
+
+  .ai-explanation p,
+  .ai-tips li {
+    font-size: 13px;
+  }
+
+  .preview-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .preview-actions button {
+    width: 100%;
   }
 }
 
