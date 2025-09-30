@@ -2110,27 +2110,32 @@ button:disabled {
 
 .stat-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--text-secondary);
+  text-align: center;
 }
 
 .stat-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2px;
 }
 
 .stat-value {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .xp-progress {
@@ -2383,23 +2388,95 @@ button:disabled {
 @media (max-width: 640px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 8px;
   }
-  
+
+  .stat-item {
+    gap: 4px;
+    padding: 8px 4px;
+  }
+
   .stat-value {
-    font-size: 16px;
+    font-size: 18px;
   }
-  
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+
   .progress-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .exercise-icon {
     width: 32px;
     height: 32px;
     font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-status {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    gap: 6px;
+  }
+
+  .stat-item {
+    gap: 3px;
+    padding: 6px 2px;
+  }
+
+  .stat-item svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .level-badge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .level-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .level-name {
+    font-size: 12px;
+  }
+
+  .badges-preview h4 {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .badge-item {
+    gap: 4px;
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .badge-icon {
+    font-size: 13px;
+  }
+
+  .badge-name {
+    font-size: 10px;
   }
 }
 
