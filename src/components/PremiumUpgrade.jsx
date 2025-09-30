@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Crown, Check, X, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react'
 
 export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
-  const [selectedPlan, setSelectedPlan] = useState('pro')
+  const [selectedPlan, setSelectedPlan] = useState('premium')
 
   const plans = [
     {
@@ -10,66 +10,48 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
       name: 'Básico',
       price: 'Grátis',
       period: '',
-      description: 'Para experimentar o FitTracker',
+      description: 'Plano gratuito com recursos essenciais',
       features: [
         '3 treinos personalizados',
         'IA básica para exercícios',
-        'Cronômetro simples',
+        'Cronômetro de descanso',
         'Progresso básico (7 dias)',
+        'Gamificação básica',
         'Suporte por email'
       ],
       limitations: [
         'Máximo 3 treinos',
-        'Histórico limitado',
-        'Sem análises avançadas',
-        'Anúncios'
+        'Histórico limitado a 7 dias',
+        'Sem backup na nuvem',
+        'Análises limitadas'
       ],
       buttonText: 'Plano Atual',
       buttonClass: 'btn-secondary',
       disabled: true
     },
     {
-      id: 'pro',
-      name: 'Pro',
-      price: 'R$ 19,90',
-      period: '/mês',
-      description: 'Para atletas sérios',
-      popular: true,
-      features: [
-        'Treinos ilimitados com IA',
-        'IA avançada personalizada',
-        'Análise de progresso completa',
-        'Histórico completo ilimitado',
-        'Múltiplos cronômetros',
-        'Dashboard de performance',
-        'Estatísticas detalhadas',
-        'Backup automático na nuvem',
-        'Suporte prioritário',
-        'Sem anúncios'
-      ],
-      buttonText: 'Escolher Pro',
-      buttonClass: 'btn-primary',
-      savings: 'Mais popular'
-    },
-    {
       id: 'premium',
       name: 'Premium',
-      price: 'R$ 29,90',
+      price: 'R$ 9,90',
       period: '/mês',
-      description: 'Para profissionais do fitness',
+      description: 'Tudo que você precisa para treinar sério',
+      popular: true,
       features: [
-        'Tudo do Pro +',
-        'IA coaching personalizada',
-        'Planos nutricionais',
-        'Integração com wearables',
-        'Relatórios profissionais',
-        'API para personal trainers',
-        'Consultoria mensal inclusa',
-        'White-label disponível'
+        '✨ Treinos ilimitados com IA',
+        '🤖 IA avançada e personalizada',
+        '📊 Histórico completo ilimitado',
+        '📈 Análise de progresso detalhada',
+        '☁️ Backup automático na nuvem',
+        '🎯 Dashboard de performance',
+        '⏱️ Múltiplos cronômetros',
+        '📉 Gráficos de evolução',
+        '🏆 Sistema de conquistas completo',
+        '💬 Suporte prioritário',
+        '🚫 Sem anúncios'
       ],
-      buttonText: 'Escolher Premium',
-      buttonClass: 'btn-premium',
-      savings: 'Para profissionais'
+      buttonText: 'Assinar Premium',
+      buttonClass: 'btn-primary',
+      savings: 'Melhor custo-benefício'
     }
   ]
 
@@ -84,8 +66,8 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
           <div className="premium-title">
             <Crown className="premium-icon" />
             <div>
-              <h2>Upgrade para FitTracker Pro</h2>
-              <p>Desbloqueie todo o potencial do seu treino</p>
+              <h2>Upgrade para Premium</h2>
+              <p>Treinos ilimitados por apenas R$ 9,90/mês</p>
             </div>
           </div>
           <button className="modal-close" onClick={onClose}>
