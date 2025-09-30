@@ -41,8 +41,8 @@ export default function MuscleVisualization({ exerciseName }) {
       'curl': { targetMuscles: ['biceps'], primary: '#00CC88', secondary: '#44FFBB', label: 'BÍCEPS' },
 
       // Tríceps
-      'tríceps': { targetMuscles: ['triceps'], primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
-      'mergulho': { targetMuscles: ['triceps', 'chest'], primary: '#FF4444', secondary: '#FF8888', label: 'TRÍCEPS' },
+      'tríceps': { targetMuscles: ['triceps'], primary: '#DC2626', secondary: '#EF4444', label: 'TRÍCEPS' },
+      'mergulho': { targetMuscles: ['triceps', 'chest'], primary: '#DC2626', secondary: '#EF4444', label: 'TRÍCEPS' },
 
       // Core
       'abdominal': { targetMuscles: ['core'], primary: '#FFAA00', secondary: '#FFDD44', label: 'ABDOMEN' },
