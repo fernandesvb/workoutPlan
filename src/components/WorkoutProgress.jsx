@@ -47,11 +47,32 @@ export default function WorkoutProgress({
 
       if (isCompleted) {
         completed++
+      } else {
+        // Calculate more accurate time per exercise
+        let exerciseTime = 0
+
+        // Parse series (e.g., "3x12" -> 3 sets)
+        const seriesMatch = exercise.series?.match(/^(\d+)/)
+        const sets = seriesMatch ? parseInt(seriesMatch[1]) : 3
+
+        // Base time per set based on exercise type
+        if (exercise.type === 'weight') {
+          // Weight exercises: ~45-60s per set + 60-90s rest
+          exerciseTime = sets * 1.75 // ~1.75 min per set (45s work + 90s rest)
+        } else if (exercise.type === 'time') {
+          // Time-based exercises: variable duration + shorter rest
+          exerciseTime = sets * 1.25 // ~1.25 min per set (30s work + 45s rest)
+        } else {
+          // Bodyweight/reps: ~30-45s per set + 45-60s rest
+          exerciseTime = sets * 1.5 // ~1.5 min per set (40s work + 50s rest)
+        }
+
+        estimatedTime += exerciseTime
       }
     })
 
-    // Estimar tempo mais realista: 3-4 min por exercício (inclui descanso)
-    estimatedTime = (total - completed) * 3
+    // Round to nearest minute
+    estimatedTime = Math.ceil(estimatedTime)
 
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
 
