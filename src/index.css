@@ -483,12 +483,6 @@ body {
   margin-bottom: 16px;
 }
 
-.exercise-header-top {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .exercise-title-row {
   display: flex;
   justify-content: space-between;
@@ -500,20 +494,6 @@ body {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-}
-
-.exercise-category-badge-inline {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  color: #cbd5e1;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 8px;
-  background: rgba(148, 163, 184, 0.15);
-  border-radius: 6px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  width: fit-content;
 }
 
 .exercise-info {
@@ -1340,10 +1320,6 @@ button:disabled {
     margin-bottom: 12px;
   }
 
-  .exercise-header-top {
-    gap: 5px;
-  }
-
   .exercise-title-row {
     gap: 8px;
   }
@@ -1364,12 +1340,6 @@ button:disabled {
     padding: 2px 4px;
     border-radius: 5px;
     letter-spacing: 0;
-  }
-
-  .exercise-category-badge-inline {
-    font-size: 8px;
-    padding: 3px 6px;
-    letter-spacing: 0.3px;
   }
 
   .exercise-name {
@@ -1461,10 +1431,6 @@ button:disabled {
     margin-bottom: 14px;
   }
 
-  .exercise-header-top {
-    gap: 6px;
-  }
-
   .exercise-title-row {
     gap: 10px;
   }
@@ -1484,11 +1450,6 @@ button:disabled {
     font-size: 8px;
     padding: 2px 5px;
     border-radius: 6px;
-  }
-
-  .exercise-category-badge-inline {
-    font-size: 9px;
-    padding: 3px 7px;
   }
 
   .exercise-info {
