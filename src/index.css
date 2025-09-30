@@ -1330,8 +1330,8 @@ button:disabled {
   }
 
   .exercise-image-container {
-    width: 60px;
-    height: 85px;
+    width: 50px;
+    height: 70px;
     border-radius: 10px;
     flex-shrink: 0;
   }
@@ -1441,8 +1441,8 @@ button:disabled {
   }
 
   .exercise-image-container {
-    width: 70px;
-    height: 100px;
+    width: 60px;
+    height: 85px;
     border-radius: 12px;
     flex-shrink: 0;
   }
@@ -1573,9 +1573,9 @@ button:disabled {
 /* Modern Progress Chart */
 .progress-chart-modern {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 16px;
-  padding: 20px;
-  margin-top: 16px;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
@@ -1583,14 +1583,14 @@ button:disabled {
 .chart-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .stat-card {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 10px 8px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.2s ease;
@@ -1627,7 +1627,7 @@ button:disabled {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   color: #f8fafc;
   margin-bottom: 2px;
@@ -4530,9 +4530,9 @@ button:disabled {
 /* New Muscle Visualization Styles */
 .exercise-image-container {
   position: relative;
-  width: 100px;
-  height: 140px;
-  border-radius: 16px;
+  width: 80px;
+  height: 110px;
+  border-radius: 14px;
   overflow: visible;
   flex-shrink: 0;
   display: flex;
