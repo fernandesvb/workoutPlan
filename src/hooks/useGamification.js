@@ -189,6 +189,18 @@ export function useGamification() {
     return badges[badgeId] || { name: 'Badge', icon: '🏆', desc: 'Conquista desbloqueada' }
   }
 
+  const resetStats = () => {
+    const initialStats = {
+      xp: 0,
+      level: 1,
+      streak: 0,
+      totalWorkouts: 0,
+      badges: [],
+      lastWorkoutDate: null
+    }
+    saveUserStats(initialStats)
+  }
+
   return {
     userStats,
     getLevelInfo,
@@ -198,6 +210,7 @@ export function useGamification() {
     addExerciseXp,
     completeWorkout,
     getBadgeInfo,
+    resetStats,
     refreshStats: loadUserStats
   }
 }

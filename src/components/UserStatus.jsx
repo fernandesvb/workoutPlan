@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Star, Award, Flame, TrendingUp, X } from 'lucide-react'
+import { Star, Award, Flame, TrendingUp, X, RotateCcw } from 'lucide-react'
 import { useGamification } from '../hooks/useGamification'
 
 export default function UserStatus({ onBadgeEarned }) {
-  const { 
-    userStats, 
-    getLevelInfo, 
-    getCurrentLevelProgress, 
+  const {
+    userStats,
+    getLevelInfo,
+    getCurrentLevelProgress,
     getXpForNextLevel,
-    getBadgeInfo 
+    getBadgeInfo,
+    resetStats
   } = useGamification()
-  
+
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [showNewBadges, setShowNewBadges] = useState([])
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   const currentLevel = getLevelInfo(userStats.level)
   const nextLevel = getLevelInfo(userStats.level + 1)
@@ -134,6 +136,18 @@ export default function UserStatus({ onBadgeEarned }) {
         </div>
       )}
 
+      {/* Botão de Reset */}
+      <div className="user-status-actions">
+        <button
+          className="reset-stats-btn"
+          onClick={() => setShowResetConfirm(true)}
+          title="Resetar progresso"
+        >
+          <RotateCcw size={14} />
+          <span>Resetar Progresso</span>
+        </button>
+      </div>
+
       {/* Animações de conquistas */}
       {showLevelUp && (
         <div className="level-up-animation" onClick={() => setShowLevelUp(false)}>
@@ -182,6 +196,46 @@ export default function UserStatus({ onBadgeEarned }) {
             >
               Continuar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Confirmação de Reset */}
+      {showResetConfirm && (
+        <div className="reset-confirm-overlay" onClick={() => setShowResetConfirm(false)}>
+          <div className="reset-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="reset-confirm-header">
+              <RotateCcw size={32} className="reset-icon" />
+              <h3>Resetar Todo o Progresso?</h3>
+            </div>
+            <div className="reset-confirm-content">
+              <p>Esta ação irá resetar:</p>
+              <ul>
+                <li>✨ {userStats.xp} XP e Nível {userStats.level}</li>
+                <li>🔥 {userStats.streak} dias de sequência</li>
+                <li>💪 {userStats.totalWorkouts} treinos completados</li>
+                <li>🏆 {userStats.badges.length} badges conquistadas</li>
+              </ul>
+              <p className="warning-text">⚠️ Esta ação não pode ser desfeita!</p>
+            </div>
+            <div className="reset-confirm-actions">
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="btn-cancel"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  resetStats()
+                  setShowResetConfirm(false)
+                }}
+                className="btn-reset-confirm"
+              >
+                <RotateCcw size={16} />
+                Sim, Resetar Tudo
+              </button>
+            </div>
           </div>
         </div>
       )}
