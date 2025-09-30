@@ -46,12 +46,12 @@
   --bg-tertiary: #334155;
   --bg-card: #1e293b;
   --bg-input: #334155;
-  
+
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --text-muted: #64748b;
-  
+  --text-secondary: #e2e8f0;
+  --text-tertiary: #cbd5e1;
+  --text-muted: #94a3b8;
+
   --border-light: #334155;
   --border-medium: #475569;
   --border-dark: #64748b;
@@ -1499,12 +1499,12 @@ button:disabled {
     --bg-tertiary: #334155;
     --bg-card: #1e293b;
     --bg-input: #334155;
-    
+
     --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --text-muted: #64748b;
-    
+    --text-secondary: #e2e8f0;
+    --text-tertiary: #cbd5e1;
+    --text-muted: #94a3b8;
+
     --border-light: #334155;
     --border-medium: #475569;
     --border-dark: #64748b;
