@@ -86,39 +86,44 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
       style={{ transition: 'all 0.2s ease' }}
     >
       <div className="exercise-header">
-        <div className="exercise-icon-info">
-          <div className="exercise-image-container">
-            <MuscleVisualization exerciseName={exercise.name} />
-            <div className="exercise-category-badge">
-              {getExerciseIconInfo(exercise).name}
+        <div className="exercise-header-top">
+          <div className="exercise-title-row">
+            <div className="exercise-name">{exercise.name}</div>
+            <div className="series-container">
+              <span className="series-info">{exercise.series}</span>
+              {isCompleted && (
+                <div className="completion-check" title="Exercício concluído!">
+                  ✅
+                </div>
+              )}
+              {isCustom && (
+                <button
+                  onClick={handleRemove}
+                  className="remove-btn ultra-modern-delete-btn"
+                  title="Remover exercício"
+                >
+                  <div className="delete-icon-wrapper">
+                    <Trash2 size={14} />
+                  </div>
+                </button>
+              )}
             </div>
           </div>
+          <div className="exercise-category-badge-inline">
+            {getExerciseIconInfo(exercise).name}
+          </div>
+        </div>
+
+        <div className="exercise-details">
+          <div className="exercise-image-container">
+            <MuscleVisualization exerciseName={exercise.name} />
+          </div>
           <div className="exercise-info">
-            <div className="exercise-name">{exercise.name}</div>
             <div className="exercise-explanation">{getExerciseExplanation(exercise.name)}</div>
             {exercise.notes && (
               <div className="exercise-notes">{exercise.notes}</div>
             )}
           </div>
-        </div>
-        <div className="series-container">
-          <span className="series-info">{exercise.series}</span>
-          {isCompleted && (
-            <div className="completion-check" title="Exercício concluído!">
-              ✅
-            </div>
-          )}
-          {isCustom && (
-            <button
-              onClick={handleRemove}
-              className="remove-btn ultra-modern-delete-btn"
-              title="Remover exercício"
-            >
-              <div className="delete-icon-wrapper">
-                <Trash2 size={14} />
-              </div>
-            </button>
-          )}
         </div>
       </div>
       
