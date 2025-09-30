@@ -278,6 +278,21 @@ RESPONDA APENAS O JSON COMPLETO:`
         { day: 2, focus: ['back', 'biceps'] },
         { day: 3, focus: ['legs', 'glutes'] },
         { day: 4, focus: ['shoulders', 'core'] }
+      ],
+      5: [
+        { day: 1, focus: ['chest', 'triceps'] },
+        { day: 2, focus: ['back', 'biceps'] },
+        { day: 3, focus: ['legs', 'glutes'] },
+        { day: 4, focus: ['shoulders', 'core'] },
+        { day: 5, focus: ['biceps', 'triceps', 'core'] }
+      ],
+      6: [
+        { day: 1, focus: ['chest', 'triceps'] },
+        { day: 2, focus: ['back', 'biceps'] },
+        { day: 3, focus: ['legs', 'glutes'] },
+        { day: 4, focus: ['shoulders', 'core'] },
+        { day: 5, focus: ['biceps', 'triceps'] },
+        { day: 6, focus: ['core', 'legs'] }
       ]
     }
     

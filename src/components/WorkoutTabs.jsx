@@ -55,6 +55,10 @@ export default function WorkoutTabs({ activeDay, onDayChange, customExercises })
         subtitle = 'Pernas'
       } else if (dayNum === 4) {
         subtitle = 'Ombros'
+      } else if (dayNum === 5) {
+        subtitle = 'Braços'
+      } else if (dayNum === 6) {
+        subtitle = 'Core/Cardio'
       } else {
         // Fallback para detecção automática
         if (categories.includes('chest') && categories.includes('triceps')) {
@@ -71,6 +75,8 @@ export default function WorkoutTabs({ activeDay, onDayChange, customExercises })
           subtitle = 'Costas'
         } else if (categories.includes('biceps') && categories.includes('triceps')) {
           subtitle = 'Braços'
+        } else if (categories.includes('core')) {
+          subtitle = 'Core'
         } else if (categories.length > 2) {
           subtitle = 'Full Body'
         }
