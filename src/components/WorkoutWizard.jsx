@@ -15,7 +15,7 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
   const [previewWorkout, setPreviewWorkout] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [customEquipments, setCustomEquipments] = useState('')
-  const [equipmentPhoto, setEquipmentPhoto] = useState(null)
+  const [equipmentPhotos, setEquipmentPhotos] = useState([])
   const [analyzingPhoto, setAnalyzingPhoto] = useState(false)
 
   const goals = [
@@ -205,29 +205,38 @@ RESPONDA APENAS O JSON COMPLETO:`
     if (step > 1) setStep(step - 1)
   }
 
-  const analyzeEquipmentPhoto = async (file) => {
+  const analyzeEquipmentPhotos = async (files) => {
     setAnalyzingPhoto(true)
     try {
-      const base64 = await convertToBase64(file)
+      let allEquipments = []
       
-      const prompt = `Analise esta foto e identifique todos os equipamentos de exercício visíveis. Liste apenas os equipamentos, separados por vírgula. Exemplo: "Halteres, Barra fixa, Esteira, Banco"`
-      
-      const response = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          prompt,
-          image: base64
+      for (const file of files) {
+        const base64 = await convertToBase64(file)
+        
+        const prompt = `Analise esta foto e identifique todos os equipamentos de exercício visíveis. Liste apenas os equipamentos, separados por vírgula. Exemplo: "Halteres, Barra fixa, Esteira, Banco"`
+        
+        const response = await fetch('/api/claude', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            prompt,
+            image: base64
+          })
         })
-      })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.response) {
+            allEquipments.push(result.response)
+          }
+        }
+      }
       
-      if (!response.ok) throw new Error('Erro na análise')
-      
-      const result = await response.json()
-      setCustomEquipments(result.response || 'Não foi possível identificar equipamentos')
+      const combinedEquipments = allEquipments.join(', ')
+      setCustomEquipments(combinedEquipments || 'Não foi possível identificar equipamentos')
       
     } catch (error) {
-      alert('Erro ao analisar foto. Tente descrever manualmente.')
+      alert('Erro ao analisar fotos. Tente descrever manualmente.')
     } finally {
       setAnalyzingPhoto(false)
     }
@@ -243,10 +252,10 @@ RESPONDA APENAS O JSON COMPLETO:`
   }
   
   const handlePhotoUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setEquipmentPhoto(file)
-      analyzeEquipmentPhoto(file)
+    const files = Array.from(e.target.files)
+    if (files.length > 0) {
+      setEquipmentPhotos(prev => [...prev, ...files])
+      analyzeEquipmentPhotos([...equipmentPhotos, ...files])
     }
   }
   
@@ -513,6 +522,7 @@ RESPONDA APENAS O JSON COMPLETO:`
                         onChange={handlePhotoUpload}
                         id="equipment-photo"
                         style={{ display: 'none' }}
+                        multiple
                       />
                       <label htmlFor="equipment-photo" className="upload-btn">
                         {analyzingPhoto ? (
@@ -522,16 +532,37 @@ RESPONDA APENAS O JSON COMPLETO:`
                           </>
                         ) : (
                           <>
-                            📷 Tirar/Escolher Foto
+                            📷 Adicionar Fotos ({equipmentPhotos.length})
                           </>
                         )}
                       </label>
-                      {equipmentPhoto && (
+                      {equipmentPhotos.length > 0 && (
                         <div className="photo-preview">
-                          <img 
-                            src={URL.createObjectURL(equipmentPhoto)} 
-                            alt="Equipamentos" 
-                          />
+                          <div className="photos-grid">
+                            {equipmentPhotos.map((photo, index) => (
+                              <div key={index} className="photo-item">
+                                <img 
+                                  src={URL.createObjectURL(photo)} 
+                                  alt={`Equipamento ${index + 1}`}
+                                />
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const newPhotos = equipmentPhotos.filter((_, i) => i !== index)
+                                    setEquipmentPhotos(newPhotos)
+                                    if (newPhotos.length > 0) {
+                                      analyzeEquipmentPhotos(newPhotos)
+                                    } else {
+                                      setCustomEquipments('')
+                                    }
+                                  }}
+                                  className="remove-photo"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
