@@ -210,7 +210,8 @@ RESPONDA APENAS O JSON COMPLETO:`
     try {
       let allEquipments = []
       
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
         const base64 = await convertToBase64(file)
         
         const prompt = `Você é um especialista em equipamentos de exercício. Analise esta imagem e identifique TODOS os equipamentos de treino visíveis.
@@ -229,30 +230,32 @@ Se não conseguir identificar equipamentos específicos, descreva o que vê (ex:
 
 Resposta (apenas a lista):`
         
-        const response = await fetch('/api/claude', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            prompt,
-            image: base64
+        try {
+          const response = await fetch('/api/claude', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              prompt,
+              image: base64
+            })
           })
-        })
-        
-        if (response.ok) {
-          const result = await response.json()
-          if (result.response && result.response.trim()) {
-            allEquipments.push(result.response.trim())
+          
+          if (response.ok) {
+            const result = await response.json()
+            if (result.response && result.response.trim() && !result.response.includes('identificados na imagem')) {
+              allEquipments.push(`Foto ${i + 1}: ${result.response.trim()}`)
+            } else {
+              allEquipments.push(`Foto ${i + 1}: Não foi possível identificar equipamentos`)
+            }
           } else {
-            // Fallback se IA não conseguir identificar
-            allEquipments.push('Equipamentos de treino identificados na imagem')
+            allEquipments.push(`Foto ${i + 1}: Erro na análise`)
           }
-        } else {
-          console.error('Erro na resposta da API:', response.status)
-          allEquipments.push('Equipamentos não identificados')
+        } catch (error) {
+          allEquipments.push(`Foto ${i + 1}: Erro ao processar`)
         }
       }
       
-      const combinedEquipments = allEquipments.filter(eq => eq && eq.trim()).join(', ')
+      const combinedEquipments = allEquipments.join('\n')
       setCustomEquipments(combinedEquipments || 'Descreva manualmente seus equipamentos no campo acima')
       
     } catch (error) {
