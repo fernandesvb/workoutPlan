@@ -15,21 +15,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt, customExercises = [] } = req.body
+    const { prompt, customExercises = [], image } = req.body
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 800,
-        messages: [{
-          role: 'user',
-          content: `Você é um personal trainer experiente.
+    let messages
+    
+    if (image) {
+      // Análise de imagem
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: prompt
+          },
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: image.includes('webp') ? 'image/webp' : 'image/jpeg',
+              data: image.split(',')[1]
+            }
+          }
+        ]
+      }]
+    } else {
+      // Prompt normal
+      messages = [{
+        role: 'user',
+        content: `Você é um personal trainer experiente.
 
 TREINO ATUAL COMPLETO:
 Dia 1 - Peito/Tríceps: Supino Smith, Crucifixo Halteres, Tríceps Polia, Tríceps Testa, Prancha, Superman
@@ -52,7 +65,20 @@ Responda APENAS com JSON:
   ],
   "explanation": "Explicação"
 }`
-        }]
+      }]
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: image ? 300 : 800,
+        messages
       })
     })
 
@@ -62,6 +88,12 @@ Responda APENAS com JSON:
 
     const data = await response.json()
     let content = data.content[0].text
+    
+    if (image) {
+      // Para análise de imagem, retornar resposta direta
+      res.json({ response: content })
+      return
+    }
     
     // Clean and extract JSON
     content = content.replace(/```json/g, '').replace(/```/g, '').trim()
