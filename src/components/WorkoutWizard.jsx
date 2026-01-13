@@ -663,9 +663,51 @@ RESPOSTA (lista detalhada em português):`
                       return 'Completo'
                     }
                     
+                    // Detectar equipamentos necessários para o dia
+                    const getDayEquipments = (exercises) => {
+                      const equipmentMap = {
+                        'Supino': 'Banco + Barra olímpica',
+                        'Crucifixo': 'Banco + Halteres',
+                        'Desenvolvimento': 'Banco + Halteres',
+                        'Puxada': 'Estação MOVEMENT',
+                        'Remada': 'Estação MOVEMENT',
+                        'Extensora': 'Cadeira extensora',
+                        'Flexora': 'Cadeira flexora',
+                        'Adutora': 'Cadeira adutora',
+                        'Abdutora': 'Cadeira abdutora',
+                        'Rosca': 'Halteres',
+                        'Tríceps': 'Estação MOVEMENT',
+                        'Prancha': 'Colchonete',
+                        'Abdominal': 'Banco abdominal',
+                        'Agachamento': 'Barra + Rack',
+                        'Leg Press': 'Leg Press',
+                        'Panturrilha': 'Halteres'
+                      }
+                      
+                      const equipments = new Set()
+                      exercises.forEach(ex => {
+                        const exerciseName = ex.name
+                        for (const [key, equipment] of Object.entries(equipmentMap)) {
+                          if (exerciseName.includes(key)) {
+                            equipments.add(equipment)
+                            break
+                          }
+                        }
+                      })
+                      
+                      return Array.from(equipments)
+                    }
+                    
+                    const dayEquipments = getDayEquipments(dayExercises)
+                    
                     return (
                       <div key={day} className="preview-day">
                         <h5>Dia {day} - {getMainMuscleGroup(dayExercises)}</h5>
+                        {dayEquipments.length > 0 && (
+                          <div className="day-equipments">
+                            <strong>🏋️ Equipamentos:</strong> {dayEquipments.join(', ')}
+                          </div>
+                        )}
                         <div className="day-exercises">
                           {dayExercises.map((ex, idx) => (
                             <div key={idx} className="preview-exercise">

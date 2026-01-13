@@ -5028,6 +5028,22 @@ button:disabled {
     justify-content: center;
   }
 }
+.day-equipments {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.day-equipments strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 /* Multiple Photos Grid */
 .photos-grid {
   display: grid;
