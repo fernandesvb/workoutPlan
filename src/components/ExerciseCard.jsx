@@ -181,8 +181,8 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
                     updatedHistory = [{ date: today, value: currentValue }, ...existingHistory]
                   }
 
-                  // Salvar dados (manter apenas últimos 10 registros)
-                  onWorkoutChange(historyKey, JSON.stringify(updatedHistory.slice(0, 10)))
+                  // Salvar dados (histórico ilimitado)
+                  onWorkoutChange(historyKey, JSON.stringify(updatedHistory))
                   onWorkoutChange(`${exercise.id}_current`, '')
 
                   // Disparar evento após pequeno delay para evitar conflitos
