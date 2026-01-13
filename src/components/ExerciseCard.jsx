@@ -48,7 +48,10 @@ const getExerciseExplanation = (exerciseName) => {
 }
 
 export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, onRemove, isCustom = false }) {
-  const isCompleted = workoutData[`${exercise.id}_completed`] === 'true'
+  // Verificar se foi completado hoje
+  const today = new Date().toLocaleDateString('pt-BR')
+  const history = JSON.parse(workoutData[`${exercise.id}_history`] || '[]')
+  const isCompletedToday = history.length > 0 && history[0].date === today
   const [isSaving, setIsSaving] = useState(false)
   const [imageError, setImageError] = useState(false)
   const getPlaceholder = (type) => {
@@ -99,8 +102,8 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
           <div className="exercise-name">{exercise.name}</div>
           <div className="series-container">
             <span className="series-info">{exercise.series}</span>
-            {isCompleted && (
-              <div className="completion-check" title="Exercício concluído!">
+            {isCompletedToday && (
+              <div className="completion-check" title="Exercício concluído hoje!">
                 ✅
               </div>
             )}
@@ -148,7 +151,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
             />
             <button
               className="save-btn"
-              disabled={isSaving || isCompleted}
+              disabled={isSaving}
               onClick={async () => {
                 if (isSaving) return
 
@@ -163,12 +166,23 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
                 try {
                   const today = new Date().toLocaleDateString('pt-BR')
                   const historyKey = `${exercise.id}_history`
-                  const history = JSON.parse(workoutData[historyKey] || '[]')
-                  history.unshift({ date: today, value: currentValue })
+                  const existingHistory = JSON.parse(workoutData[historyKey] || '[]')
+                  
+                  // Verificar se já existe registro para hoje
+                  const todayIndex = existingHistory.findIndex(entry => entry.date === today)
+                  
+                  let updatedHistory
+                  if (todayIndex >= 0) {
+                    // Atualizar registro existente de hoje
+                    updatedHistory = [...existingHistory]
+                    updatedHistory[todayIndex] = { date: today, value: currentValue }
+                  } else {
+                    // Adicionar novo registro
+                    updatedHistory = [{ date: today, value: currentValue }, ...existingHistory]
+                  }
 
-                  // Salvar dados
-                  onWorkoutChange(historyKey, JSON.stringify(history.slice(0, 5)))
-                  onWorkoutChange(`${exercise.id}_completed`, 'true')
+                  // Salvar dados (manter apenas últimos 10 registros)
+                  onWorkoutChange(historyKey, JSON.stringify(updatedHistory.slice(0, 10)))
                   onWorkoutChange(`${exercise.id}_current`, '')
 
                   // Disparar evento após pequeno delay para evitar conflitos
@@ -199,7 +213,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
 
                         // Foco no input do próximo exercício após scroll
                         setTimeout(() => {
-                          const nextInput = nextCard.querySelector('.workout-input')
+                          const nextInput = nextCard.querySelector('.current-input')
                           if (nextInput) {
                             nextInput.focus()
                           }
@@ -227,7 +241,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
                 }
               }}
             >
-              {isSaving ? '⏳' : isCompleted ? '✅' : '💾'}
+              {isSaving ? '⏳' : isCompletedToday ? '✅' : '💾'}
             </button>
           </div>
         </div>

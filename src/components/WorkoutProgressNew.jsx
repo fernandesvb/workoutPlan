@@ -44,11 +44,14 @@ export default function WorkoutProgress({
 
     let completed = 0
     let estimatedTime = 0
+    const today = new Date().toLocaleDateString('pt-BR')
 
     dayExercises.forEach(exercise => {
-      const isCompleted = workoutData[`${exercise.id}_completed`] === 'true'
+      // Verificar se tem registro para hoje no histórico
+      const history = JSON.parse(workoutData[`${exercise.id}_history`] || '[]')
+      const hasRecordToday = history.length > 0 && history[0].date === today
 
-      if (isCompleted) {
+      if (hasRecordToday) {
         completed++
       } else {
         // Calculate more accurate time per exercise

@@ -17,7 +17,9 @@ export default function ExerciseCard({
   const [values, setValues] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
-  const isCompleted = workoutData[`${exercise.id}_completed`] === 'true'
+  const today = new Date().toLocaleDateString('pt-BR')
+  const history = JSON.parse(workoutData[`${exercise.id}_history`] || '[]')
+  const isCompletedToday = history.length > 0 && history[0].date === today
 
   useEffect(() => {
     if (exercise.type === 'weight') {
@@ -252,14 +254,14 @@ export default function ExerciseCard({
   return (
     <Card className={cn(
       "transition-all duration-200 hover:shadow-md",
-      isCompleted && "ring-2 ring-green-200 dark:ring-green-800 bg-green-50/50 dark:bg-green-950/20"
+      isCompletedToday && "ring-2 ring-green-200 dark:ring-green-800 bg-green-50/50 dark:bg-green-950/20"
     )}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1 flex-1">
             <div className="flex items-center gap-2">
               <CardTitle className="text-base">{exercise.name}</CardTitle>
-              {isCompleted && (
+              {isCompletedToday && (
                 <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
               )}
             </div>
