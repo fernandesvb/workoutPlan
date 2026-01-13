@@ -264,7 +264,8 @@ RESPOSTA (lista detalhada em português):`
             allEquipments.push(`Foto ${i + 1}: Erro na análise`)
           }
         } catch (error) {
-          allEquipments.push(`Foto ${i + 1}: Erro ao processar`)
+          console.error('Erro na foto', i + 1, ':', error)
+          allEquipments.push(`Foto ${i + 1}: Erro ao processar - descreva manualmente`)
         }
       }
       

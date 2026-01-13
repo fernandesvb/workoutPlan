@@ -76,8 +76,8 @@ Responda APENAS com JSON:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: image ? 'claude-3-5-sonnet-20241022' : 'claude-3-haiku-20240307',
-        max_tokens: image ? 500 : 800,
+        model: 'claude-3-haiku-20240307',
+        max_tokens: image ? 400 : 800,
         messages
       })
     })
