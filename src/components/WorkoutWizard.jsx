@@ -102,16 +102,26 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
 - Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
 - Tempo disponível: ${formData.timeAvailable} minutos por sessão
 - Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
-- Limitações: ${formData.limitations || 'Nenhuma'}
+- Limitações/Preferências: ${formData.limitations || 'Nenhuma'}
 
-📝 PLANO DE TREINO OBRIGATÓRIO:
+🚨 INSTRUÇÕES CRÍTICAS SOBRE LIMITAÇÕES:
+${formData.limitations ? `
+- RESPEITE ABSOLUTAMENTE as limitações: "${formData.limitations}"
+- Se contém treino completo (ex: exercícios específicos), USE EXATAMENTE esses exercícios
+- Se menciona problemas físicos, EVITE exercícios que possam agravar
+- Se lista exercícios preferidos, PRIORIZE esses exercícios
+- Se especifica músculos a focar, CONCENTRE nesses grupos
+- NUNCA ignore ou substitua o que foi especificado pelo usuário
+` : '- Nenhuma limitação especial'}
+
+📝 PLANO DE TREINO ${formData.limitations && formData.limitations.includes('dia') ? 'PERSONALIZADO' : 'PADRÃO'}:
 ${getDayPlan()}
 
 ⚠️ REGRAS INEGOCIÁVEIS:
 1. EXATAMENTE ${formData.daysPerWeek} dias diferentes (day: 1, 2, 3, 4...)
 2. CADA dia deve ter EXATAMENTE ${exerciseCount} exercícios DIFERENTES
-3. NUNCA repetir o mesmo grupo muscular em dias consecutivos
-4. SEMPRE incluir PERNAS em pelo menos 1 dia
+3. ${formData.limitations ? 'PRIORIDADE MÁXIMA: Seguir limitações/preferências do usuário' : 'NUNCA repetir o mesmo grupo muscular em dias consecutivos'}
+4. SEMPRE incluir PERNAS em pelo menos 1 dia (exceto se limitações impedem)
 5. Varie os exercícios - NUNCA repetir o mesmo exercício
 6. Use categories: chest, back, legs, shoulders, biceps, triceps, core, glutes, cardio
 
@@ -125,23 +135,19 @@ ${getDayPlan()}
   "exercises": [
     {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Deitar no banco, empurrar barra do peito para cima"},
     {"name": "Desenvolvimento Ombros", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Empurrar peso acima da cabeça, ombros ativos"},
-    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Empurrar cabo para baixo, cotovelos fixos"},
-    {"name": "Remada Curvada", "day": 2, "series": "3x12", "type": "weight", "category": "back", "notes": "Puxar barra em direção ao abdome, costas retas"},
-    {"name": "Rosca Direta", "day": 2, "series": "3x12", "type": "weight", "category": "biceps", "notes": "Flexionar braços, contrair bíceps no topo"},
-    {"name": "Agachamento Livre", "day": 3, "series": "3x15", "type": "weight", "category": "legs", "notes": "Descer flexionando joelhos, subir empurrando calcanhar"},
-    {"name": "Leg Press", "day": 3, "series": "3x12", "type": "weight", "category": "legs", "notes": "Empurrar plataforma com pernas, amplitude completa"}
+    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Empurrar cabo para baixo, cotovelos fixos"}
   ]
 }
 
 🎯 CRIE AGORA ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAIS seguindo o plano acima.
 
 📋 ADICIONE TAMBÉM uma explicação NATURAL como personal trainer:
-- "explanation": Explique em 2-3 linhas POR QUE escolheu essa divisão e estratégia
+- "explanation": Explique em 2-3 linhas POR QUE escolheu essa divisão e estratégia${formData.limitations ? ' e como respeitou as limitações/preferências' : ''}
 - "tips": 3 dicas PRÁTICAS e REALISTAS para maximizar resultados
 
 ⚠️ IMPORTANTE:
 - Fale diretamente com o usuário ("você", "seu")
-- Descanso entre treinos: 24-48h (não sempre 48h!)
+- ${formData.limitations ? 'MENCIONE como respeitou as limitações/preferências especificadas' : 'Descanso entre treinos: 24-48h'}
 - Seja específico sobre a estratégia escolhida
 - Dicas práticas, não genéricas
 
@@ -535,12 +541,12 @@ RESPONDA APENAS O JSON COMPLETO:`
             )}
             
             <div className="limitations-section">
-              <label>Limitações ou preferências (opcional):</label>
+              <label>Limitações, preferências ou treino personalizado:</label>
               <textarea
                 value={formData.limitations}
                 onChange={(e) => handleSelect('limitations', e.target.value)}
-                placeholder="Ex: problemas no joelho, não gosto de agachamento..."
-                rows={3}
+                placeholder="Ex: problemas no joelho, não gosto de agachamento, quero focar em ombros, ou cole seu treino completo aqui..."
+                rows={4}
               />
             </div>
           </div>
