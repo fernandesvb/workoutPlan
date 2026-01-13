@@ -213,7 +213,21 @@ RESPONDA APENAS O JSON COMPLETO:`
       for (const file of files) {
         const base64 = await convertToBase64(file)
         
-        const prompt = `Analise esta foto e identifique todos os equipamentos de exercício visíveis. Liste apenas os equipamentos, separados por vírgula. Exemplo: "Halteres, Barra fixa, Esteira, Banco"`
+        const prompt = `Você é um especialista em equipamentos de exercício. Analise esta imagem e identifique TODOS os equipamentos de treino visíveis.
+
+Liste os equipamentos encontrados separados por vírgula, usando nomes em português.
+
+Exemplos de equipamentos:
+- Halteres, Anilhas, Barras
+- Esteira, Bicicleta ergométrica, Elíptico
+- Banco, Rack, Smith machine
+- Cabos, Polias, TRX
+- Kettlebell, Medicine ball
+- Colchonete, Faixas elásticas
+
+Se não conseguir identificar equipamentos específicos, descreva o que vê (ex: "Equipamentos de musculação diversos").
+
+Resposta (apenas a lista):`
         
         const response = await fetch('/api/claude', {
           method: 'POST',
@@ -226,14 +240,20 @@ RESPONDA APENAS O JSON COMPLETO:`
         
         if (response.ok) {
           const result = await response.json()
-          if (result.response) {
-            allEquipments.push(result.response)
+          if (result.response && result.response.trim()) {
+            allEquipments.push(result.response.trim())
+          } else {
+            // Fallback se IA não conseguir identificar
+            allEquipments.push('Equipamentos de treino identificados na imagem')
           }
+        } else {
+          console.error('Erro na resposta da API:', response.status)
+          allEquipments.push('Equipamentos não identificados')
         }
       }
       
-      const combinedEquipments = allEquipments.join(', ')
-      setCustomEquipments(combinedEquipments || 'Não foi possível identificar equipamentos')
+      const combinedEquipments = allEquipments.filter(eq => eq && eq.trim()).join(', ')
+      setCustomEquipments(combinedEquipments || 'Descreva manualmente seus equipamentos no campo acima')
       
     } catch (error) {
       alert('Erro ao analisar fotos. Tente descrever manualmente.')
