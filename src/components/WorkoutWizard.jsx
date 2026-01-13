@@ -214,21 +214,34 @@ RESPONDA APENAS O JSON COMPLETO:`
         const file = files[i]
         const base64 = await convertToBase64(file)
         
-        const prompt = `Você é um especialista em equipamentos de exercício. Analise esta imagem e identifique TODOS os equipamentos de treino visíveis.
+        const prompt = `Você é um especialista em equipamentos de academia e musculação. Analise esta imagem com EXTREMO DETALHAMENTO.
 
-Liste os equipamentos encontrados separados por vírgula, usando nomes em português.
+IDENTIFIQUE ESPECIFICAMENTE:
 
-Exemplos de equipamentos:
-- Halteres, Anilhas, Barras
-- Esteira, Bicicleta ergométrica, Elíptico
-- Banco, Rack, Smith machine
-- Cabos, Polias, TRX
-- Kettlebell, Medicine ball
-- Colchonete, Faixas elásticas
+🏋️ EQUIPAMENTOS DE MUSCULAÇÃO:
+- Supino reto/inclinado/declinado (com ou sem suporte guiado)
+- Leg press 45°, cadeira extensora, cadeira flexora
+- Estações multifuncionais (puxada frontal, remada, peck deck, desenvolvimento)
+- Racks, torres de halteres, suportes
+- Cross over, polias, cabos
 
-Se não conseguir identificar equipamentos específicos, descreva o que vê (ex: "Equipamentos de musculação diversos").
+🏃 EQUIPAMENTOS AERÓBICOS:
+- Esteira, bicicleta ergométrica, elíptico, transport
 
-Resposta (apenas a lista):`
+💪 PESOS E ACESSÓRIOS:
+- Halteres (especificar se é torre/conjunto)
+- Barras (reta, W/EZ, olímpica)
+- Anilhas, kettlebells, medicine balls
+- Bancos (ajustáveis, fixos, abdominais)
+- Colchonetes, faixas elásticas
+
+🔍 SEJA ESPECÍFICO:
+- Não diga apenas "máquina" - identifique o tipo exato
+- Se for aparelho combinado, liste as funções
+- Mencione características visíveis (guiado, ajustável, etc)
+- Se houver marca visível, mencione
+
+RESPOSTA (lista detalhada em português):`
         
         try {
           const response = await fetch('/api/claude', {
