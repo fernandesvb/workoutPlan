@@ -76,7 +76,7 @@ Responda APENAS com JSON:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: image ? 400 : 800,
         messages
       })
