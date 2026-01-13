@@ -95,75 +95,18 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
         return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas | Dia 4: Ombros | Dia 5: Braços | Dia 6: Core/Cardio'
       }
       
-      const prompt = `Você é um personal trainer EXPERT. Crie um programa de treino PROFISSIONAL:
+      const prompt = `Você é um personal trainer. Crie um treino:
 
-🎯 PERFIL DO CLIENTE:
-- Objetivos: ${goalLabels}
-- Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-- Tempo disponível: ${formData.timeAvailable} minutos por sessão
-- Equipamentos: ${equipments.find(e => e.id === formData.equipment)?.label}
-- Limitações/Preferências: ${formData.limitations || 'Nenhuma'}
+Objetivos: ${goalLabels}
+Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
+Tempo: ${formData.timeAvailable}min
+Dias: ${formData.daysPerWeek}
 
-🚨 INSTRUÇÕES CRÍTICAS SOBRE LIMITAÇÕES:
-${formData.limitations ? `
-- RESPEITE ABSOLUTAMENTE as limitações: "${formData.limitations}"
-- Se contém treino completo (ex: exercícios específicos), USE EXATAMENTE esses exercícios
-- Se menciona problemas físicos, EVITE exercícios que possam agravar
-- Se lista exercícios preferidos, PRIORIZE esses exercícios
-- Se especifica músculos a focar, CONCENTRE nesses grupos
-- NUNCA ignore ou substitua o que foi especificado pelo usuário
-` : '- Nenhuma limitação especial'}
-
-📝 PLANO DE TREINO ${formData.limitations && formData.limitations.includes('dia') ? 'PERSONALIZADO' : 'PADRÃO'}:
-${getDayPlan()}
-
-⚠️ REGRAS INEGOCIÁVEIS:
-1. EXATAMENTE ${formData.daysPerWeek} dias diferentes (day: 1, 2, 3, 4...)
-2. CADA dia deve ter EXATAMENTE ${exerciseCount} exercícios DIFERENTES
-3. ${formData.limitations ? 'PRIORIDADE MÁXIMA: Seguir limitações/preferências do usuário' : 'NUNCA repetir o mesmo grupo muscular em dias consecutivos'}
-4. SEMPRE incluir PERNAS em pelo menos 1 dia (exceto se limitações impedem)
-5. Varie os exercícios - NUNCA repetir o mesmo exercício
-6. Use categories: chest, back, legs, shoulders, biceps, triceps, core, glutes, cardio
-
-📊 EXEMPLO PERFEITO (${exerciseCount} exercícios por dia):
+Responda APENAS JSON:
 {
-  "workoutPlan": {
-    "name": "Programa ${goalLabels}",
-    "description": "Treino profissional ${formData.daysPerWeek}x por semana",
-    "duration": "8-12 semanas"
-  },
-  "exercises": [
-    {"name": "Supino Reto", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Deitar no banco, empurrar barra do peito para cima"},
-    {"name": "Desenvolvimento Ombros", "day": 1, "series": "3x12", "type": "weight", "category": "shoulders", "notes": "Empurrar peso acima da cabeça, ombros ativos"},
-    {"name": "Tríceps Pulley", "day": 1, "series": "3x15", "type": "weight", "category": "triceps", "notes": "Empurrar cabo para baixo, cotovelos fixos"}
-  ]
-}
-
-🎯 CRIE AGORA ${parseInt(formData.daysPerWeek) * exerciseCount} EXERCÍCIOS TOTAIS seguindo o plano acima.
-
-📋 ADICIONE TAMBÉM uma explicação NATURAL como personal trainer:
-- "explanation": Explique em 2-3 linhas POR QUE escolheu essa divisão e estratégia${formData.limitations ? ' e como respeitou as limitações/preferências' : ''}
-- "tips": 3 dicas PRÁTICAS e REALISTAS para maximizar resultados
-
-⚠️ IMPORTANTE:
-- Fale diretamente com o usuário ("você", "seu")
-- ${formData.limitations ? 'MENCIONE como respeitou as limitações/preferências especificadas' : 'Descanso entre treinos: 24-48h'}
-- Seja específico sobre a estratégia escolhida
-- Dicas práticas, não genéricas
-
-FORMATO FINAL:
-{
-  "workoutPlan": {
-    "name": "Programa ${goalLabels}",
-    "description": "Treino profissional ${formData.daysPerWeek}x por semana",
-    "duration": "8-12 semanas",
-    "explanation": "Estruturei seu treino focando em...",
-    "tips": ["Descanse 24h entre treinos do mesmo grupo muscular", "Aumente a carga gradualmente", "Mantenha a técnica sempre em primeiro lugar"]
-  },
-  "exercises": [...]
-}
-
-RESPONDA APENAS O JSON COMPLETO:`
+  "workoutPlan": {"name": "Programa", "description": "Treino", "explanation": "Breve", "tips": ["Dica1"]},
+  "exercises": [{"name": "Ex", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Nota"}]
+}`
 
       // Logs removidos para produção
       
