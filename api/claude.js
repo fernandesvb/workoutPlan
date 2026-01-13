@@ -49,10 +49,24 @@ Dia 1 - Peito/Tríceps: Supino Smith, Crucifixo Halteres, Tríceps Polia, Tríce
 Dia 2 - Costas/Bíceps: Remada Máquina, Puxada Frontal, Rosca Direta, Rosca Martelo, Prancha Lateral, Ponte
 Dia 3 - Pernas: Leg Press, Extensora, Flexora, Panturrilha, Bicicleta, Gato-Vaca
 
+EQUIPAMENTOS DISPONÍVEIS NA ACADEMIA:
+- Torre de halteres (2kg-20kg)
+- Estação multifuncional MOVEMENT (puxada frontal, remada sentada, peck deck, desenvolvimento)
+- Cadeira extensora (quadríceps)
+- Cadeira adutora/abdutora
+- Banco abdominal declinado
+- Suporte de supino com rack e barra olímpica
+- Banco ajustável (reto/inclinado/declinado)
+- Colchonetes STARKE
+- Barras retas e faixas elásticas
+
 EXERCÍCIOS EXTRAS ADICIONADOS:
 ${customExercises.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex.day})`).join('\n') : 'Nenhum'}
 
-IMPORTANTE: NÃO sugira exercícios que já existem no treino atual
+IMPORTANTE: 
+- NÃO sugira exercícios que já existem no treino atual
+- Use APENAS equipamentos da lista disponível
+- Mencione qual equipamento usar em cada exercício
 
 SOLICITAÇÃO: "${prompt}"
 
@@ -61,7 +75,7 @@ Sugira 3-4 exercícios distribuídos nos dias apropriados.
 Responda APENAS com JSON:
 {
   "exercises": [
-    {"name": "Nome", "series": "3x12", "type": "weight", "category": "normal", "day": 1, "notes": "Dica"}
+    {"name": "Nome", "series": "3x12", "type": "weight", "category": "normal", "day": 1, "notes": "Equipamento: [nome] - Dica"}
   ],
   "explanation": "Explicação"
 }`
@@ -77,7 +91,7 @@ Responda APENAS com JSON:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5-20250929',
-        max_tokens: image ? 400 : 800,
+        max_tokens: image ? 1000 : 1200,
         messages
       })
     })
