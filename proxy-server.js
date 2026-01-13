@@ -6,25 +6,38 @@ const app = express()
 const PORT = 3001
 
 app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 app.post('/api/claude', async (req, res) => {
   try {
-    const { prompt, workoutData, customExercises } = req.body
+    const { prompt, workoutData, customExercises, image } = req.body
     
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 800,
-        messages: [{
-          role: 'user',
-          content: `Você é um personal trainer brasileiro experiente.
+    let messages
+    
+    if (image) {
+      // Análise de imagem
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: prompt
+          },
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: image.includes('webp') ? 'image/webp' : 'image/jpeg',
+              data: image.split(',')[1]
+            }
+          }
+        ]
+      }]
+    } else {
+      // Prompt normal
+      messages = [{
+        role: 'user',
+        content: `Você é um personal trainer brasileiro experiente.
 
 TREINO ATUAL COMPLETO (30-35 min por dia):
 Dia 1 - Peito/Tríceps: Supino Máquina Smith, Crucifixo Halteres, Tríceps Polia, Tríceps Testa, Prancha Frontal, Superman
@@ -32,7 +45,7 @@ Dia 2 - Costas/Bíceps: Remada Máquina, Puxada Frontal, Rosca Direta, Rosca Mar
 Dia 3 - Pernas: Leg Press, Cadeira Extensora, Cadeira Flexora, Panturrilha, Abdominal Bicicleta, Gato-Vaca
 
 EXERCÍCIOS JÁ ADICIONADOS:
-${customExercises.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex.day}) - ${ex.series}`).join('\n') : 'Nenhum exercício personalizado ainda'}
+${customExercises?.length > 0 ? customExercises.map(ex => `- ${ex.name} (Dia ${ex.day}) - ${ex.series}`).join('\n') : 'Nenhum exercício personalizado ainda'}
 
 SOLICITAÇÃO: "${prompt}"
 
@@ -55,32 +68,35 @@ Responda APENAS com JSON válido:
       "category": "normal",
       "day": 1,
       "notes": "Dica detalhada"
-    },
-    {
-      "name": "Exercício Dia 2",
-      "series": "3x12",
-      "type": "weight",
-      "category": "normal",
-      "day": 2,
-      "notes": "Dica detalhada"
-    },
-    {
-      "name": "Exercício Dia 3",
-      "series": "3x12",
-      "type": "weight",
-      "category": "normal",
-      "day": 3,
-      "notes": "Dica detalhada"
     }
   ],
-  "explanation": "Explicação de como distribuií os exercícios nos 3 dias"
+  "explanation": "Explicação de como distribuí os exercícios nos 3 dias"
 }`
-        }]
+      }]
+    }
+    
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: image ? 300 : 800,
+        messages
       })
     })
 
     const data = await response.json()
     let content = data.content[0].text
+    
+    if (image) {
+      // Para análise de imagem, retornar resposta direta
+      res.json({ response: content })
+      return
+    }
     
     console.log('Resposta bruta:', content)
     
