@@ -157,7 +157,7 @@ Responda APENAS JSON:
         const file = files[i]
         const base64 = await convertToBase64(file)
         
-        const prompt = `Liste equipamentos e exercícios possíveis (formato: Nome - Exercícios)`
+        const prompt = `Equipamento - Exercícios (lista curta)`
 
         try {
           const response = await fetch('/api/claude', {
