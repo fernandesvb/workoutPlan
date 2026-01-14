@@ -160,33 +160,6 @@ Responda APENAS JSON:
         const prompt = `Identifique equipamentos:
 Formato: Nome - Exercícios`
 
-IDENTIFIQUE ESPECIFICAMENTE:
-
-🏋️ EQUIPAMENTOS DE MUSCULAÇÃO:
-- Supino reto/inclinado/declinado (com ou sem suporte guiado)
-- Leg press 45°, cadeira extensora, cadeira flexora
-- Estações multifuncionais (puxada frontal, remada, peck deck, desenvolvimento)
-- Racks, torres de halteres, suportes
-- Cross over, polias, cabos
-
-🏃 EQUIPAMENTOS AERÓBICOS:
-- Esteira, bicicleta ergométrica, elíptico, transport
-
-💪 PESOS E ACESSÓRIOS:
-- Halteres (especificar se é torre/conjunto)
-- Barras (reta, W/EZ, olímpica)
-- Anilhas, kettlebells, medicine balls
-- Bancos (ajustáveis, fixos, abdominais)
-- Colchonetes, faixas elásticas
-
-🔍 SEJA ESPECÍFICO:
-- Não diga apenas "máquina" - identifique o tipo exato
-- Se for aparelho combinado, liste as funções
-- Mencione características visíveis (guiado, ajustável, etc)
-- Se houver marca visível, mencione
-
-RESPOSTA (lista detalhada em português):`
-        
         try {
           const response = await fetch('/api/claude', {
             method: 'POST',
