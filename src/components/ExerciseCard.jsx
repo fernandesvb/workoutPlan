@@ -93,7 +93,7 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
 
   return (
     <div
-      className={`exercise-card ${exercise.category === 'core' ? 'core' : ''} ${isCompleted ? 'completed' : ''}`}
+      className={`exercise-card ${exercise.category === 'core' ? 'core' : ''} ${isCompletedToday ? 'completed' : ''}`}
       data-exercise-id={exercise.id}
       style={{ transition: 'all 0.2s ease' }}
     >
