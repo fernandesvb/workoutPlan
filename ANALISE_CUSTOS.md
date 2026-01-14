@@ -322,6 +322,63 @@ O plano gratuito atual é MUITO generoso e reduz drasticamente a conversão:
 - Receita: R$ 9.960/mês
 - **Diferença: +R$ 13.876/mês (+139%)**
 
+---
+
+### 📊 ANÁLISE DETALHADA DE CUSTOS
+
+**Custos de IA por Plano:**
+
+**Plano Básico (800 usuários):**
+- 1 renovação/mês: $0.007
+- 5 sugestões/mês: $0.053
+- SEM fotos: $0
+- **Custo/usuário: $0.06 (R$ 0,30)**
+- **Custo total: $48 (R$ 240)**
+
+**Plano Premium (800 usuários):**
+- 2 treinos/mês: $0.014
+- 10 fotos (primeira vez): $0.038
+- 10 sugestões/mês: $0.105
+- **Custo/usuário: $0.157 (R$ 0,79)**
+- **Custo total: $126 (R$ 630)**
+
+**Plano Anual (400 usuários):**
+- Mesmo uso que Premium
+- **Custo/usuário: $0.157 (R$ 0,79)**
+- **Custo total: $63 (R$ 315)**
+
+**TOTAL CUSTOS IA: $237/mês (R$ 1.185/mês)**
+
+**Custos de Infraestrutura:**
+- Firebase (2k usuários ativos): R$ 150/mês
+- Vercel Pro: R$ 100/mês
+- **Total Infra: R$ 250/mês**
+
+**CUSTOS TOTAIS: R$ 1.435/mês**
+
+---
+
+### ✅ CUSTOS NÃO AUMENTAM SIGNIFICATIVAMENTE!
+
+**Comparação:**
+
+| Modelo | Assinantes | Custos IA | Custos Infra | Total Custos |
+|--------|------------|-----------|--------------|---------------|
+| **Preço Alto** | 400 | R$ 276 | R$ 150 | R$ 426 |
+| **Híbrido** | 2.000 | R$ 1.185 | R$ 250 | R$ 1.435 |
+
+**Análise:**
+- 5x mais usuários = apenas 3.4x mais custos
+- Custo por usuário MENOR no modelo híbrido
+- Economia de escala compensa
+
+**Margem por Plano:**
+- Básico: R$ 9,90 - R$ 0,30 = **R$ 9,60 (97%)**
+- Premium: R$ 14,90 - R$ 0,79 = **R$ 14,11 (94.7%)**
+- Anual: R$ 9,99 - R$ 0,79 = **R$ 9,20 (92.1%)**
+
+**Todos os planos continuam EXTREMAMENTE lucrativos!**
+
 ### ROI:
 - Investimento inicial: $124 (Apple + Google)
 - Break-even: Mês 1
