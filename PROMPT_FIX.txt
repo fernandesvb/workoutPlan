@@ -1,0 +1,5 @@
+Linha 160 do WorkoutWizard.jsx precisa ser substituída.
+
+SUBSTITUIR TUDO entre linha 160 e linha 187 por:
+        const prompt = `Identifique equipamentos:
+Formato: Nome - Exercícios`
