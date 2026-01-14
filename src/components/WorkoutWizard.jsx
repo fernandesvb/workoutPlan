@@ -172,7 +172,18 @@ Responda APENAS JSON:
           if (response.ok) {
             const result = await response.json()
             if (result.response && result.response.trim() && !result.response.includes('identificados na imagem')) {
-              allEquipments.push(`Foto ${i + 1}: ${result.response.trim()}`)
+              // Remover títulos markdown e texto introdutório
+              let cleanText = result.response.trim()
+              cleanText = cleanText.replace(/^#.*$/gm, '') // Remove títulos markdown
+              cleanText = cleanText.replace(/^\*\*Equipamentos.*\*\*$/gm, '') // Remove "Equipamentos e Exercícios Possíveis"
+              cleanText = cleanText.replace(/^\*\*Exercícios.*\*\*$/gm, '') // Remove "Exercícios possíveis"
+              cleanText = cleanText.split('\n').filter(line => line.trim() && !line.includes('Equipamento') && !line.includes('lista curta')).join('\n').trim()
+              
+              if (cleanText) {
+                allEquipments.push(`Foto ${i + 1}: ${cleanText}`)
+              } else {
+                allEquipments.push(`Foto ${i + 1}: Não foi possível identificar equipamentos`)
+              }
             } else {
               allEquipments.push(`Foto ${i + 1}: Não foi possível identificar equipamentos`)
             }
