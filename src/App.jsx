@@ -138,8 +138,10 @@ function App() {
       if (success) {
         setShowWizard(false)
         
-        // Forçar saída da tela de boas-vindas
-        continueExistingWorkout()
+        // Aguardar um momento e forçar atualização do estado
+        setTimeout(() => {
+          continueExistingWorkout()
+        }, 100)
 
         // Se não estiver logado, mostrar aviso sobre sincronização
         if (!user) {
@@ -147,7 +149,7 @@ function App() {
             type: 'warning',
             message: '✅ Treino criado localmente! Faça login para sincronizar na nuvem e não perder seus dados.'
           })
-          setTimeout(() => setSaveStatus(null), 8000) // 8 segundos para ler
+          setTimeout(() => setSaveStatus(null), 8000)
         }
       } else {
         alert('Erro ao criar treino. Tente novamente.')

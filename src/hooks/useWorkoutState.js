@@ -96,17 +96,20 @@ export function useWorkoutState() {
       }
       localStorage.setItem('workoutMeta', JSON.stringify(workoutMeta))
       
-      // Salvar no Firebase se logado
-      if (typeof window !== 'undefined' && window.saveToFirebase) {
-        window.saveToFirebase()
-      }
-      
+      // Atualizar estado IMEDIATAMENTE
       setWorkoutState({
         hasWorkout: true,
         workoutCreatedAt: now,
         workoutProfile: profile,
         showWelcome: false
       })
+      
+      // Salvar no Firebase se logado (após atualizar estado)
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.saveToFirebase) {
+          window.saveToFirebase()
+        }
+      }, 100)
       
       return true
     } catch (error) {
