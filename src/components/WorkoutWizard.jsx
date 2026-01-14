@@ -148,10 +148,10 @@ Responda JSON:
             tips.push('Como iniciante, foque na técnica antes de aumentar carga')
           }
           if (parseInt(formData.timeAvailable) <= 30) {
-            tips.push('Com ${formData.timeAvailable}min, mantenha descansos curtos (60s) entre séries')
+            tips.push(`Com ${formData.timeAvailable}min, mantenha descansos curtos (60s) entre séries`)
           }
           if (parseInt(formData.daysPerWeek) >= 4) {
-            tips.push('Treinando ${formData.daysPerWeek}x/semana, garanta 7-8h de sono para recuperação')
+            tips.push(`Treinando ${formData.daysPerWeek}x/semana, garanta 7-8h de sono para recuperação`)
           }
           tips.push('Aumente carga progressivamente quando conseguir completar todas as séries')
           
