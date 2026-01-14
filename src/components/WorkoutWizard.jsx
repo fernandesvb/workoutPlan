@@ -180,19 +180,19 @@ Responda APENAS JSON:
               cleanText = cleanText.split('\n').filter(line => line.trim() && !line.includes('Equipamento') && !line.includes('lista curta')).join('\n').trim()
               
               if (cleanText) {
-                allEquipments.push(`Foto ${i + 1}: ${cleanText}`)
+                allEquipments.push(`\n📷 FOTO ${i + 1}:\n${cleanText}\n${'='.repeat(50)}`)
               } else {
-                allEquipments.push(`Foto ${i + 1}: Não foi possível identificar equipamentos`)
+                allEquipments.push(`\n📷 FOTO ${i + 1}:\nNão foi possível identificar equipamentos\n${'='.repeat(50)}`)
               }
             } else {
-              allEquipments.push(`Foto ${i + 1}: Não foi possível identificar equipamentos`)
+              allEquipments.push(`\n📷 FOTO ${i + 1}:\nNão foi possível identificar equipamentos\n${'='.repeat(50)}`)
             }
           } else {
-            allEquipments.push(`Foto ${i + 1}: Erro na análise`)
+            allEquipments.push(`\n📷 FOTO ${i + 1}:\nErro na análise\n${'='.repeat(50)}`)
           }
         } catch (error) {
           console.error('Erro na foto', i + 1, ':', error)
-          allEquipments.push(`Foto ${i + 1}: Erro ao processar - descreva manualmente`)
+          allEquipments.push(`\n📷 FOTO ${i + 1}:\nErro ao processar - descreva manualmente\n${'='.repeat(50)}`)
         }
       }
       
