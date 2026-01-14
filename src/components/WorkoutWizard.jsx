@@ -95,16 +95,22 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
         return 'Dia 1: Peito/Tríceps | Dia 2: Costas/Bíceps | Dia 3: Pernas | Dia 4: Ombros | Dia 5: Braços | Dia 6: Core/Cardio'
       }
       
-      const prompt = `Você é um personal trainer. Crie um treino:
+      const prompt = `Crie treino personalizado:
 
 Objetivos: ${goalLabels}
 Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-Tempo: ${formData.timeAvailable}min
-Dias: ${formData.daysPerWeek}
+Tempo: ${formData.timeAvailable}min/dia
+Frequência: ${formData.daysPerWeek}x/semana
+Limitações: ${formData.limitations || 'Nenhuma'}
 
-Responda APENAS JSON:
+Responda JSON:
 {
-  "workoutPlan": {"name": "Programa", "description": "Treino", "explanation": "Breve", "tips": ["Dica1"]},
+  "workoutPlan": {
+    "name": "Nome do programa",
+    "description": "Descrição curta",
+    "explanation": "Explique POR QUE escolheu essa divisão e COMO ela atende os objetivos específicos do usuário",
+    "tips": ["Dica específica 1 relacionada aos objetivos", "Dica 2 sobre a frequência/tempo", "Dica 3 prática"]
+  },
   "exercises": [{"name": "Ex", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Nota"}]
 }`
 
@@ -126,11 +132,34 @@ Responda APENAS JSON:
         
         // Adicionar explicação manual se IA não gerou
         if (!result.workoutPlan) {
+          const goalText = goalLabels.toLowerCase()
+          let customExplanation = `Criei um treino ${formData.daysPerWeek}x por semana focado em ${goalLabels.toLowerCase()}.`
+          
+          if (goalText.includes('massa')) {
+            customExplanation += ' Priorizei exercícios compostos com volume adequado para hipertrofia.'
+          } else if (goalText.includes('emagrecer') || goalText.includes('definir')) {
+            customExplanation += ' Combinei treino de força com alta intensidade para maximizar queima calórica.'
+          } else if (goalText.includes('condicionamento')) {
+            customExplanation += ' Estruturei com foco em resistência e capacidade cardiovascular.'
+          }
+          
+          const tips = []
+          if (formData.experience === 'beginner') {
+            tips.push('Como iniciante, foque na técnica antes de aumentar carga')
+          }
+          if (parseInt(formData.timeAvailable) <= 30) {
+            tips.push('Com ${formData.timeAvailable}min, mantenha descansos curtos (60s) entre séries')
+          }
+          if (parseInt(formData.daysPerWeek) >= 4) {
+            tips.push('Treinando ${formData.daysPerWeek}x/semana, garanta 7-8h de sono para recuperação')
+          }
+          tips.push('Aumente carga progressivamente quando conseguir completar todas as séries')
+          
           result.workoutPlan = {
             name: `Programa ${goalLabels}`,
-            description: `Treino profissional ${formData.daysPerWeek}x por semana`,
-            explanation: 'Estruturei seu treino com base nos seus objetivos, dividindo os grupos musculares para otimizar recuperação e resultados.',
-            tips: ['Descanse 24h entre treinos do mesmo grupo', 'Aumente carga progressivamente', 'Foque na execução correta']
+            description: `Treino ${formData.experience === 'beginner' ? 'iniciante' : 'avançado'} ${formData.daysPerWeek}x por semana`,
+            explanation: customExplanation,
+            tips
           }
         }
       }
