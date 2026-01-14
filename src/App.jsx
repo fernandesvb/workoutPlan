@@ -127,6 +127,7 @@ function App() {
         type: ex.type || 'weight',
         series: ex.series,
         category: ex.category || 'normal',
+        equipment: ex.equipment || [],
         notes: ex.notes || '',
         created: new Date().toISOString()
       }))
