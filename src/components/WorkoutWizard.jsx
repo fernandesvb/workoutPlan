@@ -157,7 +157,8 @@ Responda APENAS JSON:
         const file = files[i]
         const base64 = await convertToBase64(file)
         
-        const prompt = `Você é um especialista em equipamentos de academia e musculação. Analise esta imagem com EXTREMO DETALHAMENTO.
+        const prompt = `Identifique equipamentos:
+Formato: Nome - Exercícios`
 
 IDENTIFIQUE ESPECIFICAMENTE:
 
