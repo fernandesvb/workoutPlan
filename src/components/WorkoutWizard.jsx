@@ -654,7 +654,12 @@ RESPOSTA (lista detalhada em português):`
                         <div className="day-exercises">
                           {dayExercises.map((ex, idx) => (
                             <div key={idx} className="preview-exercise">
-                              <span className="ex-name">{ex.name}</span>
+                              <div className="ex-info">
+                                <span className="ex-name">{ex.name}</span>
+                                {ex.equipment && ex.equipment.length > 0 && (
+                                  <span className="ex-equipment">🏋️ {ex.equipment.join(' ou ')}</span>
+                                )}
+                              </div>
                               <span className="ex-series">{ex.series}</span>
                             </div>
                           ))}

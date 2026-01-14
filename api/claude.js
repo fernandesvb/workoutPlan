@@ -75,7 +75,7 @@ Sugira 3-4 exercícios distribuídos nos dias apropriados.
 Responda APENAS com JSON:
 {
   "exercises": [
-    {"name": "Nome", "series": "3x12", "type": "weight", "category": "normal", "day": 1, "notes": "Equipamento: [nome] - Dica"}
+    {"name": "Nome", "series": "3x12", "type": "weight", "category": "normal", "day": 1, "equipment": ["Aparelho 1", "Aparelho 2"], "notes": "Dica"}
   ],
   "explanation": "Explicação"
 }`

@@ -130,6 +130,11 @@ export default function ExerciseCard({ exercise, workoutData, onWorkoutChange, o
           </div>
           <div className="exercise-info">
             <div className="exercise-explanation">{getExerciseExplanation(exercise.name)}</div>
+            {exercise.equipment && exercise.equipment.length > 0 && (
+              <div className="exercise-equipment">
+                <strong>🏋️ Equipamento:</strong> {exercise.equipment.join(' ou ')}
+              </div>
+            )}
             {exercise.notes && (
               <div className="exercise-notes">{exercise.notes}</div>
             )}
