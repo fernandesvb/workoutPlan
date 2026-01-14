@@ -91,7 +91,7 @@ Responda APENAS com JSON:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5-20250929',
-        max_tokens: image ? 200 : 400,
+        max_tokens: image ? 250 : 400,
         messages
       })
     })
