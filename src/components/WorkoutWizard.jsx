@@ -99,19 +99,22 @@ export default function WorkoutWizard({ onWorkoutGenerated, onClose }) {
 
 Objetivos: ${goalLabels}
 Experiência: ${experiences.find(e => e.id === formData.experience)?.label}
-Tempo: ${formData.timeAvailable}min/dia
-Frequência: ${formData.daysPerWeek}x/semana
-Limitações: ${formData.limitations || 'Nenhuma'}
+Tempo disponível: ${formData.timeAvailable}min por treino
+Frequência: ${formData.daysPerWeek}x por semana
+Equipamentos: ${formData.equipment === 'custom' ? customEquipments : equipments.find(e => e.id === formData.equipment)?.label}
+${formData.limitations ? `Limitações/Preferências: ${formData.limitations}` : ''}
+
+IMPORTANTE: Considere TODAS as informações acima, especialmente limitações e preferências.
 
 Responda JSON:
 {
   "workoutPlan": {
     "name": "Nome do programa",
-    "description": "Descrição curta",
-    "explanation": "Explique POR QUE escolheu essa divisão e COMO ela atende os objetivos específicos do usuário",
-    "tips": ["Dica específica 1 relacionada aos objetivos", "Dica 2 sobre a frequência/tempo", "Dica 3 prática"]
+    "description": "Descrição",
+    "explanation": "Explique como o treino atende os objetivos E respeita as limitações/preferências informadas",
+    "tips": ["Dica 1 específica", "Dica 2 sobre tempo/frequência", "Dica 3 prática"]
   },
-  "exercises": [{"name": "Ex", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "notes": "Nota"}]
+  "exercises": [{"name": "Ex", "day": 1, "series": "3x12", "type": "weight", "category": "chest", "equipment": ["Aparelho"], "notes": "Nota"}]
 }`
 
       // Logs removidos para produção
@@ -134,6 +137,10 @@ Responda JSON:
         if (!result.workoutPlan) {
           const goalText = goalLabels.toLowerCase()
           let customExplanation = `Criei um treino ${formData.daysPerWeek}x por semana focado em ${goalLabels.toLowerCase()}.`
+          
+          if (formData.limitations) {
+            customExplanation += ` Respeitei suas preferências: ${formData.limitations}.`
+          }
           
           if (goalText.includes('massa')) {
             customExplanation += ' Priorizei exercícios compostos com volume adequado para hipertrofia.'
