@@ -97,17 +97,41 @@
 
 ## 💵 SUGESTÃO DE PRECIFICAÇÃO
 
-### Modelo Freemium
-**Plano Gratuito:**
-- 1 geração de treino
-- Sem análise de fotos
-- 1 sugestão de exercício por mês
-- Custo: $0.017/usuário
+### ⚠️ ANÁLISE DE CONVERSÃO - FREEMIUM ATUAL
+
+**Problema Identificado:**
+O plano gratuito atual é MUITO generoso e reduz drasticamente a conversão:
+
+**Usuário Gratuito recebe:**
+- 1 treino completo personalizado (valor principal do app)
+- 1 sugestão de exercício/mês
+- Todos os recursos de tracking ilimitado
+- Sincronização na nuvem
+
+**Por que não converter para Premium?**
+❌ Já tem o treino principal (90% do valor)
+❌ Pode usar o app indefinidamente sem pagar
+❌ Só precisa de Premium se quiser mudar treino frequentemente
+
+**Taxa de conversão esperada: 1-3% (MUITO BAIXA)**
+
+---
+
+### ✅ FREEMIUM OTIMIZADO (RECOMENDADO)
+
+**Plano Gratuito (Trial de 7 dias):**
+- Acesso COMPLETO por 7 dias
+- Geração de treino ilimitada
+- Análise de fotos ilimitada
+- Sugestões ilimitadas
+- **Após 7 dias: Apenas visualização (sem editar/adicionar)**
 
 **Plano Premium ($4.99/mês ou R$ 24.90/mês):**
 - Treinos ilimitados
 - Análise de fotos ilimitada
 - Sugestões ilimitadas
+- Sincronização na nuvem
+- Histórico completo
 - Custo médio: $0.10/usuário/mês
 - **Margem: 98% ($4.89 lucro)**
 
@@ -116,6 +140,41 @@
 - Economia de 33% vs mensal
 - Custo: $1.20/usuário/ano
 - **Margem: 97% ($38.79 lucro)**
+
+**Taxa de conversão esperada: 8-15% (ALTA)**
+
+---
+
+### 🎯 ALTERNATIVA: FREEMIUM LIMITADO
+
+**Plano Gratuito:**
+- 1 geração de treino (sem renovar)
+- SEM análise de fotos (manual apenas)
+- SEM sugestões de IA
+- Tracking básico (sem gráficos/estatísticas)
+- Sincronização apenas local
+
+**Plano Premium ($4.99/mês):**
+- Renovação de treino ilimitada
+- Análise de fotos com IA
+- Sugestões personalizadas
+- Gráficos e estatísticas avançadas
+- Sincronização na nuvem
+- Backup automático
+
+**Taxa de conversão esperada: 5-10% (MÉDIA)**
+
+---
+
+### 📊 COMPARAÇÃO DE MODELOS
+
+| Modelo | Conversão | 10k usuários | Receita Mensal | Lucro Mensal |
+|--------|-----------|--------------|----------------|---------------|
+| **Freemium Atual** | 2% | 200 Premium | $998 | $878 |
+| **Trial 7 dias** | 12% | 1.200 Premium | $5.988 | $5.868 |
+| **Freemium Limitado** | 7% | 700 Premium | $3.493 | $3.373 |
+
+**Diferença Trial vs Atual: +$5.000/mês (+568%)**
 
 ### Modelo Único (Compra Única)
 **Preço: $19.99 ou R$ 99.90**
@@ -128,18 +187,25 @@
 
 ## 🎯 RECOMENDAÇÃO FINAL
 
-### Estratégia Híbrida:
-1. **Freemium** para aquisição de usuários
-2. **Premium Mensal** ($4.99) para usuários ativos
-3. **Premium Anual** ($39.99) com desconto para fidelização
+### 🏆 Estratégia TRIAL de 7 dias (MELHOR OPÇÃO):
+1. **Trial gratuito de 7 dias** com acesso COMPLETO
+2. **Premium Mensal** ($4.99) após trial
+3. **Premium Anual** ($39.99) com 33% desconto
+4. **Paywall suave**: Após 7 dias, usuário pode VER mas não EDITAR
+
+**Por que funciona:**
+✅ Usuário experimenta TODO o valor do app
+✅ Cria hábito em 7 dias (psicologia)
+✅ Quando bloquear, já está engajado
+✅ Conversão 6x maior que freemium tradicional
 
 ### Projeção Realista (12 meses):
 - 10.000 downloads
-- 5% conversão Premium = 500 assinantes
-- Receita: 500 × $4.99 = $2.495/mês
-- Custos IA: $29/mês (cenário médio)
-- Custos Infra: $70/mês (Firebase + Vercel)
-- **Lucro Líquido: $2.396/mês (R$ 11.980/mês)**
+- **12% conversão Premium** = 1.200 assinantes
+- Receita: 1.200 × $4.99 = **$5.988/mês**
+- Custos IA: $70/mês
+- Custos Infra: $70/mês
+- **Lucro Líquido: $5.848/mês (R$ 29.240/mês)**
 
 ### ROI:
 - Investimento inicial: $124 (Apple + Google)
