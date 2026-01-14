@@ -160,6 +160,10 @@ function App() {
   }
 
   const handleCreateNew = () => {
+    if (!user) {
+      alert('🔐 Faça login para criar seu treino personalizado e salvar na nuvem!')
+      return
+    }
     setShowWizard(true)
   }
 
@@ -248,6 +252,10 @@ function App() {
   }, [customExercises.length]) // Usar .length específico para evitar loops
 
   const handleRenewWorkout = () => {
+    if (!user) {
+      alert('🔐 Faça login para renovar seu treino!')
+      return
+    }
     setShowWizard(true)
   }
 
