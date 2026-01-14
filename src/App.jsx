@@ -137,6 +137,9 @@ function App() {
       
       if (success) {
         setShowWizard(false)
+        
+        // Forçar saída da tela de boas-vindas
+        continueExistingWorkout()
 
         // Se não estiver logado, mostrar aviso sobre sincronização
         if (!user) {
@@ -146,8 +149,6 @@ function App() {
           })
           setTimeout(() => setSaveStatus(null), 8000) // 8 segundos para ler
         }
-
-        // Não fazer reload - apenas continuar para o treino
       } else {
         alert('Erro ao criar treino. Tente novamente.')
       }
