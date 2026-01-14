@@ -199,13 +199,14 @@ O plano gratuito atual é MUITO generoso e reduz drasticamente a conversão:
 ✅ Quando bloquear, já está engajado
 ✅ Conversão 6x maior que freemium tradicional
 
-### Projeção Realista (12 meses):
+### Projeção Realista COM PROTEÇÕES (12 meses):
 - 10.000 downloads
 - **12% conversão Premium** = 1.200 assinantes
 - Receita: 1.200 × $4.99 = **$5.988/mês**
-- Custos IA: $70/mês
+- Custos IA (com rate limiting): $180/mês (média $0.15/usuário)
 - Custos Infra: $70/mês
-- **Lucro Líquido: $5.848/mês (R$ 29.240/mês)**
+- **Lucro Líquido: $5.738/mês (R$ 28.690/mês)**
+- **Margem: 95.8%**
 
 ### ROI:
 - Investimento inicial: $124 (Apple + Google)
@@ -215,6 +216,73 @@ O plano gratuito atual é MUITO generoso e reduz drasticamente a conversão:
 ---
 
 ## ⚡ OTIMIZAÇÕES PARA REDUZIR CUSTOS
+
+### ⚠️ RISCO: CUSTO PODE AUMENTAR?
+
+**SIM! Cenários de Abuso:**
+
+**Usuário "Power User" (5% dos usuários):**
+- Renova treino 10x/mês: $0.07
+- Analisa 50 fotos/mês: $0.19
+- Pede 30 sugestões/mês: $0.32
+- **TOTAL: $0.58/mês (5.8x o custo médio)**
+
+**Usuário "Abusador" (1% dos usuários):**
+- Renova treino 50x/mês: $0.35
+- Analisa 200 fotos/mês: $0.75
+- Pede 100 sugestões/mês: $1.05
+- **TOTAL: $2.15/mês (21.5x o custo médio)**
+
+**Impacto em 1.000 Premium:**
+- 940 normais: $94
+- 50 power users: $29
+- 10 abusadores: $21.50
+- **TOTAL: $144.50 vs $100 esperado (+44%)**
+
+---
+
+### 🛡️ PROTEÇÕES NECESSÁRIAS
+
+**1. Rate Limiting (ESSENCIAL):**
+```javascript
+// Limites diários por usuário Premium
+const LIMITS = {
+  workoutGeneration: 3,      // 3 treinos/dia
+  photoAnalysis: 10,         // 10 fotos/dia
+  exerciseSuggestions: 10    // 10 sugestões/dia
+}
+```
+
+**Custo máximo com limites:**
+- 3 treinos/dia × 30 dias = 90 treinos/mês = $0.63
+- 10 fotos/dia × 30 dias = 300 fotos/mês = $1.13
+- 10 sugestões/dia × 30 dias = 300 sugestões/mês = $3.15
+- **MÁXIMO: $4.91/usuário/mês**
+
+**Margem com abuso máximo: $4.99 - $4.91 = $0.08 (1.6%)**
+
+**2. Limites Recomendados (Balanceados):**
+```javascript
+const BALANCED_LIMITS = {
+  workoutGeneration: 2,      // 2 treinos/dia (60/mês)
+  photoAnalysis: 5,          // 5 fotos/dia (150/mês)
+  exerciseSuggestions: 5     // 5 sugestões/dia (150/mês)
+}
+```
+
+**Custo máximo balanceado:**
+- 60 treinos/mês = $0.42
+- 150 fotos/mês = $0.56
+- 150 sugestões/mês = $1.58
+- **MÁXIMO: $2.56/usuário/mês**
+- **Margem: $4.99 - $2.56 = $2.43 (48.7%)**
+
+**3. Alertas de Custo:**
+- Monitorar usuários que ultrapassam $1/mês
+- Email automático quando custo > $2/usuário
+- Bloquear temporariamente se > $5/usuário
+
+---
 
 ### Já Implementadas:
 ✅ max_tokens otimizado (450 vs 1000+)
