@@ -8,50 +8,61 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
     {
       id: 'basic',
       name: 'Básico',
-      price: 'Grátis',
-      period: '',
-      description: 'Plano gratuito com recursos essenciais',
+      price: 'R$ 9,90',
+      period: '/mês',
+      description: 'Porta de entrada para treinos com IA',
       features: [
-        '3 treinos personalizados',
-        'IA básica para exercícios',
+        '1 renovação de treino/mês',
+        '5 sugestões de IA/mês',
+        'Histórico de 30 dias',
+        'Backup na nuvem',
         'Cronômetro de descanso',
-        'Progresso básico (7 dias)',
-        'Gamificação básica',
-        'Suporte por email'
+        'Progresso básico'
       ],
-      limitations: [
-        'Máximo 3 treinos',
-        'Histórico limitado a 7 dias',
-        'Sem backup na nuvem',
-        'Análises limitadas'
-      ],
-      buttonText: 'Plano Atual',
-      buttonClass: 'btn-secondary',
-      disabled: true
+      buttonText: 'Assinar Básico',
+      buttonClass: 'btn-secondary'
     },
     {
       id: 'premium',
       name: 'Premium',
-      price: 'R$ 9,90',
+      price: 'R$ 14,90',
       period: '/mês',
       description: 'Tudo que você precisa para treinar sério',
       popular: true,
       features: [
-        '✨ Treinos ilimitados com IA',
-        '🤖 IA avançada e personalizada',
-        '📊 Histórico completo ilimitado',
-        '📈 Análise de progresso detalhada',
-        '☁️ Backup automático na nuvem',
-        '🎯 Dashboard de performance',
-        '⏱️ Múltiplos cronômetros',
-        '📉 Gráficos de evolução',
-        '🏆 Sistema de conquistas completo',
-        '💬 Suporte prioritário',
-        '🚫 Sem anúncios'
+        '2 treinos novos/semana',
+        '10 fotos de equipamentos/treino',
+        '3 sugestões de IA/dia',
+        'Histórico ilimitado',
+        'Backup automático na nuvem',
+        'Análise de progresso avançada',
+        'Gráficos de evolução',
+        'Sistema de conquistas completo'
       ],
       buttonText: 'Assinar Premium',
       buttonClass: 'btn-primary',
-      savings: 'Melhor custo-benefício'
+      savings: 'Mais Popular'
+    },
+    {
+      id: 'annual',
+      name: 'Anual',
+      price: 'R$ 119,90',
+      period: '/ano',
+      pricePerMonth: 'R$ 9,99/mês',
+      description: 'Melhor custo-benefício',
+      features: [
+        'Todos recursos Premium',
+        '2 treinos novos/semana',
+        '10 fotos de equipamentos/treino',
+        '3 sugestões de IA/dia',
+        'Histórico ilimitado',
+        'Suporte prioritário',
+        'Economia de 33%',
+        'Menos que 1 mês de academia'
+      ],
+      buttonText: 'Assinar Anual',
+      buttonClass: 'btn-primary',
+      savings: 'Economize R$ 58,90'
     }
   ]
 
@@ -66,8 +77,8 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
           <div className="premium-title">
             <Crown className="premium-icon" />
             <div>
-              <h2>Upgrade para Premium</h2>
-              <p>Treinos ilimitados por apenas R$ 9,90/mês</p>
+              <h2>Escolha seu Plano</h2>
+              <p>Treinos personalizados com IA a partir de R$ 9,90/mês</p>
             </div>
           </div>
           <button className="modal-close" onClick={onClose}>
@@ -130,6 +141,9 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
                     <span className="price">{plan.price}</span>
                     <span className="period">{plan.period}</span>
                   </div>
+                  {plan.pricePerMonth && (
+                    <div className="plan-price-detail">{plan.pricePerMonth}</div>
+                  )}
                   <p className="plan-description">{plan.description}</p>
                 </div>
 
@@ -143,19 +157,6 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
                     ))}
                   </ul>
 
-                  {plan.limitations && (
-                    <div className="plan-limitations">
-                      <h5>Limitações:</h5>
-                      <ul>
-                        {plan.limitations.map((limitation, index) => (
-                          <li key={index} className="limitation">
-                            <X size={16} className="x-icon" />
-                            {limitation}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
 
                 <button
@@ -190,10 +191,9 @@ export default function PremiumUpgrade({ show, onClose, onUpgrade }) {
             <button
               className="btn-primary large"
               onClick={() => onUpgrade(selectedPlan)}
-              disabled={selectedPlan === 'basic'}
             >
               <Crown size={20} />
-              Fazer Upgrade Agora
+              Assinar {selectedPlanData?.name}
             </button>
           </div>
         </div>
