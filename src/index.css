@@ -5108,3 +5108,8 @@ button:disabled {
   background: #dc2626;
   transform: scale(1.1);
 }
+
+.custom-equipment-section textarea {
+  min-height: 150px !important;
+  max-height: 400px;
+}
