@@ -15,7 +15,8 @@
 - **Custo**: $0.00375 por foto × 5 = $0.01875
 
 ### 3. **Sugestões de Exercícios Extras** (AddExerciseModal)
-- **Quando**: Usuário pede sugestões de exercícios via IA
+- **Quando**: Usuário clica em "Novo Exercício com IA" e pede sugestões
+- **Exemplo**: "Quero exercícios para ombros", "Preciso de mais core"
 - **Frequência**: 2-5x por usuário (média 3)
 - **Tokens**: ~300 input + 450 output = 750 tokens
 - **Custo**: $0.0105 por sugestão × 3 = $0.0315
@@ -203,10 +204,10 @@ O plano gratuito atual é MUITO generoso e reduz drasticamente a conversão:
 - 10.000 downloads
 - **12% conversão Premium** = 1.200 assinantes
 - Receita: 1.200 × $4.99 = **$5.988/mês**
-- Custos IA (com rate limiting): $180/mês (média $0.15/usuário)
+- Custos IA (média real): $165/mês ($0.138/usuário)
 - Custos Infra: $70/mês
-- **Lucro Líquido: $5.738/mês (R$ 28.690/mês)**
-- **Margem: 95.8%**
+- **Lucro Líquido: $5.753/mês (R$ 28.765/mês)**
+- **Margem: 96.1%**
 
 ### ROI:
 - Investimento inicial: $124 (Apple + Google)
@@ -261,21 +262,33 @@ const LIMITS = {
 
 **Margem com abuso máximo: $4.99 - $4.91 = $0.08 (1.6%)**
 
-**2. Limites Recomendados (Balanceados):**
+**2. Limites Recomendados (Balanceados e Realistas):**
 ```javascript
 const BALANCED_LIMITS = {
-  workoutGeneration: 2,      // 2 treinos/dia (60/mês)
-  photoAnalysis: 5,          // 5 fotos/dia (150/mês)
-  exerciseSuggestions: 5     // 5 sugestões/dia (150/mês)
+  workoutGeneration: 2,      // 2 treinos/SEMANA (8/mês)
+  photoAnalysis: 10,         // 10 fotos/TREINO (uma única vez)
+  exerciseSuggestions: 3     // 3 sugestões/DIA (90/mês)
 }
 ```
 
+**Justificativa:**
+- **2 treinos/semana**: Usuário normal renova treino a cada 4-8 semanas
+- **10 fotos/treino**: Suficiente para fotografar toda academia (uso único)
+- **3 sugestões/dia**: Permite experimentar e ajustar treino gradualmente
+
 **Custo máximo balanceado:**
-- 60 treinos/mês = $0.42
-- 150 fotos/mês = $0.56
-- 150 sugestões/mês = $1.58
-- **MÁXIMO: $2.56/usuário/mês**
-- **Margem: $4.99 - $2.56 = $2.43 (48.7%)**
+- 8 treinos/mês = $0.056
+- 10 fotos (uso único) = $0.038
+- 90 sugestões/mês = $0.945
+- **MÁXIMO: $1.04/usuário/mês**
+- **Margem: $4.99 - $1.04 = $3.95 (79.2%)**
+
+**Custo médio real (uso normal):**
+- 2 treinos/mês = $0.014
+- 5 fotos (primeira vez) = $0.019
+- 10 sugestões/mês = $0.105
+- **MÉDIO: $0.138/usuário/mês**
+- **Margem: $4.99 - $0.138 = $4.85 (97.2%)**
 
 **3. Alertas de Custo:**
 - Monitorar usuários que ultrapassam $1/mês
