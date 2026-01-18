@@ -587,7 +587,7 @@ Formato obrigatório: **Nome do Equipamento** - exercício1, exercício2, exerc�
         {step === 6 && (
           <div className="wizard-step">
             <div className="step-icon"><Sparkles size={32} /></div>
-            <h3>Seu Treino Personalizado</h3>
+            <h3>Preview do Seu Treino</h3>
             {previewWorkout ? (
               <div className="workout-preview">
                 <div className="preview-header">
