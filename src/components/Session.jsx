@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { DEFAULT_SETS, WORKOUT_BY_ID, exercisesOf } from '../data/workouts'
+import { WORKOUT_BY_ID, exercisesOf, setsOf } from '../data/workouts'
 import ExerciseItem from './ExerciseItem'
 import RestTimer from './RestTimer'
 
@@ -16,21 +16,21 @@ export default function Session({
   const [expandedId, setExpandedId] = useState(() => all[0]?.id ?? null)
   const [restStartedAt, setRestStartedAt] = useState(null)
 
-  const setsOf = (id) => active.entries[id] ?? []
-  const isComplete = (id) => setsOf(id).filter(Boolean).length >= DEFAULT_SETS
+  const loggedOf = (id) => active.entries[id] ?? []
+  const isComplete = (ex) => loggedOf(ex.id).filter(Boolean).length >= setsOf(ex)
 
-  const totalSets = all.length * DEFAULT_SETS
-  const doneSets = all.reduce((n, e) => n + setsOf(e.id).filter(Boolean).length, 0)
+  const totalSets = all.reduce((n, e) => n + setsOf(e), 0)
+  const doneSets = all.reduce((n, e) => n + loggedOf(e.id).filter(Boolean).length, 0)
   const pct = totalSets ? Math.round((doneSets / totalSets) * 100) : 0
 
-  const handleLogSet = (exerciseId, index, payload) => {
-    onLogSet(exerciseId, index, payload)
+  const handleLogSet = (exercise, index, payload) => {
+    onLogSet(exercise.id, index, payload)
     setRestStartedAt(Date.now())
 
     // Se essa foi a última série, já abre o próximo exercício pendente.
-    const after = setsOf(exerciseId).filter(Boolean).length + 1
-    if (after >= DEFAULT_SETS) {
-      const next = all.find((e) => e.id !== exerciseId && !isComplete(e.id))
+    const after = loggedOf(exercise.id).filter(Boolean).length + 1
+    if (after >= setsOf(exercise)) {
+      const next = all.find((e) => e.id !== exercise.id && !isComplete(e))
       setExpandedId(next ? next.id : null)
     }
   }
@@ -64,11 +64,11 @@ export default function Session({
             <ExerciseItem
               key={ex.id}
               exercise={ex}
-              sets={setsOf(ex.id)}
+              sets={loggedOf(ex.id)}
               lastPerformance={lastPerformance(ex.id)}
               expanded={expandedId === ex.id}
               onToggle={() => setExpandedId(expandedId === ex.id ? null : ex.id)}
-              onLogSet={(i, payload) => handleLogSet(ex.id, i, payload)}
+              onLogSet={(i, payload) => handleLogSet(ex, i, payload)}
               onClearSet={(i) => onClearSet(ex.id, i)}
             />
           ))}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Check, Minus, Plus, TrendingUp } from 'lucide-react'
-import { DEFAULT_REPS, DEFAULT_SETS } from '../data/workouts'
+import { repsOf, setsOf } from '../data/workouts'
 
 const STEP = 2.5
 
@@ -28,8 +28,10 @@ export default function ExerciseItem({
   onLogSet,
   onClearSet,
 }) {
+  const totalSets = setsOf(exercise)
+  const reps = repsOf(exercise)
   const filled = sets.filter(Boolean)
-  const isDone = filled.length >= DEFAULT_SETS
+  const isDone = filled.length >= totalSets
 
   // Peso corrente: continua de onde parou na sessão, senão repete a última vez.
   const [weight, setWeight] = useState(() => {
@@ -49,7 +51,7 @@ export default function ExerciseItem({
     if (sets[index]) {
       onClearSet(index)
     } else {
-      onLogSet(index, { weight, reps: DEFAULT_REPS })
+      onLogSet(index, { weight, reps })
     }
   }
 
@@ -64,7 +66,7 @@ export default function ExerciseItem({
           {exercise.hint && <span className="hint">{exercise.hint}</span>}
         </span>
         <span className="exercise-summary">
-          {filled.length}/{DEFAULT_SETS}
+          {filled.length}/{totalSets}
         </span>
       </button>
 
@@ -97,7 +99,7 @@ export default function ExerciseItem({
                 onFocus={(e) => e.target.select()}
                 aria-label="Carga em quilos"
               />
-              <span className="unit">kg · {DEFAULT_REPS} reps</span>
+              <span className="unit">kg · {reps} reps</span>
             </div>
             <button
               className="step-btn"
@@ -109,7 +111,7 @@ export default function ExerciseItem({
           </div>
 
           <div className="sets-row">
-            {Array.from({ length: DEFAULT_SETS }, (_, i) => {
+            {Array.from({ length: totalSets }, (_, i) => {
               const set = sets[i]
               return (
                 <button

@@ -1,14 +1,26 @@
-// Plano fixo do Vinicius — 4 treinos, 5 repetições por série.
+// Plano fixo do Vinicius — 4 treinos rodados em loop (sem dia fixo da semana).
 // Para mudar exercícios, séries ou repetições, edite apenas este arquivo.
+//
+// Cada exercício aceita `sets` e `reps` próprios; sem isso, usa o padrão abaixo.
+// Abdominal e lombar fogem das 5 reps de propósito: são musculatura de
+// resistência, treinada em faixa mais alta.
 
 export const DEFAULT_SETS = 4
 export const DEFAULT_REPS = 5
+
+/** Séries/repetições efetivas de um exercício. */
+export function setsOf(exercise) {
+  return exercise.sets ?? DEFAULT_SETS
+}
+export function repsOf(exercise) {
+  return exercise.reps ?? DEFAULT_REPS
+}
 
 export const WORKOUTS = [
   {
     id: 1,
     name: 'Treino 1',
-    focus: 'Trapézio · Ombros · Pernas',
+    focus: 'Trapézio · Ombros · Pernas · Abdômen',
     groups: [
       {
         name: 'Trapézio',
@@ -31,6 +43,12 @@ export const WORKOUTS = [
         exercises: [
           { id: 't1-per-1', name: 'Cadeira Abdutora', hint: 'abertura de pernas' },
           { id: 't1-per-2', name: 'Cadeira Adutora', hint: 'fechamento de pernas' },
+        ],
+      },
+      {
+        name: 'Abdômen',
+        exercises: [
+          { id: 't1-abd-1', name: 'Abdominal Máquina', sets: 3, reps: 12 },
         ],
       },
     ],
@@ -59,7 +77,13 @@ export const WORKOUTS = [
       {
         name: 'Lombar',
         exercises: [
-          { id: 't2-lom-1', name: 'Banco Romano', hint: 'extensão lombar' },
+          {
+            id: 't2-lom-1',
+            name: 'Banco Romano',
+            hint: 'extensão lombar',
+            sets: 3,
+            reps: 12,
+          },
         ],
       },
     ],
@@ -67,7 +91,7 @@ export const WORKOUTS = [
   {
     id: 3,
     name: 'Treino 3',
-    focus: 'Pernas completo',
+    focus: 'Pernas completo · Abdômen',
     groups: [
       {
         name: 'Pernas',
@@ -79,12 +103,18 @@ export const WORKOUTS = [
           { id: 't3-per-5', name: 'Panturrilha' },
         ],
       },
+      {
+        name: 'Abdômen',
+        exercises: [
+          { id: 't3-abd-1', name: 'Abdominal Máquina', sets: 3, reps: 12 },
+        ],
+      },
     ],
   },
   {
     id: 4,
     name: 'Treino 4',
-    focus: 'Peito · Bíceps · Lombar',
+    focus: 'Peito · Tríceps · Lombar',
     groups: [
       {
         name: 'Peito',
@@ -95,17 +125,23 @@ export const WORKOUTS = [
         ],
       },
       {
-        name: 'Bíceps',
+        name: 'Tríceps',
         exercises: [
-          { id: 't4-bic-1', name: 'Rosca Scott' },
-          { id: 't4-bic-2', name: 'Rosca Concentrada' },
-          { id: 't4-bic-3', name: 'Rosca Inversa' },
+          { id: 't4-tri-1', name: 'Tríceps Testa' },
+          { id: 't4-tri-2', name: 'Tríceps Corda' },
+          { id: 't4-tri-3', name: 'Tríceps Francês' },
         ],
       },
       {
         name: 'Lombar',
         exercises: [
-          { id: 't4-lom-1', name: 'Banco Romano', hint: 'extensão lombar' },
+          {
+            id: 't4-lom-1',
+            name: 'Banco Romano',
+            hint: 'extensão lombar',
+            sets: 3,
+            reps: 12,
+          },
         ],
       },
     ],

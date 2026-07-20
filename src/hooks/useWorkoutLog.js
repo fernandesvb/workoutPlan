@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { DEFAULT_REPS, DEFAULT_SETS } from '../data/workouts'
 
 const STORAGE_KEY = 'treino.v2'
 
@@ -178,6 +177,5 @@ export function useWorkoutLog() {
     suggestedWorkoutId,
     exportBackup,
     importBackup,
-    defaults: { sets: DEFAULT_SETS, reps: DEFAULT_REPS },
   }
 }
