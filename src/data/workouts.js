@@ -1,9 +1,10 @@
 // Plano fixo do Vinicius — 4 treinos rodados em loop (sem dia fixo da semana).
 // Para mudar exercícios, séries ou a corrida, edite apenas este arquivo.
 //
-// Metodologia: peso baixo, TODAS as séries até a falha. Por isso não existe
-// número de repetições alvo — o que se registra é quantas saíram de verdade,
-// e é esse número (não a carga) que mostra a evolução.
+// Metodologia: peso baixo, séries até a falha. Por isso não existe número de
+// repetições alvo — o que se registra é quantas saíram de verdade, e é esse
+// número (não a carga) que mostra a evolução.
+// Exceção: o Stiff carrega a coluna, então para 2-3 reps antes da falha.
 //
 // A corrida entra no fim de cada treino: fazer antes de puxar ferro derruba
 // a força e atrapalha o estímulo de hipertrofia.
@@ -35,7 +36,7 @@ export const WORKOUTS = [
   {
     id: 1,
     name: 'Treino 1',
-    focus: 'Trapézio · Ombros · Pernas · Abdômen',
+    focus: 'Trapézio · Ombros · Glúteo · Abdômen',
     groups: [
       {
         name: 'Trapézio',
@@ -54,10 +55,11 @@ export const WORKOUTS = [
         ],
       },
       {
-        name: 'Pernas',
+        name: 'Pernas e Glúteo',
         exercises: [
           { id: 't1-per-1', name: 'Cadeira Abdutora', hint: 'abertura de pernas' },
           { id: 't1-per-2', name: 'Cadeira Adutora', hint: 'fechamento de pernas' },
+          { id: 't1-per-3', name: 'Elevação Pélvica', hint: 'glúteo' },
         ],
       },
       {
@@ -107,6 +109,10 @@ export const WORKOUTS = [
         exercises: [
           { id: 't3-per-1', name: 'Leg Press' },
           { id: 't3-per-2', name: 'Agachamento no Aparelho' },
+          // Stiff cedo, enquanto a lombar está descansada. Único exercício do
+          // plano que NÃO vai à falha: falhar num hinge com carga na coluna é
+          // onde a forma quebra e as costas se machucam.
+          { id: 't3-per-6', name: 'Stiff', hint: 'posterior · não ir à falha', sets: 3 },
           { id: 't3-per-3', name: 'Cadeira Extensora' },
           { id: 't3-per-4', name: 'Mesa Flexora' },
           { id: 't3-per-5', name: 'Panturrilha' },
