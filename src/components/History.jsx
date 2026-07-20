@@ -1,17 +1,23 @@
 import { Trash2 } from 'lucide-react'
-import { WORKOUT_BY_ID } from '../data/workouts'
+import { EXERCISE_INDEX, WORKOUT_BY_ID } from '../data/workouts'
 
 function sessionStats(session) {
   let sets = 0
   let volume = 0
-  for (const list of Object.values(session.entries)) {
-    for (const set of list) {
-      if (!set) continue
-      sets += 1
-      volume += (set.weight || 0) * (set.reps || 0)
+  let cardio = null
+  for (const [exerciseId, list] of Object.entries(session.entries)) {
+    const isCardio = EXERCISE_INDEX[exerciseId]?.type === 'cardio'
+    for (const entry of list) {
+      if (!entry) continue
+      if (isCardio) {
+        cardio = entry
+      } else {
+        sets += 1
+        volume += (entry.weight || 0) * (entry.reps || 0)
+      }
     }
   }
-  return { sets, volume }
+  return { sets, volume, cardio }
 }
 
 export default function History({ sessions, onDelete }) {
@@ -34,7 +40,7 @@ export default function History({ sessions, onDelete }) {
       </p>
       {sessions.map((s) => {
         const workout = WORKOUT_BY_ID[s.workoutId]
-        const { sets, volume } = sessionStats(s)
+        const { sets, volume, cardio } = sessionStats(s)
         const date = new Date(s.finishedAt)
         return (
           <div key={s.id} className="history-item">
@@ -50,6 +56,7 @@ export default function History({ sessions, onDelete }) {
                   year: '2-digit',
                 })}{' '}
                 · {sets} séries · {volume.toLocaleString('pt-BR')} kg
+                {cardio ? ` · ${cardio.minutes} min corrida` : ''}
               </div>
             </span>
             <button

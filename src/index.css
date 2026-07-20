@@ -381,18 +381,34 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-/* Stepper de carga */
+/* Steppers (carga + reps, ou duração + batimentos) */
 
-.weight-control {
+.controls-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 14px;
   margin-bottom: 16px;
 }
 
+.control-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .step-btn {
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
@@ -408,18 +424,18 @@ h3 {
   transform: scale(0.94);
 }
 
-.weight-display {
+.control-value {
   flex: 1;
   text-align: center;
   min-width: 0;
 }
 
-.weight-display input {
+.control-value input {
   width: 100%;
   background: none;
   border: none;
   text-align: center;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
@@ -428,20 +444,29 @@ h3 {
   -moz-appearance: textfield;
 }
 
-.weight-display input::-webkit-outer-spin-button,
-.weight-display input::-webkit-inner-spin-button {
+.control-value input::-webkit-outer-spin-button,
+.control-value input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.weight-display .unit {
-  font-size: 12px;
+.control-value .unit {
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-dim);
   display: block;
   margin-top: -2px;
+}
+
+.warn {
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  margin: 0 0 14px;
 }
 
 /* Séries */
@@ -475,10 +500,18 @@ h3 {
 }
 
 .set-chip .val {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
+  line-height: 1.1;
+}
+
+.set-chip .sub-val {
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
 }
 
 .set-chip:active {

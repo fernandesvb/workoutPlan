@@ -1,19 +1,34 @@
 // Plano fixo do Vinicius — 4 treinos rodados em loop (sem dia fixo da semana).
-// Para mudar exercícios, séries ou repetições, edite apenas este arquivo.
+// Para mudar exercícios, séries ou a corrida, edite apenas este arquivo.
 //
-// Cada exercício aceita `sets` e `reps` próprios; sem isso, usa o padrão abaixo.
-// Abdominal e lombar fogem das 5 reps de propósito: são musculatura de
-// resistência, treinada em faixa mais alta.
+// Metodologia: peso baixo, TODAS as séries até a falha. Por isso não existe
+// número de repetições alvo — o que se registra é quantas saíram de verdade,
+// e é esse número (não a carga) que mostra a evolução.
+//
+// A corrida entra no fim de cada treino: fazer antes de puxar ferro derruba
+// a força e atrapalha o estímulo de hipertrofia.
 
 export const DEFAULT_SETS = 4
-export const DEFAULT_REPS = 5
 
-/** Séries/repetições efetivas de um exercício. */
+/** Séries de um exercício. A corrida é um bloco único. */
 export function setsOf(exercise) {
+  if (exercise.type === 'cardio') return 1
   return exercise.sets ?? DEFAULT_SETS
 }
-export function repsOf(exercise) {
-  return exercise.reps ?? DEFAULT_REPS
+
+/** Bloco de corrida, idêntico nos 4 treinos. */
+const CARDIO = {
+  name: 'Corrida',
+  exercises: [
+    {
+      id: 'cardio-corrida',
+      name: 'Corrida na Esteira',
+      type: 'cardio',
+      minutes: 20,
+      hr: [130, 140],
+      speed: [5, 6],
+    },
+  ],
 }
 
 export const WORKOUTS = [
@@ -47,10 +62,9 @@ export const WORKOUTS = [
       },
       {
         name: 'Abdômen',
-        exercises: [
-          { id: 't1-abd-1', name: 'Abdominal Máquina', sets: 3, reps: 12 },
-        ],
+        exercises: [{ id: 't1-abd-1', name: 'Abdominal Máquina', sets: 3 }],
       },
+      CARDIO,
     ],
   },
   {
@@ -77,15 +91,10 @@ export const WORKOUTS = [
       {
         name: 'Lombar',
         exercises: [
-          {
-            id: 't2-lom-1',
-            name: 'Banco Romano',
-            hint: 'extensão lombar',
-            sets: 3,
-            reps: 12,
-          },
+          { id: 't2-lom-1', name: 'Banco Romano', hint: 'extensão lombar', sets: 3 },
         ],
       },
+      CARDIO,
     ],
   },
   {
@@ -105,10 +114,9 @@ export const WORKOUTS = [
       },
       {
         name: 'Abdômen',
-        exercises: [
-          { id: 't3-abd-1', name: 'Abdominal Máquina', sets: 3, reps: 12 },
-        ],
+        exercises: [{ id: 't3-abd-1', name: 'Abdominal Máquina', sets: 3 }],
       },
+      CARDIO,
     ],
   },
   {
@@ -135,15 +143,10 @@ export const WORKOUTS = [
       {
         name: 'Lombar',
         exercises: [
-          {
-            id: 't4-lom-1',
-            name: 'Banco Romano',
-            hint: 'extensão lombar',
-            sets: 3,
-            reps: 12,
-          },
+          { id: 't4-lom-1', name: 'Banco Romano', hint: 'extensão lombar', sets: 3 },
         ],
       },
+      CARDIO,
     ],
   },
 ]

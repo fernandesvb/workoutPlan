@@ -49,14 +49,18 @@ export function useWorkoutLog() {
     setState((s) => ({ ...s, active: null }))
   }, [])
 
-  /** Grava (ou regrava) uma série. setIndex é 0-based. */
-  const logSet = useCallback((exerciseId, setIndex, { weight, reps }) => {
+  /**
+   * Grava (ou regrava) uma série. setIndex é 0-based.
+   * O payload é livre: musculação manda { weight, reps }, corrida manda
+   * { minutes, hr } — por isso não desestruturamos campos fixos aqui.
+   */
+  const logSet = useCallback((exerciseId, setIndex, payload) => {
     setState((s) => {
       if (!s.active) return s
       const current = s.active.entries[exerciseId] ?? []
       const next = [...current]
       while (next.length <= setIndex) next.push(null)
-      next[setIndex] = { weight, reps, at: new Date().toISOString() }
+      next[setIndex] = { ...payload, at: new Date().toISOString() }
       return {
         ...s,
         active: {

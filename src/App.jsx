@@ -4,8 +4,28 @@ import { ArrowLeft, BarChart3, Download, Upload, X } from 'lucide-react'
 import Home from './components/Home'
 import Session from './components/Session'
 import History from './components/History'
-import { WORKOUT_BY_ID } from './data/workouts'
+import { EXERCISE_INDEX, WORKOUT_BY_ID } from './data/workouts'
 import { useWorkoutLog } from './hooks/useWorkoutLog'
+
+/** Resumo da sessão: a corrida não conta como série, ela tem linha própria. */
+function summarize(session) {
+  let sets = 0
+  let volume = 0
+  let cardio = null
+  for (const [exerciseId, list] of Object.entries(session.entries)) {
+    const isCardio = EXERCISE_INDEX[exerciseId]?.type === 'cardio'
+    for (const entry of list) {
+      if (!entry) continue
+      if (isCardio) {
+        cardio = entry
+      } else {
+        sets += 1
+        volume += (entry.weight || 0) * (entry.reps || 0)
+      }
+    }
+  }
+  return { sets, volume, cardio, workoutId: session.workoutId }
+}
 
 export default function App() {
   const log = useWorkoutLog()
@@ -24,24 +44,16 @@ export default function App() {
   }
 
   const handleFinish = () => {
-    const done = Object.values(log.active.entries)
-      .flat()
-      .filter(Boolean).length
+    const anything = Object.values(log.active.entries).flat().filter(Boolean).length
 
-    if (done === 0) {
+    if (anything === 0) {
       log.cancelSession()
       setView('home')
       return
     }
 
     const session = log.finishSession()
-    if (session) {
-      const volume = Object.values(session.entries)
-        .flat()
-        .filter(Boolean)
-        .reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0)
-      setSummary({ sets: done, volume, workoutId: session.workoutId })
-    }
+    if (session) setSummary(summarize(session))
     setView('home')
   }
 
@@ -158,8 +170,14 @@ export default function App() {
             <span className="emoji">💪</span>
             <h2>Treino concluído!</h2>
             <p>
-              {summary.sets} séries registradas ·{' '}
-              {summary.volume.toLocaleString('pt-BR')} kg de volume total.
+              {summary.sets} séries · {summary.volume.toLocaleString('pt-BR')} kg
+              de volume total.
+              {summary.cardio && (
+                <>
+                  <br />
+                  Corrida: {summary.cardio.minutes} min a {summary.cardio.hr} bpm.
+                </>
+              )}
             </p>
             <button className="btn btn-primary" onClick={() => setSummary(null)}>
               Fechar

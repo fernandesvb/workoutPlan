@@ -25,7 +25,8 @@ export default function Session({
 
   const handleLogSet = (exercise, index, payload) => {
     onLogSet(exercise.id, index, payload)
-    setRestStartedAt(Date.now())
+    // Depois de 20 min de corrida ninguém precisa de cronômetro de descanso.
+    if (exercise.type !== 'cardio') setRestStartedAt(Date.now())
 
     // Se essa foi a última série, já abre o próximo exercício pendente.
     const after = loggedOf(exercise.id).filter(Boolean).length + 1
