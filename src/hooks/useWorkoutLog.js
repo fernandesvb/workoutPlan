@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { WORKOUT_BY_ID } from '../data/workouts'
 
 const STORAGE_KEY = 'treino.v2'
 
@@ -93,10 +94,16 @@ export function useWorkoutLog() {
     let saved = null
     setState((s) => {
       if (!s.active) return s
+      // Congela nome e badge do treino na sessão. Sem isso, reestruturar o
+      // plano faz o histórico antigo mentir: o id 4 já foi "Peito/Tríceps" e
+      // hoje é "Inferior B2", e a sessão passada seria reetiquetada.
+      const workout = WORKOUT_BY_ID[s.active.workoutId]
       const session = {
         ...s.active,
         id: `s_${Date.now()}`,
         finishedAt: new Date().toISOString(),
+        workoutName: workout?.name,
+        badge: workout?.badge,
       }
       saved = session
       return { sessions: [session, ...s.sessions], active: null }

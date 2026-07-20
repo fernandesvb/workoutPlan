@@ -191,8 +191,9 @@ h3 {
   place-items: center;
   border-radius: 16px;
   background: var(--surface-3);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text);
 }
@@ -670,8 +671,9 @@ h3 {
   background: var(--surface-2);
   display: grid;
   place-items: center;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 

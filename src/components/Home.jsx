@@ -66,7 +66,7 @@ export default function Home({ sessions, lastDoneByWorkout, suggestedWorkoutId, 
               className={`workout-card ${isNext ? 'suggested' : ''}`}
               onClick={() => onStart(w.id)}
             >
-              <span className="workout-badge">{w.id}</span>
+              <span className="workout-badge">{w.badge ?? w.id}</span>
               <span className="workout-info">
                 <h3>
                   {w.name}

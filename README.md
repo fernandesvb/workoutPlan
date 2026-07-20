@@ -20,15 +20,23 @@ hipertrofia.
 
 Quatro treinos, 4 séries por exercício (3 no abdominal e no banco romano):
 
-| Treino | Grupos                                                           |
-| ------ | ---------------------------------------------------------------- |
-| 1      | Trapézio · Ombros · Pernas (abdutora/adutora) · Abdominal        |
-| 2      | Costas · Bíceps · Banco romano                                   |
-| 3      | Pernas (leg press, agachamento, extensora, flexora, panturrilha) · Abdominal |
-| 4      | Peito · Tríceps · Banco romano                                   |
+Split **AB (superior/inferior alternado)**, para cada músculo ser treinado 2×
+por ciclo em vez de 1×:
 
-Rodam em **loop** (1 → 2 → 3 → 4 → 1…), sem vínculo com dia da semana. O app
-sugere o próximo com base no último feito.
+| Treino | Foco | Exercícios |
+| --- | --- | --- |
+| **A1** | Superior | Supino Reto · Supino Inclinado · Puxada Frontal · Remada Curvada · Desenvolvimento · Rosca Direta · Tríceps Testa |
+| **B1** | Inferior | Leg Press · Agachamento · Stiff · Panturrilha · Cadeira Abdutora · Abdominal |
+| **A2** | Superior | Elevação Lateral · Elevação Frontal · Remada Alta · Encolhimento · Crucifixo · Remada Baixa · Rosca Martelo · Tríceps Corda |
+| **B2** | Inferior | Elevação Pélvica · Mesa Flexora · Cadeira Extensora · Cadeira Adutora · Banco Romano · Abdominal |
+
+Rodam em **loop** (A1 → B1 → A2 → B2 → A1…), sem vínculo com dia da semana. O
+app sugere o próximo com base no último feito.
+
+⚠️ **Nunca renomeie o `id` de um exercício existente** em `workouts.js`. O
+histórico de carga é indexado por esse id — trocar apaga a progressão
+registrada. Os prefixos `t1`/`t2`/`t3`/`t4` são herdados da estrutura anterior
+e não batem mais com o treino atual, de propósito.
 
 Para mudar exercícios, séries ou repetições, edite **apenas**
 [`src/data/workouts.js`](src/data/workouts.js). O resto do app se adapta.

@@ -44,10 +44,10 @@ export default function History({ sessions, onDelete }) {
         const date = new Date(s.finishedAt)
         return (
           <div key={s.id} className="history-item">
-            <span className="day">{s.workoutId}</span>
+            <span className="day">{s.badge ?? workout?.badge ?? s.workoutId}</span>
             <span className="info">
               <div className="title">
-                {workout?.name ?? `Treino ${s.workoutId}`}
+                {s.workoutName ?? workout?.name ?? `Treino ${s.workoutId}`}
               </div>
               <div className="detail">
                 {date.toLocaleDateString('pt-BR', {
